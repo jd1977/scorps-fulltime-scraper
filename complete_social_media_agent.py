@@ -755,17 +755,29 @@ class CompleteSocialMediaAgent:
         
         draw = ImageDraw.Draw(img)
         
+        # Calculate dynamic overlay size based on number of fixtures
+        num_fixtures = min(len(fixtures), 6)
+        row_height = 90  # Increased to fit venue underneath
+        date_section_height = 80
+        footer_height = 100
+        
+        # Calculate overlay dimensions
+        fixtures_height = num_fixtures * row_height + 40  # 40px padding
+        overlay_top = ((self.height - footer_height) - fixtures_height - date_section_height) // 2 + 100
+        overlay_bottom = overlay_top + date_section_height + fixtures_height
+        
         # Add semi-transparent overlay for better text readability
         overlay = Image.new('RGBA', (self.width, self.height), (0, 0, 0, 0))
         overlay_draw = ImageDraw.Draw(overlay)
         
-        # Dark overlay in the middle section for fixture list
-        overlay_draw.rectangle([(50, 450), (self.width - 50, self.height - 100)], 
+        # Dark overlay - dynamically sized and centered
+        overlay_draw.rectangle([(50, overlay_top), (self.width - 50, overlay_bottom)], 
                               fill=(0, 0, 0, 180))
         img.paste(overlay, (0, 0), overlay)
         draw = ImageDraw.Draw(img)
         
-        # Add date at the top
+        # Add date at the top of overlay
+        date_y = overlay_top + 20
         if fixtures:
             date_text = f"FIXTURES - {fixtures[0].get('date', 'UPCOMING')}"
             try:
@@ -785,20 +797,21 @@ class CompleteSocialMediaAgent:
             text_x = (self.width // 2) - (text_width // 2)
             
             # Shadow
-            draw.text((text_x + 2, 422), date_text, fill="#000000", font=date_font)
+            draw.text((text_x + 2, date_y + 2), date_text, fill="#000000", font=date_font)
             # Main text
-            draw.text((text_x, 420), date_text, fill="#FFFFFF", font=date_font)
+            draw.text((text_x, date_y), date_text, fill="#FFFFFF", font=date_font)
         
         # Draw fixtures
-        y_start = 500
-        row_height = 70
+        y_start = overlay_top + date_section_height + 20
         
         try:
             fixture_font = ImageFont.truetype("arial.ttf", 24)
             venue_font = ImageFont.truetype("arialbd.ttf", 28)
+            venue_small_font = ImageFont.truetype("arial.ttf", 18)  # Smaller font for venue
         except:
             fixture_font = self.text_font
             venue_font = self.subtitle_font
+            venue_small_font = self.small_font
         
         for i, fixture in enumerate(fixtures[:6]):  # Show up to 6 fixtures
             y_pos = y_start + (i * row_height)
@@ -817,10 +830,10 @@ class CompleteSocialMediaAgent:
                 opponent = home.replace('Scawthorpe Scorpions J.F.C.', '').replace('J.F.C.', '').strip()
             
             # Shorten opponent name if too long
-            if len(opponent) > 25:
-                opponent = opponent[:22] + "..."
+            if len(opponent) > 30:
+                opponent = opponent[:27] + "..."
             
-            # Draw fixture details
+            # Draw fixture details - main line
             # Venue indicator (HOME/AWAY)
             draw.text((80, y_pos), venue_text, fill=venue_color, font=venue_font)
             
@@ -830,15 +843,17 @@ class CompleteSocialMediaAgent:
             # Opponent
             draw.text((250, y_pos), opponent.upper(), fill="#FFFFFF", font=fixture_font)
             
-            # Venue location (if available)
+            # Venue location underneath in smaller text
             venue_loc = fixture.get('venue', '')
             if venue_loc:
                 # Shorten venue name
                 venue_loc = venue_loc.replace(' Playing Fields', '').replace(' Sports Ground', '')
-                if len(venue_loc) > 20:
-                    venue_loc = venue_loc[:17] + "..."
-                venue_x = self.width - 350
-                draw.text((venue_x, y_pos), f"@ {venue_loc}", fill="#CCCCCC", font=fixture_font)
+                venue_loc = venue_loc.replace(' Recreation Ground', '').replace(' Sports Centre', '')
+                if len(venue_loc) > 40:
+                    venue_loc = venue_loc[:37] + "..."
+                
+                # Draw venue underneath the fixture
+                draw.text((250, y_pos + 30), f"@ {venue_loc}", fill="#AAAAAA", font=venue_small_font)
         
         # Footer
         footer_text = "COME ON SCORPS! 🦂"
