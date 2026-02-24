@@ -64,7 +64,7 @@ def format_result_display(home_team, away_team, home_score, away_score, team_nam
         if home_score == 0 and away_score == 0:
             score_display = "X - X"
             # For U11 and below, we can't determine win/loss, so show football icon
-            result_icon = "[BALL] PLAYED"
+            result_icon = "⚽ PLAYED"
             return result_icon, score_display
     
     # For U12 and above, or if actual scores exist
@@ -79,20 +79,20 @@ def format_result_display(home_team, away_team, home_score, away_score, team_nam
     
     # Determine result icon
     if our_score > their_score:
-        result_icon = "[OK] WIN"
+        result_icon = "✅ WIN"
     elif our_score < their_score:
-        result_icon = "[X] LOSS"
+        result_icon = "❌ LOSS"
     else:
-        result_icon = "[DRAW] DRAW"
+        result_icon = "🤝 DRAW"
     
     score_display = f"{home_score} - {away_score}"
     return result_icon, score_display
 
 def display_main_menu():
     """Display the main menu"""
-    print("\n[SCORPS] SCAWTHORPE SCORPIONS J.F.C. - SOCIAL MEDIA AGENT")
+    print("\n🦂 SCAWTHORPE SCORPIONS J.F.C. - SOCIAL MEDIA AGENT")
     print("=" * 60)
-    print("\n[MENU] MAIN MENU:")
+    print("\n📱 MAIN MENU:")
     print("  1. List Fixtures by Team")
     print("  2. List All Fixtures")
     print("  3. Show Tables by Team")
@@ -118,7 +118,7 @@ def sort_teams_by_age(teams):
 
 def display_teams_compact(teams):
     """Display teams in a simple numbered list with full names, sorted by age"""
-    print("\n[SCORPS] SELECT A TEAM:")
+    print("\n🦂 SELECT A TEAM:")
     print("=" * 60)
     
     # Sort teams by age group
@@ -146,14 +146,14 @@ def get_team_choice(teams):
             if 1 <= team_num <= len(teams):
                 return teams[team_num - 1]
             else:
-                print(f"[X] Please enter a number between 1 and {len(teams)}")
+                print(f"❌ Please enter a number between 1 and {len(teams)}")
                 
         except ValueError:
-            print("[X] Please enter a valid number or 'b' to go back")
+            print("❌ Please enter a valid number or 'b' to go back")
 
 def list_fixtures_by_team(agent, teams):
     """Option 1: List fixtures by team"""
-    print("\n[FIXTURES] LIST FIXTURES BY TEAM")
+    print("\n📅 LIST FIXTURES BY TEAM")
     print("=" * 60)
     
     sorted_teams = display_teams_compact(teams)
@@ -163,12 +163,12 @@ def list_fixtures_by_team(agent, teams):
         return
     
     team_name = selected_team['name'].replace('Scawthorpe Scorpions J.F.C.', '').strip()
-    print(f"\n[SEARCH] Getting fixtures for: {selected_team['name']}")
+    print(f"\n🔍 Getting fixtures for: {selected_team['name']}")
     
     data = agent.get_team_fixtures_only(team_name)
     
     if data and data['fixtures']:
-        print(f"\n[FIXTURES] UPCOMING FIXTURES - {selected_team['name']}")
+        print(f"\n📅 UPCOMING FIXTURES - {selected_team['name']}")
         print("=" * 60)
         
         for i, fixture in enumerate(data['fixtures'][:10], 1):
@@ -177,22 +177,22 @@ def list_fixtures_by_team(agent, teams):
             away = format_team_name(fixture.get('away_team', 'TBC'))
             print(f"   {home} vs {away}")
             if fixture.get('venue'):
-                print(f"   [VENUE] Venue: {fixture.get('venue')}")
+                print(f"   📍 Venue: {fixture.get('venue')}")
             if fixture.get('competition'):
-                print(f"   [RESULTS] Competition: {fixture.get('competition')}")
+                print(f"   🏆 Competition: {fixture.get('competition')}")
         
         # Create post
-        create = input("\n[MENU] Create social media post? (y/n): ").strip().lower()
+        create = input("\n📱 Create social media post? (y/n): ").strip().lower()
         if create == 'y':
             filename = agent.create_fixtures_post(data['team'], data['fixtures'])
-            print(f"[OK] Created: {filename}")
+            print(f"✅ Created: {filename}")
     else:
-        print(f"\n[X] No fixtures found for {selected_team['name']}")
+        print(f"\n❌ No fixtures found for {selected_team['name']}")
         print("   The season may not have started yet or fixtures haven't been published.")
 
 def list_all_fixtures(agent, teams):
     """Option 2: List all fixtures (within next 7 days only) - uses club-wide search"""
-    print("\n[FIXTURES] LIST ALL FIXTURES (NEXT 7 DAYS)")
+    print("\n📅 LIST ALL FIXTURES (NEXT 7 DAYS)")
     print("=" * 60)
     
     from datetime import datetime, timedelta
@@ -203,7 +203,7 @@ def list_all_fixtures(agent, teams):
     today = datetime.now()
     seven_days_later = today + timedelta(days=7)
     
-    print(f"\n[SEARCH] Getting all club fixtures between {today.strftime('%d/%m/%y')} and {seven_days_later.strftime('%d/%m/%y')}...")
+    print(f"\n🔍 Getting all club fixtures between {today.strftime('%d/%m/%y')} and {seven_days_later.strftime('%d/%m/%y')}...")
     
     # Use club-wide fixtures URL directly (no team filter)
     CLUB_ID = "105735333"
@@ -285,13 +285,13 @@ def list_all_fixtures(agent, teams):
                     except:
                         continue
     except Exception as e:
-        print(f"   [X] Error: {e}")
+        print(f"   ❌ Error: {e}")
     
     if all_fixtures:
         # Sort by age group (youngest first), then by date
         all_fixtures.sort(key=lambda x: (get_age_group_sort_key(x.get('team', '')), x['parsed_date'].timestamp()))
         
-        print(f"\n[FIXTURES] UPCOMING FIXTURES IN NEXT 7 DAYS ({len(all_fixtures)} found)")
+        print(f"\n📅 UPCOMING FIXTURES IN NEXT 7 DAYS ({len(all_fixtures)} found)")
         print("   (Ordered by age group: U7, U8, U9, U10, U11, U12, U13, U14, U15, U16, U18)")
         print("=" * 60)
         
@@ -302,28 +302,28 @@ def list_all_fixtures(agent, teams):
             away = format_team_name(fixture.get('away_team', 'TBC'))
             print(f"   {home} vs {away}")
             if fixture.get('venue'):
-                print(f"   [VENUE] Venue: {fixture['venue']}")
+                print(f"   📍 Venue: {fixture['venue']}")
             if fixture.get('competition'):
-                print(f"   [RESULTS] Competition: {fixture.get('competition')}")
+                print(f"   🏆 Competition: {fixture.get('competition')}")
     else:
-        print(f"\n[X] No fixtures found in the next 7 days")
+        print(f"\n❌ No fixtures found in the next 7 days")
         print("   Check back later for upcoming matches!")
 
 def show_tables_by_team(agent, teams):
     """Option 3: Show tables by team - COMING SOON"""
-    print("\n[TABLE] SHOW TABLES BY TEAM")
+    print("\n📊 SHOW TABLES BY TEAM")
     print("=" * 60)
-    print("\n[WARN]  LEAGUE TABLES - COMING SOON")
+    print("\n⚠️  LEAGUE TABLES - COMING SOON")
     print("=" * 60)
     print("\nWe're working on a reliable way to scrape league tables from")
     print("the FA Full-Time website. The website uses complex JavaScript")
     print("rendering that makes automated scraping challenging.")
-    print("\n[TIP] IN THE MEANTIME:")
+    print("\n💡 IN THE MEANTIME:")
     print("   • Visit https://fulltime.thefa.com directly in your browser")
     print("   • Use Option 4 to see recent results for your team")
     print("   • Use Option 1 to see upcoming fixtures")
     print("   • Use Option 5 to see all recent results")
-    print("\n[OK] WHAT'S WORKING:")
+    print("\n✅ WHAT'S WORKING:")
     print("   • Option 1: List Fixtures by Team")
     print("   • Option 2: List All Fixtures")
     print("   • Option 4: Show Results by Team (with correct scores!)")
@@ -334,7 +334,7 @@ def show_tables_by_team(agent, teams):
 
 def show_all_this_weeks_results(agent, teams):
     """Option 4: Show all this week's results (last 7 days)"""
-    print("\n[RESULTS] SHOW ALL RESULTS (LAST 7 DAYS)")
+    print("\n🏆 SHOW ALL RESULTS (LAST 7 DAYS)")
     print("=" * 60)
     
     from datetime import datetime, timedelta
@@ -343,7 +343,7 @@ def show_all_this_weeks_results(agent, teams):
     today = datetime.now()
     seven_days_ago = today - timedelta(days=7)
     
-    print(f"\n[SEARCH] Scanning all teams for results between {seven_days_ago.strftime('%d/%m/%y')} and {today.strftime('%d/%m/%y')}...")
+    print(f"\n🔍 Scanning all teams for results between {seven_days_ago.strftime('%d/%m/%y')} and {today.strftime('%d/%m/%y')}...")
     
     all_results = []
     
@@ -371,15 +371,15 @@ def show_all_this_weeks_results(agent, teams):
                 except ValueError:
                     # Skip results with invalid dates
                     continue
-            print(f"[OK] {results_found} results")
+            print(f"✅ {results_found} results")
         else:
-            print("[O] No results")
+            print("⭕ No results")
     
     if all_results:
         # Sort by age group (youngest first), then by date (most recent first)
         all_results.sort(key=lambda x: (get_age_group_sort_key(x.get('team', '')), -x['parsed_date'].timestamp()))
         
-        print(f"\n[RESULTS] RESULTS FROM LAST 7 DAYS ({len(all_results)} found)")
+        print(f"\n🏆 RESULTS FROM LAST 7 DAYS ({len(all_results)} found)")
         print("   (Ordered by age group: U7, U8, U9, U10, U11, U12, U13, U14, U15, U16, U18)")
         print("=" * 60)
         
@@ -403,13 +403,13 @@ def show_all_this_weeks_results(agent, teams):
             print(f"   {result.get('date', 'Recent')}")
             print(f"   {home} {score_display} {away}")
             if result.get('competition'):
-                print(f"   [RESULTS] Competition: {result.get('competition')}")
+                print(f"   🏆 Competition: {result.get('competition')}")
     else:
-        print(f"\n[X] No results found in the last 7 days")
+        print(f"\n❌ No results found in the last 7 days")
 
 def show_results_by_team(agent, teams):
     """Option 4: Show results by team - uses direct scraping"""
-    print("\n[RESULTS] SHOW RESULTS BY TEAM")
+    print("\n🏆 SHOW RESULTS BY TEAM")
     print("=" * 60)
     
     from datetime import datetime
@@ -426,7 +426,7 @@ def show_results_by_team(agent, teams):
     team_name = selected_team['name'].replace('Scawthorpe Scorpions J.F.C.', '').strip()
     team_id = selected_team['team_id']
     
-    print(f"\n[SEARCH] Getting results for: {selected_team['name']}")
+    print(f"\n🔍 Getting results for: {selected_team['name']}")
     print(f"   Team ID: {team_id}")
     
     # Use direct scraping with team-specific results URL
@@ -525,7 +525,7 @@ def show_results_by_team(agent, teams):
                     except:
                         continue
     except Exception as e:
-        print(f"   [X] Error: {e}")
+        print(f"   ❌ Error: {e}")
     
     if all_results:
         # Sort results by date (most recent first)
@@ -534,7 +534,7 @@ def show_results_by_team(agent, teams):
         except:
             sorted_results = all_results
         
-        print(f"\n[RESULTS] RECENT RESULTS - {selected_team['name']}")
+        print(f"\n🏆 RECENT RESULTS - {selected_team['name']}")
         print(f"   (Showing last {min(10, len(sorted_results))} results)")
         print("=" * 60)
         
@@ -557,21 +557,21 @@ def show_results_by_team(agent, teams):
             print(f"\n{i}. {result_icon} - {result.get('date', 'Recent')}")
             print(f"   {home} {score_display} {away}")
             if result.get('competition'):
-                print(f"   [RESULTS] Competition: {result.get('competition')}")
+                print(f"   🏆 Competition: {result.get('competition')}")
         
         # Create post
-        create = input("\n[MENU] Create social media post? (y/n): ").strip().lower()
+        create = input("\n📱 Create social media post? (y/n): ").strip().lower()
         if create == 'y':
             # Convert to format expected by create_results_post
             filename = agent.create_results_post(selected_team, sorted_results[:10])
-            print(f"[OK] Created: {filename}")
+            print(f"✅ Created: {filename}")
     else:
-        print(f"\n[X] No results found for {selected_team['name']}")
+        print(f"\n❌ No results found for {selected_team['name']}")
 
 def main():
     """Main menu loop"""
     print("\n" + "=" * 60)
-    print("[SCORPS] SCAWTHORPE SCORPIONS J.F.C.")
+    print("🦂 SCAWTHORPE SCORPIONS J.F.C.")
     print("   Social Media Agent")
     print("=" * 60)
     
@@ -602,7 +602,7 @@ def main():
         elif choice == '5':
             show_all_this_weeks_results(agent, teams)
         else:
-            print("[X] Invalid option. Please try again.")
+            print("❌ Invalid option. Please try again.")
         
         input("\nPress Enter to continue...")
 

@@ -150,7 +150,7 @@ class CompleteSocialMediaAgent:
 
     def get_team_fixtures_only(self, team_name: str) -> Dict[str, Any]:
         """Get only fixtures for a team - simplified for option 1"""
-        print(f"[*] Getting fixtures for: {team_name}")
+        print(f"⚽ Getting fixtures for: {team_name}")
         
         # Find the team
         matching_team = None
@@ -160,18 +160,18 @@ class CompleteSocialMediaAgent:
                 break
         
         if not matching_team:
-            print(f"[ERROR] Team '{team_name}' not found")
+            print(f"❌ Team '{team_name}' not found")
             return {}
         
         team_id = matching_team['team_id']
-        print(f"   [OK] Found team ID: {team_id}")
+        print(f"   ✅ Found team ID: {team_id}")
         
         # Get fixtures using team-specific URL only
         fixtures_url = f"https://fulltime.thefa.com/fixtures.html?selectedSeason={self.SEASON_ID}&selectedFixtureGroupAgeGroup=0&selectedFixtureGroupKey=&selectedRelatedFixtureOption=3&selectedClub={self.CLUB_ID}&selectedTeam={team_id}&selectedDateCode=all&previousSelectedFixtureGroupAgeGroup=&previousSelectedFixtureGroupKey=&previousSelectedClub={self.CLUB_ID}"
         
         fixtures = []
         try:
-            print(f"   [WEB] Fetching fixtures from FA Fulltime...")
+            print(f"   🌐 Fetching fixtures from FA Fulltime...")
             self._rotate_user_agent()
             response = self.session.get(fixtures_url, timeout=15)
             time.sleep(3)
@@ -216,12 +216,12 @@ class CompleteSocialMediaAgent:
                         except:
                             continue
                 
-                print(f"   [OK] Found {len(fixtures)} fixtures")
+                print(f"   ✅ Found {len(fixtures)} fixtures")
             else:
-                print(f"   [ERROR] HTTP {response.status_code}")
+                print(f"   ❌ HTTP {response.status_code}")
                 
         except Exception as e:
-            print(f"   [ERROR] {e}")
+            print(f"   ❌ {e}")
         
         return {
             'team': matching_team,
