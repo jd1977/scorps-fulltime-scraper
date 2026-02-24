@@ -722,9 +722,22 @@ class CompleteSocialMediaAgent:
         # Try to load the background image
         import os
         import random
-        bg_path = os.path.join('assets', 'fixtures_background.png')
         
-        if os.path.exists(bg_path):
+        # Try multiple possible filenames
+        possible_paths = [
+            os.path.join('assets', 'Scawthorpe Scorpions fixture announcement.png'),
+            os.path.join('assets', 'fixtures_background.png'),
+            os.path.join('assets', 'fixture_announcement.png')
+        ]
+        
+        bg_path = None
+        for path in possible_paths:
+            if os.path.exists(path):
+                bg_path = path
+                print(f"   ✅ Using background: {path}")
+                break
+        
+        if bg_path:
             # Load and resize background image
             img = Image.open(bg_path)
             img = img.resize((self.width, self.height), Image.Resampling.LANCZOS)
