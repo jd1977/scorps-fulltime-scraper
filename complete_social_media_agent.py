@@ -756,16 +756,16 @@ class CompleteSocialMediaAgent:
         draw = ImageDraw.Draw(img)
         
         # Black box in bottom half - below the badge
-        # Position it in the lower portion of the image
-        overlay_top = int(self.height * 0.55)  # Start at 55% down the image
-        overlay_bottom = self.height - 80  # Leave space for footer
+        # Position it lower in the image
+        overlay_top = int(self.height * 0.62)  # Start at 62% down the image (lower)
+        overlay_bottom = self.height - 60  # Leave less space for footer
         
         # Add semi-transparent overlay
         overlay = Image.new('RGBA', (self.width, self.height), (0, 0, 0, 0))
         overlay_draw = ImageDraw.Draw(overlay)
         
-        # Dark overlay in bottom half
-        overlay_draw.rectangle([(40, overlay_top), (self.width - 40, overlay_bottom)], 
+        # Dark overlay in bottom half - wider (less padding on sides)
+        overlay_draw.rectangle([(30, overlay_top), (self.width - 30, overlay_bottom)], 
                               fill=(0, 0, 0, 200))
         img.paste(overlay, (0, 0), overlay)
         draw = ImageDraw.Draw(img)
@@ -782,11 +782,11 @@ class CompleteSocialMediaAgent:
             venue_font = self.small_font
             vs_font = self.text_font
         
-        # Layout: 2 columns, 3 rows
-        col_width = (self.width - 120) // 2  # Divide space into 2 columns
+        # Layout: 2 columns, 3 rows - wider columns
+        col_width = (self.width - 80) // 2  # Wider columns (less total padding)
         row_height = (overlay_bottom - overlay_top - 40) // 3  # Divide into 3 rows
         
-        padding_left = 60
+        padding_left = 50  # Less left padding
         padding_top = overlay_top + 20
         
         for i, fixture in enumerate(fixtures[:6]):  # Show up to 6 fixtures
