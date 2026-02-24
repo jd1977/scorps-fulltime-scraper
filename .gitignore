@@ -40,8 +40,9 @@ Thumbs.db
 # Generated content
 social_media_posts/
 posts/
-fixtures_boys_teams_*.png
-fixtures_girls_teams_*.png
+fixtures_*.png
+results_*.png
+table_*.png
 
 # Sensitive data (if any)
 *.env
