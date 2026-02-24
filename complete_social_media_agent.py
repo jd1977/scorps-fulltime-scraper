@@ -716,55 +716,126 @@ class CompleteSocialMediaAgent:
             return draw.textsize(text, font=font)[0]
 
     def create_fixtures_post(self, team_data: dict, fixtures: list) -> str:
-        """Create a fixtures post"""
+        """Create a fixtures post using the new template"""
         print(f"🎨 Creating fixtures post...")
         
-        img = Image.new('RGB', (self.width, self.height), self.black)
+        # Try to load the background image
+        import os
+        import random
+        bg_path = os.path.join('assets', 'fixtures_background.png')
+        
+        if os.path.exists(bg_path):
+            # Load and resize background image
+            img = Image.open(bg_path)
+            img = img.resize((self.width, self.height), Image.Resampling.LANCZOS)
+        else:
+            # Fallback: Create black background with orange accents
+            print("   ⚠️  Background image not found, using fallback design")
+            img = Image.new('RGB', (self.width, self.height), self.black)
+            draw_temp = ImageDraw.Draw(img)
+            self._add_paint_effects(draw_temp)
+        
         draw = ImageDraw.Draw(img)
         
-        self._add_paint_effects(draw)
+        # Add semi-transparent overlay for better text readability
+        overlay = Image.new('RGBA', (self.width, self.height), (0, 0, 0, 0))
+        overlay_draw = ImageDraw.Draw(overlay)
         
-        # Title
-        title = "BOYS FIXTURES"
-        title_width = self._get_text_width(draw, title, self.title_font)
-        title_x = (self.width - title_width) // 2
-        draw.text((title_x, 80), title, fill=self.orange, font=self.title_font)
+        # Dark overlay in the middle section for fixture list
+        overlay_draw.rectangle([(50, 450), (self.width - 50, self.height - 100)], 
+                              fill=(0, 0, 0, 180))
+        img.paste(overlay, (0, 0), overlay)
+        draw = ImageDraw.Draw(img)
         
-        # Team name
-        team_name = self._clean_team_name(team_data['name'])
-        team_width = self._get_text_width(draw, team_name, self.subtitle_font)
-        team_x = (self.width - team_width) // 2
-        draw.text((team_x, 150), team_name, fill=self.white, font=self.subtitle_font)
-        
-        # Fixtures
-        y_pos = 220
-        
+        # Add date at the top
         if fixtures:
-            for i, fixture in enumerate(fixtures[:6]):
-                date_time = f"{fixture.get('date', 'TBC')} {fixture.get('time', '')}"
-                draw.text((80, y_pos), date_time, fill=self.orange, font=self.text_font)
-                
-                home = fixture.get('home_team', 'TBC')
-                away = fixture.get('away_team', 'TBC')
-                match_text = f"{home} v {away}"
-                
-                if 'scawthorpe' in match_text.lower() or 'scorpions' in match_text.lower():
-                    draw.text((80, y_pos + 35), match_text, fill=self.white, font=self.text_font)
-                else:
-                    draw.text((80, y_pos + 35), match_text, fill=(200, 200, 200), font=self.text_font)
-                
-                y_pos += 120
-        else:
-            draw.text((80, y_pos), "No upcoming fixtures", fill=self.white, font=self.text_font)
-            draw.text((80, y_pos + 50), "Check back soon for updates!", fill=self.orange, font=self.text_font)
+            date_text = f"FIXTURES - {fixtures[0].get('date', 'UPCOMING')}"
+            try:
+                date_font = ImageFont.truetype("arialbd.ttf", 36)
+            except:
+                date_font = self.subtitle_font
+            
+            # Draw date with shadow for visibility
+            bbox = draw.textbbox((0, 0), date_text, font=date_font)
+            text_width = bbox[2] - bbox[0]
+            text_x = (self.width // 2) - (text_width // 2)
+            
+            # Shadow
+            draw.text((text_x + 2, 422), date_text, fill="#000000", font=date_font)
+            # Main text
+            draw.text((text_x, 420), date_text, fill="#FFFFFF", font=date_font)
+        
+        # Draw fixtures
+        y_start = 500
+        row_height = 70
+        
+        try:
+            fixture_font = ImageFont.truetype("arial.ttf", 24)
+            venue_font = ImageFont.truetype("arialbd.ttf", 28)
+        except:
+            fixture_font = self.text_font
+            venue_font = self.subtitle_font
+        
+        for i, fixture in enumerate(fixtures[:6]):  # Show up to 6 fixtures
+            y_pos = y_start + (i * row_height)
+            
+            home = fixture.get('home_team', '')
+            away = fixture.get('away_team', '')
+            
+            # Determine if home or away
+            if "scawthorpe" in home.lower() or "scorps" in home.lower():
+                venue_text = "HOME"
+                venue_color = "#FF8C00"  # Orange
+                opponent = away.replace('Scawthorpe Scorpions J.F.C.', '').replace('J.F.C.', '').strip()
+            else:
+                venue_text = "AWAY"
+                venue_color = "#4169E1"  # Blue
+                opponent = home.replace('Scawthorpe Scorpions J.F.C.', '').replace('J.F.C.', '').strip()
+            
+            # Shorten opponent name if too long
+            if len(opponent) > 25:
+                opponent = opponent[:22] + "..."
+            
+            # Draw fixture details
+            # Venue indicator (HOME/AWAY)
+            draw.text((80, y_pos), venue_text, fill=venue_color, font=venue_font)
+            
+            # VS text
+            draw.text((200, y_pos), "vs", fill="#FFFFFF", font=fixture_font)
+            
+            # Opponent
+            draw.text((250, y_pos), opponent.upper(), fill="#FFFFFF", font=fixture_font)
+            
+            # Venue location (if available)
+            venue_loc = fixture.get('venue', '')
+            if venue_loc:
+                # Shorten venue name
+                venue_loc = venue_loc.replace(' Playing Fields', '').replace(' Sports Ground', '')
+                if len(venue_loc) > 20:
+                    venue_loc = venue_loc[:17] + "..."
+                venue_x = self.width - 350
+                draw.text((venue_x, y_pos), f"@ {venue_loc}", fill="#CCCCCC", font=fixture_font)
         
         # Footer
-        footer = "🦂 SCAWTHORPE SCORPIONS J.F.C. 🦂"
-        footer_width = self._get_text_width(draw, footer, self.text_font)
-        footer_x = (self.width - footer_width) // 2
-        draw.text((footer_x, self.height - 80), footer, fill=self.orange, font=self.text_font)
+        footer_text = "COME ON SCORPS! 🦂"
+        try:
+            footer_font = ImageFont.truetype("arialbd.ttf", 28)
+        except:
+            footer_font = self.subtitle_font
         
-        filename = f"fixtures_{team_name.replace(' ', '_').lower()}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
+        bbox = draw.textbbox((0, 0), footer_text, font=footer_font)
+        text_width = bbox[2] - bbox[0]
+        text_x = (self.width // 2) - (text_width // 2)
+        
+        # Shadow
+        draw.text((text_x + 2, self.height - 48), footer_text, fill="#000000", font=footer_font)
+        # Main text
+        draw.text((text_x, self.height - 50), footer_text, fill="#FFFFFF", font=footer_font)
+        
+        # Generate unique filename with microseconds
+        team_name = self._clean_team_name(team_data['name'])
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S_%f')  # Added microseconds
+        filename = f"fixtures_{team_name.replace(' ', '_').lower()}_{timestamp}.png"
         img.save(filename)
         return filename
 
