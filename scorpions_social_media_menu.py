@@ -305,6 +305,26 @@ def list_all_fixtures(agent, teams):
                 print(f"   📍 Venue: {fixture['venue']}")
             if fixture.get('competition'):
                 print(f"   🏆 Competition: {fixture.get('competition')}")
+        
+        # Create post option
+        create = input("\n📱 Create social media post? (y/n): ").strip().lower()
+        if create == 'y':
+            # Convert fixtures to the format expected by create_fixtures_post
+            from complete_social_media_agent import Fixture
+            fixture_objects = []
+            for f in all_fixtures[:6]:  # Limit to 6 fixtures for the post
+                fixture_obj = Fixture(
+                    date=f['date'],
+                    time=f['time'],
+                    home_team=f['home_team'],
+                    away_team=f['away_team'],
+                    venue=f.get('venue', ''),
+                    competition=f.get('competition', '')
+                )
+                fixture_objects.append(fixture_obj)
+            
+            filename = agent.create_fixtures_post({'name': 'All Teams'}, fixture_objects)
+            print(f"✅ Created: {filename}")
     else:
         print(f"\n❌ No fixtures found in the next 7 days")
         print("   Check back later for upcoming matches!")
