@@ -13,6 +13,7 @@ from dataclasses import dataclass
 from typing import List, Optional, Dict, Any
 from PIL import Image, ImageDraw, ImageFont
 import random
+import time
 
 @dataclass
 class Fixture:
@@ -94,8 +95,6 @@ class CompleteSocialMediaAgent:
     
     def _rotate_user_agent(self):
         """Rotate to a random user agent."""
-        import random
-        import time
         user_agent = random.choice(self.USER_AGENTS)
         self.session.headers.update({
             'User-Agent': user_agent,
