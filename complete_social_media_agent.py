@@ -815,12 +815,34 @@ class CompleteSocialMediaAgent:
             # Format Scorps team name (e.g., "Scorps U10 Red")
             scorps_name = our_team.replace('Scawthorpe Scorpions J.F.C.', 'Scorps').replace('Scawthorpe Scorpions', 'Scorps').strip()
             
+            # Add colored circle emoji based on team color
+            color_emoji = ""
+            scorps_lower = scorps_name.lower()
+            if 'red' in scorps_lower:
+                color_emoji = " 🔴"
+            elif 'blue' in scorps_lower:
+                color_emoji = " 🔵"
+            elif 'green' in scorps_lower:
+                color_emoji = " 🟢"
+            elif 'orange' in scorps_lower or 'or' in scorps_lower:
+                color_emoji = " 🟠"
+            elif 'white' in scorps_lower:
+                color_emoji = " ⚪"
+            elif 'black' in scorps_lower:
+                color_emoji = " ⚫"
+            elif 'pink' in scorps_lower:
+                color_emoji = " 🩷"
+            elif 'yellow' in scorps_lower:
+                color_emoji = " 🟡"
+            
+            scorps_name_with_color = scorps_name + color_emoji
+            
             # Clean opponent name (no truncation)
             opponent = opponent.replace('Scawthorpe Scorpions J.F.C.', '').replace('J.F.C.', '').strip()
             
             # Draw fixture in column
-            # Line 1: Scorps team name in orange
-            draw.text((x_pos, y_pos), scorps_name, fill="#FF8C00", font=team_font)
+            # Line 1: Scorps team name in orange with color indicator
+            draw.text((x_pos, y_pos), scorps_name_with_color, fill="#FF8C00", font=team_font)
             
             # Line 2: HOME/AWAY indicator and "vs"
             draw.text((x_pos, y_pos + 25), f"{venue_indicator} vs", fill=venue_color, font=vs_font)
