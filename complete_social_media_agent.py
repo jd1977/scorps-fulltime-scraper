@@ -755,105 +755,89 @@ class CompleteSocialMediaAgent:
         
         draw = ImageDraw.Draw(img)
         
-        # Calculate dynamic overlay size based on number of fixtures
-        num_fixtures = min(len(fixtures), 6)
-        row_height = 90  # Increased to fit venue underneath
-        date_section_height = 80
-        footer_height = 100
+        # Black box in bottom half - below the badge
+        # Position it in the lower portion of the image
+        overlay_top = int(self.height * 0.55)  # Start at 55% down the image
+        overlay_bottom = self.height - 80  # Leave space for footer
         
-        # Calculate overlay dimensions
-        fixtures_height = num_fixtures * row_height + 40  # 40px padding
-        overlay_top = ((self.height - footer_height) - fixtures_height - date_section_height) // 2 + 100
-        overlay_bottom = overlay_top + date_section_height + fixtures_height
-        
-        # Add semi-transparent overlay for better text readability
+        # Add semi-transparent overlay
         overlay = Image.new('RGBA', (self.width, self.height), (0, 0, 0, 0))
         overlay_draw = ImageDraw.Draw(overlay)
         
-        # Dark overlay - dynamically sized and centered
-        overlay_draw.rectangle([(50, overlay_top), (self.width - 50, overlay_bottom)], 
-                              fill=(0, 0, 0, 180))
+        # Dark overlay in bottom half
+        overlay_draw.rectangle([(40, overlay_top), (self.width - 40, overlay_bottom)], 
+                              fill=(0, 0, 0, 200))
         img.paste(overlay, (0, 0), overlay)
         draw = ImageDraw.Draw(img)
         
-        # Add date at the top of overlay
-        date_y = overlay_top + 20
-        if fixtures:
-            date_text = f"FIXTURES - {fixtures[0].get('date', 'UPCOMING')}"
-            try:
-                date_font = ImageFont.truetype("arialbd.ttf", 36)
-            except:
-                date_font = self.subtitle_font
-            
-            # Draw date with shadow for visibility
-            try:
-                # Try new method first
-                bbox = draw.textbbox((0, 0), date_text, font=date_font)
-                text_width = bbox[2] - bbox[0]
-            except AttributeError:
-                # Fallback to old method
-                text_width = draw.textsize(date_text, font=date_font)[0]
-            
-            text_x = (self.width // 2) - (text_width // 2)
-            
-            # Shadow
-            draw.text((text_x + 2, date_y + 2), date_text, fill="#000000", font=date_font)
-            # Main text
-            draw.text((text_x, date_y), date_text, fill="#FFFFFF", font=date_font)
-        
-        # Draw fixtures
-        y_start = overlay_top + date_section_height + 20
-        
+        # Fonts
         try:
-            fixture_font = ImageFont.truetype("arial.ttf", 24)
-            venue_font = ImageFont.truetype("arialbd.ttf", 28)
-            venue_small_font = ImageFont.truetype("arial.ttf", 18)  # Smaller font for venue
+            team_font = ImageFont.truetype("arialbd.ttf", 20)  # For Scorps team name
+            opponent_font = ImageFont.truetype("arial.ttf", 18)  # For opponent
+            venue_font = ImageFont.truetype("arial.ttf", 14)  # For venue
+            vs_font = ImageFont.truetype("arial.ttf", 16)  # For "vs"
         except:
-            fixture_font = self.text_font
-            venue_font = self.subtitle_font
-            venue_small_font = self.small_font
+            team_font = self.text_font
+            opponent_font = self.text_font
+            venue_font = self.small_font
+            vs_font = self.text_font
+        
+        # Layout: 2 columns, 3 rows
+        col_width = (self.width - 120) // 2  # Divide space into 2 columns
+        row_height = (overlay_bottom - overlay_top - 40) // 3  # Divide into 3 rows
+        
+        padding_left = 60
+        padding_top = overlay_top + 20
         
         for i, fixture in enumerate(fixtures[:6]):  # Show up to 6 fixtures
-            y_pos = y_start + (i * row_height)
+            # Calculate position (2 columns, 3 rows)
+            col = i % 2  # 0 or 1
+            row = i // 2  # 0, 1, or 2
+            
+            x_pos = padding_left + (col * col_width)
+            y_pos = padding_top + (row * row_height)
             
             home = fixture.get('home_team', '')
             away = fixture.get('away_team', '')
             
-            # Determine if home or away
+            # Extract Scorps team name and determine opponent
             if "scawthorpe" in home.lower() or "scorps" in home.lower():
-                venue_text = "HOME"
+                our_team = home
+                opponent = away
+                venue_indicator = "HOME"
                 venue_color = "#FF8C00"  # Orange
-                opponent = away.replace('Scawthorpe Scorpions J.F.C.', '').replace('J.F.C.', '').strip()
             else:
-                venue_text = "AWAY"
+                our_team = away
+                opponent = home
+                venue_indicator = "AWAY"
                 venue_color = "#4169E1"  # Blue
-                opponent = home.replace('Scawthorpe Scorpions J.F.C.', '').replace('J.F.C.', '').strip()
             
-            # Shorten opponent name if too long
-            if len(opponent) > 30:
-                opponent = opponent[:27] + "..."
+            # Format Scorps team name (e.g., "Scorps U10 Red")
+            scorps_name = our_team.replace('Scawthorpe Scorpions J.F.C.', 'Scorps').replace('Scawthorpe Scorpions', 'Scorps').strip()
             
-            # Draw fixture details - main line
-            # Venue indicator (HOME/AWAY)
-            draw.text((80, y_pos), venue_text, fill=venue_color, font=venue_font)
+            # Shorten opponent name
+            opponent = opponent.replace('Scawthorpe Scorpions J.F.C.', '').replace('J.F.C.', '').strip()
+            if len(opponent) > 20:
+                opponent = opponent[:17] + "..."
             
-            # VS text
-            draw.text((200, y_pos), "vs", fill="#FFFFFF", font=fixture_font)
+            # Draw fixture in column
+            # Line 1: Scorps team name in orange
+            draw.text((x_pos, y_pos), scorps_name, fill="#FF8C00", font=team_font)
             
-            # Opponent
-            draw.text((250, y_pos), opponent.upper(), fill="#FFFFFF", font=fixture_font)
+            # Line 2: HOME/AWAY indicator and "vs"
+            draw.text((x_pos, y_pos + 25), f"{venue_indicator} vs", fill=venue_color, font=vs_font)
             
-            # Venue location underneath in smaller text
+            # Line 3: Opponent
+            draw.text((x_pos, y_pos + 45), opponent, fill="#FFFFFF", font=opponent_font)
+            
+            # Line 4: Venue
             venue_loc = fixture.get('venue', '')
             if venue_loc:
-                # Shorten venue name
                 venue_loc = venue_loc.replace(' Playing Fields', '').replace(' Sports Ground', '')
                 venue_loc = venue_loc.replace(' Recreation Ground', '').replace(' Sports Centre', '')
-                if len(venue_loc) > 40:
-                    venue_loc = venue_loc[:37] + "..."
-                
-                # Draw venue underneath the fixture
-                draw.text((250, y_pos + 30), f"@ {venue_loc}", fill="#AAAAAA", font=venue_small_font)
+                if len(venue_loc) > 25:
+                    venue_loc = venue_loc[:22] + "..."
+                draw.text((x_pos, y_pos + 68), f"@ {venue_loc}", fill="#AAAAAA", font=venue_font)
         
         # Footer
         footer_text = "COME ON SCORPS! 🦂"
