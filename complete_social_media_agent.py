@@ -740,7 +740,12 @@ class CompleteSocialMediaAgent:
         if bg_path:
             # Load and resize background image
             img = Image.open(bg_path)
-            img = img.resize((self.width, self.height), Image.Resampling.LANCZOS)
+            try:
+                # Try new method first (Pillow >= 9.1.0)
+                img = img.resize((self.width, self.height), Image.Resampling.LANCZOS)
+            except AttributeError:
+                # Fallback to old method (Pillow < 9.1.0)
+                img = img.resize((self.width, self.height), Image.LANCZOS)
         else:
             # Fallback: Create black background with orange accents
             print("   ⚠️  Background image not found, using fallback design")
