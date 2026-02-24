@@ -436,15 +436,20 @@ def show_tables_by_team(agent, teams):
                     
                     for entry in table_data:
                         team_display = entry['team']
+                        is_our_team = False
+                        
                         # Highlight our team
                         if 'scawthorpe' in team_display.lower() or 'scorpions' in team_display.lower():
-                            team_display = f"🦂 {format_team_name(team_display)}"
+                            team_display = format_team_name(team_display)
+                            team_display = f"🦂 {team_display}"
+                            is_our_team = True
                         else:
                             team_display = format_team_name(team_display)
                         
-                        # Truncate long team names
-                        if len(team_display) > 30:
-                            team_display = team_display[:27] + "..."
+                        # Truncate long team names (account for emoji taking visual space)
+                        max_len = 28 if is_our_team else 30
+                        if len(team_display) > max_len:
+                            team_display = team_display[:max_len-3] + "..."
                         
                         print(f"{entry['pos']:<4} {team_display:<30} {entry['played']:<3} {entry['won']:<3} {entry['drawn']:<3} {entry['lost']:<3} {entry['gf']:<4} {entry['ga']:<4} {entry['gd']:<4} {entry['pts']:<4}")
                     
