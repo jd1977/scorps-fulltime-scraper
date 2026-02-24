@@ -388,7 +388,9 @@ def show_tables_by_team(agent, teams):
                 for row in data_rows:
                     cells = row.find_all('td')
                     print(f"   🔍 Row has {len(cells)} cells")
-                    if len(cells) >= 10:
+                    
+                    # Handle both 7-cell and 10-cell table formats
+                    if len(cells) >= 7:
                         try:
                             pos = cells[0].get_text(strip=True)
                             team = cells[1].get_text(strip=True)
@@ -396,10 +398,19 @@ def show_tables_by_team(agent, teams):
                             won = cells[3].get_text(strip=True)
                             drawn = cells[4].get_text(strip=True)
                             lost = cells[5].get_text(strip=True)
-                            gf = cells[6].get_text(strip=True)
-                            ga = cells[7].get_text(strip=True)
-                            gd = cells[8].get_text(strip=True)
-                            pts = cells[9].get_text(strip=True)
+                            
+                            # Check if we have 10 cells (with GF, GA, GD) or 7 cells (without)
+                            if len(cells) >= 10:
+                                gf = cells[6].get_text(strip=True)
+                                ga = cells[7].get_text(strip=True)
+                                gd = cells[8].get_text(strip=True)
+                                pts = cells[9].get_text(strip=True)
+                            else:
+                                # 7-cell format: Pos, Team, P, W, D, L, Pts
+                                gf = "-"
+                                ga = "-"
+                                gd = "-"
+                                pts = cells[6].get_text(strip=True)
                             
                             table_data.append({
                                 'pos': pos,
