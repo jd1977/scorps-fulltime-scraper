@@ -331,10 +331,10 @@ def show_tables_by_team(agent, teams):
     print(f"\n🔍 Getting league table for: {team_name}")
     print(f"   League ID: {league_id}, Division ID: {division_id}")
     
-    # Build table URL using the correct format
-    # Example: https://fulltime.thefa.com/index.html?league=8057112&selectedSeason=895948809&selectedDivision=660317515&selectedCompetition=0&selectedFixtureGroupKey=1_805033255
+    # Build table URL using division_id from team data
+    # Format: https://fulltime.thefa.com/index.html?selectedSeason=895948809&selectedFixtureGroupAgeGroup=0&selectedDivision={division_id}&selectedCompetition=0
     SEASON_ID = "895948809"
-    table_url = f"https://fulltime.thefa.com/index.html?league={league_id}&selectedSeason={SEASON_ID}&selectedDivision={division_id}&selectedCompetition=0&selectedFixtureGroupKey=1_805033255"
+    table_url = f"https://fulltime.thefa.com/index.html?selectedSeason={SEASON_ID}&selectedFixtureGroupAgeGroup=0&selectedDivision={division_id}&selectedCompetition=0"
     
     import requests
     from bs4 import BeautifulSoup
