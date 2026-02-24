@@ -815,10 +815,8 @@ class CompleteSocialMediaAgent:
             # Format Scorps team name (e.g., "Scorps U10 Red")
             scorps_name = our_team.replace('Scawthorpe Scorpions J.F.C.', 'Scorps').replace('Scawthorpe Scorpions', 'Scorps').strip()
             
-            # Shorten opponent name
+            # Clean opponent name (no truncation)
             opponent = opponent.replace('Scawthorpe Scorpions J.F.C.', '').replace('J.F.C.', '').strip()
-            if len(opponent) > 20:
-                opponent = opponent[:17] + "..."
             
             # Draw fixture in column
             # Line 1: Scorps team name in orange
@@ -827,16 +825,15 @@ class CompleteSocialMediaAgent:
             # Line 2: HOME/AWAY indicator and "vs"
             draw.text((x_pos, y_pos + 25), f"{venue_indicator} vs", fill=venue_color, font=vs_font)
             
-            # Line 3: Opponent
+            # Line 3: Opponent (full text)
             draw.text((x_pos, y_pos + 45), opponent, fill="#FFFFFF", font=opponent_font)
             
-            # Line 4: Venue
+            # Line 4: Venue (full text)
             venue_loc = fixture.get('venue', '')
             if venue_loc:
                 venue_loc = venue_loc.replace(' Playing Fields', '').replace(' Sports Ground', '')
                 venue_loc = venue_loc.replace(' Recreation Ground', '').replace(' Sports Centre', '')
-                if len(venue_loc) > 25:
-                    venue_loc = venue_loc[:22] + "..."
+                # No truncation - show full venue name
                 draw.text((x_pos, y_pos + 68), f"@ {venue_loc}", fill="#AAAAAA", font=venue_font)
         
         # Footer
