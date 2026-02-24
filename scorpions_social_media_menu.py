@@ -331,8 +331,10 @@ def show_tables_by_team(agent, teams):
     print(f"\n🔍 Getting league table for: {team_name}")
     print(f"   League ID: {league_id}, Division ID: {division_id}")
     
-    # Build table URL
-    table_url = f"https://fulltime.thefa.com/table.html?league={league_id}&division={division_id}"
+    # Build table URL using the correct format
+    # Example: https://fulltime.thefa.com/index.html?league=8057112&selectedSeason=895948809&selectedDivision=660317515&selectedCompetition=0&selectedFixtureGroupKey=1_805033255
+    SEASON_ID = "895948809"
+    table_url = f"https://fulltime.thefa.com/index.html?league={league_id}&selectedSeason={SEASON_ID}&selectedDivision={division_id}&selectedCompetition=0&selectedFixtureGroupKey=1_805033255"
     
     import requests
     from bs4 import BeautifulSoup
@@ -361,15 +363,31 @@ def show_tables_by_team(agent, teams):
         if response.status_code == 200:
             soup = BeautifulSoup(response.content, 'html.parser')
             
-            # Find the league table
+            # Debug: Save HTML to file for inspection
+            # with open('table_debug.html', 'w', encoding='utf-8') as f:
+            #     f.write(str(soup.prettify()))
+            
+            # Try different ways to find the table
             table = soup.find('table', class_='table')
+            if not table:
+                table = soup.find('table', class_='league-table')
+            if not table:
+                table = soup.find('table')  # Try any table
+            
+            print(f"   🔍 Found table: {table is not None}")
             
             if table:
                 rows = table.find_all('tr')
+                print(f"   🔍 Found {len(rows)} rows")
                 table_data = []
                 
-                for row in rows[1:]:  # Skip header row
+                # Skip header row(s) - find first row with td elements
+                data_rows = [row for row in rows if row.find_all('td')]
+                print(f"   🔍 Found {len(data_rows)} data rows")
+                
+                for row in data_rows:
                     cells = row.find_all('td')
+                    print(f"   🔍 Row has {len(cells)} cells")
                     if len(cells) >= 10:
                         try:
                             pos = cells[0].get_text(strip=True)
@@ -395,7 +413,8 @@ def show_tables_by_team(agent, teams):
                                 'gd': gd,
                                 'pts': pts
                             })
-                        except:
+                        except Exception as e:
+                            print(f"   ⚠️  Error parsing row: {e}")
                             continue
                 
                 if table_data:
