@@ -272,7 +272,7 @@ class CompleteSocialMediaAgent:
                             date_span = date_cell.find('span')
                             date = date_span.get_text(strip=True) if date_span else ""
                             time_span = date_cell.find('span', class_='color-dark-grey')
-                            time = time_span.get_text(strip=True) if time_span else ""
+                            fixture_time = time_span.get_text(strip=True) if time_span else ""
                             
                             # Teams
                             home_team = cells[2].get_text(strip=True)
@@ -292,7 +292,7 @@ class CompleteSocialMediaAgent:
                                 
                                 fixture = {
                                     'date': date,
-                                    'time': time,
+                                    'time': fixture_time,
                                     'home_team': home_team,
                                     'away_team': away_team,
                                     'venue': venue,
@@ -401,7 +401,7 @@ class CompleteSocialMediaAgent:
                     
                     # Extract time
                     time_match = re.search(r'(\d{1,2}:\d{2})', text)
-                    time = time_match.group(1) if time_match else ""
+                    fixture_time = time_match.group(1) if time_match else ""
                     
                     # Try to find opponent
                     # Look for pattern: Team A v Team B
@@ -430,7 +430,7 @@ class CompleteSocialMediaAgent:
                         
                         fixture = {
                             'date': date,
-                            'time': time,
+                            'time': fixture_time,
                             'home_team': home_team,
                             'away_team': away_team
                         }
@@ -481,7 +481,7 @@ class CompleteSocialMediaAgent:
                 home_team = match[0].strip()
                 away_team = match[1].strip()
                 date = match[2] if len(match) > 2 else ""
-                time = match[3] if len(match) > 3 else ""
+                fixture_time = match[3] if len(match) > 3 else ""
                 
                 # Filter out navigation/menu items
                 if (len(home_team) > 3 and len(away_team) > 3 and 
@@ -491,7 +491,7 @@ class CompleteSocialMediaAgent:
                     
                     fixture = Fixture(
                         date=date,
-                        time=time,
+                        time=fixture_time,
                         home_team=home_team,
                         away_team=away_team
                     )
