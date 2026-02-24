@@ -309,22 +309,60 @@ def list_all_fixtures(agent, teams):
         # Create post option
         create = input("\n📱 Create social media post? (y/n): ").strip().lower()
         if create == 'y':
-            # Convert fixtures to the format expected by create_fixtures_post
-            from complete_social_media_agent import Fixture
-            fixture_objects = []
-            for f in all_fixtures[:6]:  # Limit to 6 fixtures for the post
-                fixture_obj = Fixture(
-                    date=f['date'],
-                    time=f['time'],
-                    home_team=f['home_team'],
-                    away_team=f['away_team'],
-                    venue=f.get('venue', ''),
-                    competition=f.get('competition', '')
-                )
-                fixture_objects.append(fixture_obj)
+            print("\n🎨 Creating fixtures posts...")
             
-            filename = agent.create_fixtures_post({'name': 'All Teams'}, fixture_objects)
-            print(f"✅ Created: {filename}")
+            # Separate boys and girls fixtures
+            boys_fixtures = []
+            girls_fixtures = []
+            
+            for f in all_fixtures:
+                team_name = f.get('team', '').lower()
+                if 'girl' in team_name:
+                    girls_fixtures.append(f)
+                else:
+                    boys_fixtures.append(f)
+            
+            created_posts = []
+            
+            # Create boys posts (max 6 per post)
+            if boys_fixtures:
+                for i in range(0, len(boys_fixtures), 6):
+                    batch = boys_fixtures[i:i+6]
+                    fixture_dicts = []
+                    for f in batch:
+                        fixture_dicts.append({
+                            'date': f['date'],
+                            'time': f['time'],
+                            'home_team': f['home_team'],
+                            'away_team': f['away_team'],
+                            'venue': f.get('venue', ''),
+                            'competition': f.get('competition', '')
+                        })
+                    
+                    filename = agent.create_fixtures_post({'name': 'Boys Teams'}, fixture_dicts)
+                    created_posts.append(filename)
+                    print(f"   ✅ Boys fixtures post {len(created_posts)}: {filename}")
+            
+            # Create girls posts (max 6 per post)
+            if girls_fixtures:
+                for i in range(0, len(girls_fixtures), 6):
+                    batch = girls_fixtures[i:i+6]
+                    fixture_dicts = []
+                    for f in batch:
+                        fixture_dicts.append({
+                            'date': f['date'],
+                            'time': f['time'],
+                            'home_team': f['home_team'],
+                            'away_team': f['away_team'],
+                            'venue': f.get('venue', ''),
+                            'competition': f.get('competition', '')
+                        })
+                    
+                    filename = agent.create_fixtures_post({'name': 'Girls Teams'}, fixture_dicts)
+                    created_posts.append(filename)
+                    print(f"   ✅ Girls fixtures post {len(created_posts)}: {filename}")
+            
+            print(f"\n✅ Created {len(created_posts)} post(s)")
     else:
         print(f"\n❌ No fixtures found in the next 7 days")
         print("   Check back later for upcoming matches!")
