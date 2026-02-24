@@ -1,0 +1,7 @@
+❌ No boys fixtures found for 01/03/2026
+
+This could mean:
+- No fixtures scheduled for that date
+- Fixtures not yet published
+- March 2026 is off-season
+- Different date format used

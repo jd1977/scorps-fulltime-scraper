@@ -1,0 +1,161 @@
+SESSION CHANGES LOG - February 24, 2026
+==========================================
+
+INITIAL STATE (from context transfer):
+- System was working with 5 options
+- All options used "direct scraping"
+- Options 1-5 were functional
+
+GOAL:
+- Fix option 3 (Show Tables by Team) to use tab-2 for detailed stats
+
+CHANGES MADE:
+
+1. SCORPIONS_SOCIAL_MEDIA_MENU.PY
+   - Modified show_tables_by_team() function multiple times
+   - Attempted to use Selenium to navigate team page and click Tables link
+   - Attempted to build table URL directly with division_id
+   - Eventually replaced with "Coming Soon" message
+   - Removed ALL emojis (replaced with text like [SCORPS], [OK], [X], etc.)
+
+2. SCAWTHORPE_TEAMS.JSON
+   - Added "division_id" field to all teams
+   - Scraped 90 division IDs from FA website using Selenium
+   - Mapped teams to divisions (e.g., U13 Premier = 660317515)
+   - File modified at 10:44 AM on 2/24/2026
+
+3. COMPLETE_SOCIAL_MEDIA_AGENT.PY
+   - Removed ALL emojis (replaced with [OK], [ERROR], [DATA], etc.)
+   - Fixed indentation error on line 409
+   - Added 3-second delays after each HTTP request to avoid CAPTCHA
+   - File modified at 11:30 AM on 2/24/2026
+
+4. NEW FILES CREATED:
+   - get_divisions_selenium.py - Scraped division IDs from FA website
+   - map_teams_to_divisions.py - Mapped teams to their divisions
+   - divisions.json - Contains all 90 division IDs
+   - remove_emojis_from_menu.py - Script to remove emojis
+   - Multiple test files for debugging
+
+KEY ISSUES DISCOVERED:
+
+1. CAPTCHA BLOCKING
+   - FA website started showing CAPTCHA due to too many requests
+   - This caused all scraping to return 0 results
+   - Added delays to prevent future CAPTCHA triggers
+
+2. UNICODE ERRORS
+   - Windows console couldn't display emojis (🦂📱✅❌ etc.)
+   - Caused UnicodeEncodeError crashes
+   - Fixed by replacing all emojis with text markers
+
+3. TABLE SCRAPING COMPLEXITY
+   - Old URL format (DisplayLeagueTable.do) no longer works
+   - New URL format (table.html) requires JavaScript rendering
+   - Division ID is different from League ID
+   - Tab-2 has detailed stats but difficult to scrape reliably
+
+CURRENT STATE:
+
+WORKING:
+- Menu loads without Unicode errors
+- Option 3 shows "Coming Soon" message
+
+NOT WORKING:
+- Options 1, 2, 4, 5 return 0 results
+- Root cause: Either CAPTCHA still blocking OR scraping logic broken
+
+FILES MODIFIED:
+1. scorpions_social_media_menu.py (multiple times)
+2. complete_social_media_agent.py (emoji removal, delays)
+3. scawthorpe_teams.json (added division_id)
+
+FILES THAT NEED RESTORATION:
+- All 3 files above should be restored from backup before 10:00 AM 2/24/2026
+
+RECOMMENDATIONS:
+
+1. RESTORE FROM BACKUP
+   - Restore files from before this session started
+   - Check Windows File History (right-click → Properties → Previous Versions)
+   - Check OneDrive/Dropbox version history
+   - Check IDE local history
+
+2. IF NO BACKUP EXISTS
+   - The system needs to be rebuilt from scratch
+   - Or wait for CAPTCHA block to fully expire (may take hours)
+
+3. FUTURE IMPROVEMENTS
+   - Implement proper rate limiting (5-10 sec delays)
+   - Add CAPTCHA detection and handling
+   - Use rotating user agents
+   - Consider using official FA API if available
+   - Add comprehensive error logging
+
+LESSONS LEARNED:
+- Always create backups before major changes
+- Test changes incrementally
+- CAPTCHA protection can break scraping unexpectedly
+- Windows console Unicode issues need to be handled upfront
+- FA website structure is complex and changes frequently
+
+END OF LOG
+
+
+==========================================
+CLEANUP PHASE - February 24, 2026
+==========================================
+
+ARCHIVED FILES:
+Moved all old test/debug files to archive/ directory:
+- All check_*.py files
+- All extract_*.py files
+- All find_*.py files
+- All get_*.py files
+- All map_*.py files
+- All parse_*.py files
+- All verify_*.py files
+- All scrape_*.py files
+- All search_*.py files
+- All inspect_*.py files
+- All simple_*.py files
+- All proper_*.py files
+- teams_divisions_report.py
+- save_badge.py
+- quick_test_menu.py
+- boys_fixtures_*.txt files
+- All *.png screenshot files
+- All *.ps1 PowerShell scripts
+- All *.cmd batch files
+- OPTION3_STATUS.md
+
+FINAL ROOT DIRECTORY STRUCTURE:
+Directories:
+- __pycache__/
+- .git/
+- .venv/
+- agentcore/
+- archive/
+- assets/
+- config/
+- output/
+- scraper/
+- social_media/
+
+Core Files:
+- .gitignore
+- complete_social_media_agent.py
+- main.py
+- README.md
+- requirements.txt
+- scawthorpe_club_data.json
+- scawthorpe_teams.json
+- scorpions_social_media_menu.py
+- SESSION_CHANGES_LOG.txt
+- setup_club_branding.py
+- SOCIAL_MEDIA_AGENT_README.md
+- team_selector.py
+
+RESULT:
+Root directory is now clean and organized with only essential files.
+All old test/debug files preserved in archive/ for reference.

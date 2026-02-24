@@ -1,0 +1,174 @@
+SCAWTHORPE SCORPIONS J.F.C. - TEAMS & DIVISIONS REPORT
+=================================================================
+Total Teams: 28
+Report Generated: 2026-02-23T14:59:46.467867
+
+LEAGUE: Sheffield & Hallamshire FA County Cups
+----------------------------------------------
+Team: Scawthorpe Scorpions J.F.C. Scawthorpe S
+  Team ID: 511705732
+  League ID: 446340283
+  Age Group: Senior
+
+Team: Scawthorpe Scorpions J.F.C. U13
+  Team ID: 718945801
+  League ID: 446340283
+  Age Group: U13
+
+Team: Scawthorpe Scorpions J.F.C. U13 Black
+  Team ID: 942586386
+  League ID: 446340283
+  Age Group: U13
+  Team Color: Black
+
+Team: Scawthorpe Scorpions J.F.C. U13 Girls
+  Team ID: 480456864
+  League ID: 446340283
+  Age Group: U13
+  Gender: Girls
+
+Team: Scawthorpe Scorpions J.F.C. U16
+  Team ID: 691128330
+  League ID: 446340283
+  Age Group: U16
+
+Team: Scawthorpe Scorpions J.F.C. U16 Girls
+  Team ID: 218806227
+  League ID: 446340283
+  Age Group: U16
+  Gender: Girls
+
+
+LEAGUE: Sheffield & Hallamshire Women & Girls League
+----------------------------------------------------
+Team: Scawthorpe Scorpions J.F.C. Scawthorpe S
+  Team ID: 499942636
+  League ID: 6066158
+  Age Group: Senior
+
+Team: Scawthorpe Scorpions J.F.C. U13 Girls
+  Team ID: 206159523
+  League ID: 6066158
+  Age Group: U13
+  Gender: Girls
+
+Team: Scawthorpe Scorpions J.F.C. U14 Girls
+  Team ID: 256179332
+  League ID: 6066158
+  Age Group: U14
+  Gender: Girls
+
+Team: Scawthorpe Scorpions J.F.C. U16 Girls
+  Team ID: 395474278
+  League ID: 6066158
+  Age Group: U16
+  Gender: Girls
+
+Team: Scawthorpe Scorpions J.F.C. U18 Blue
+  Team ID: 218284156
+  League ID: 6066158
+  Age Group: U18
+  Team Color: Blue
+
+
+LEAGUE: Doncaster & District Youth Football League Sponsored by Doncaster Rovers FC
+-----------------------------------------------------------------------------------
+Team: Scawthorpe Scorpions J.F.C. U10 Red
+  Team ID: 888762707
+  League ID: 8057112
+  Age Group: U10
+  Team Color: Red
+
+Team: Scawthorpe Scorpions J.F.C. U11 Blue
+  Team ID: 489333434
+  League ID: 8057112
+  Age Group: U11
+  Team Color: Blue
+
+Team: Scawthorpe Scorpions J.F.C. U11 girls Or
+  Team ID: 171539866
+  League ID: 8057112
+  Age Group: U11
+  Gender: Girls
+
+Team: Scawthorpe Scorpions J.F.C. U11 Pink
+  Team ID: 480937210
+  League ID: 8057112
+  Age Group: U11
+  Team Color: Pink
+
+Team: Scawthorpe Scorpions J.F.C. U11 Red
+  Team ID: 485868691
+  League ID: 8057112
+  Age Group: U11
+  Team Color: Red
+
+Team: Scawthorpe Scorpions J.F.C. U12 Girls
+  Team ID: 847549540
+  League ID: 8057112
+  Age Group: U12
+  Gender: Girls
+
+Team: Scawthorpe Scorpions J.F.C. U12 Red
+  Team ID: 563868205
+  League ID: 8057112
+  Age Group: U12
+  Team Color: Red
+
+Team: Scawthorpe Scorpions J.F.C. U13
+  Team ID: 598735408
+  League ID: 8057112
+  Age Group: U13
+
+Team: Scawthorpe Scorpions J.F.C. U14 Girls Bl
+  Team ID: 733758577
+  League ID: 8057112
+  Age Group: U14
+  Gender: Girls
+
+Team: Scawthorpe Scorpions J.F.C. U15 Red
+  Team ID: 217518884
+  League ID: 8057112
+  Age Group: U15
+  Team Color: Red
+
+Team: Scawthorpe Scorpions J.F.C. U16
+  Team ID: 379271952
+  League ID: 8057112
+  Age Group: U16
+
+Team: Scawthorpe Scorpions J.F.C. U18
+  Team ID: 403008395
+  League ID: 8057112
+  Age Group: U18
+
+Team: Scawthorpe Scorpions J.F.C. U7 Blue
+  Team ID: 661020044
+  League ID: 8057112
+  Age Group: U7
+  Team Color: Blue
+
+Team: Scawthorpe Scorpions J.F.C. U7 Red
+  Team ID: 934782069
+  League ID: 8057112
+  Age Group: U7
+  Team Color: Red
+
+Team: Scawthorpe Scorpions J.F.C. U8 White
+  Team ID: 977927201
+  League ID: 8057112
+  Age Group: U8
+  Team Color: White
+
+Team: Scawthorpe Scorpions J.F.C. U9 Blue
+  Team ID: 534149249
+  League ID: 8057112
+  Age Group: U9
+  Team Color: Blue
+
+Team: Scawthorpe Scorpions J.F.C. U9 Green
+  Team ID: 330957981
+  League ID: 8057112
+  Age Group: U9
+  Team Color: Green
+

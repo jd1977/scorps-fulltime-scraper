@@ -1,0 +1,807 @@
+{
+  "club_info": {
+    "title": "Scawthorpe Scorpions J.F.C. | Search | Full-Time | The Football Association",
+    "club_name": "Scawthorpe Scorpions J.F.C. teams on Full-Time"
+  },
+  "teams": [
+    {
+      "name": "About",
+      "url": "http://www.thefa.com/about-football-association",
+      "fixtures_url": "http://www.thefa.com/competitions/fa-youth-cup/fixtures",
+      "results_url": "http://www.thefa.com/competitions/fa-youth-cup/results",
+      "table_url": "https://www.englandfootball.com/participate/leagues-and-clubs/helpful-apps-and-websites"
+    },
+    {
+      "name": "Make Your Move",
+      "url": "http://www.thefa.com/competitions/the-womens-fa-cup/make-your-move",
+      "fixtures_url": "http://www.thefa.com/competitions/the-womens-fa-cup/fixtures",
+      "results_url": "http://www.thefa.com/competitions/the-womens-fa-cup/results",
+      "table_url": "https://www.englandfootball.com/participate/leagues-and-clubs/helpful-apps-and-websites"
+    },
+    {
+      "name": "England men's senior team",
+      "url": "https://www.englandfootball.com/england/mens-senior-team",
+      "fixtures_url": null,
+      "results_url": null,
+      "table_url": null
+    },
+    {
+      "name": "FA Cup Finals",
+      "url": "http://www.thefa.com/competitions/thefacup/fa-cup-finals",
+      "fixtures_url": "http://www.thefa.com/competitions/fa-youth-cup/fixtures",
+      "results_url": "http://www.thefa.com/competitions/fa-youth-cup/results",
+      "table_url": "https://www.englandfootball.com/participate/leagues-and-clubs/helpful-apps-and-websites"
+    },
+    {
+      "name": "The Emirates FA Cup",
+      "url": "http://www.thefa.com/competitions/thefacup",
+      "fixtures_url": "http://www.thefa.com/competitions/thefacup/fixtures",
+      "results_url": "http://www.thefa.com/competitions/thefacup/results-archive",
+      "table_url": "https://www.englandfootball.com/participate/leagues-and-clubs/helpful-apps-and-websites"
+    },
+    {
+      "name": "Results",
+      "url": "http://www.thefa.com/competitions/the-womens-fa-cup/results",
+      "fixtures_url": "http://www.thefa.com/competitions/the-womens-fa-cup/fixtures",
+      "results_url": "http://www.thefa.com/competitions/the-womens-fa-cup/results",
+      "table_url": "https://www.englandfootball.com/participate/leagues-and-clubs/helpful-apps-and-websites"
+    },
+    {
+      "name": "Wembley Stadium Advisory Board",
+      "url": "http://www.thefa.com/about-football-association/who-we-are/wembley-stadium-advisory-board",
+      "fixtures_url": null,
+      "results_url": null,
+      "table_url": null
+    },
+    {
+      "name": "Most Visited Leagues",
+      "url": "https://fulltime.thefa.com/home/mostVisitedLeagues.html",
+      "fixtures_url": "http://www.thefa.com/competitions/fa-youth-cup/fixtures",
+      "results_url": "http://www.thefa.com/competitions/fa-youth-cup/results",
+      "table_url": "https://fulltime.thefa.com/index.html?league=464647918"
+    },
+    {
+      "name": "ViewtheEmiratesFACupFacebookchannel",
+      "url": "http://facebook.com/emiratesfacup",
+      "fixtures_url": null,
+      "results_url": null,
+      "table_url": null
+    },
+    {
+      "name": "The FA Council",
+      "url": "http://www.thefa.com/about-football-association/who-we-are/the-fa-council",
+      "fixtures_url": null,
+      "results_url": null,
+      "table_url": null
+    },
+    {
+      "name": "Working Group",
+      "url": "http://www.thefa.com/inclusion-and-anti-discrimination/south-asians-in-football/working-group",
+      "fixtures_url": "http://www.thefa.com/competitions/fa-youth-cup/fixtures",
+      "results_url": "http://www.thefa.com/competitions/fa-youth-cup/results",
+      "table_url": "https://www.englandfootball.com/participate/leagues-and-clubs/helpful-apps-and-websites"
+    },
+    {
+      "name": "About",
+      "url": "http://www.thefa.com/competitions/fa-trophy/about",
+      "fixtures_url": "http://www.thefa.com/competitions/fa-trophy/fixtures",
+      "results_url": "http://www.thefa.com/competitions/fa-trophy/results",
+      "table_url": "https://www.englandfootball.com/participate/leagues-and-clubs/helpful-apps-and-websites"
+    },
+    {
+      "name": "Browse Leagues",
+      "url": "https://fulltime.thefa.com/home/leagues.html",
+      "fixtures_url": "http://www.thefa.com/competitions/fa-youth-cup/fixtures",
+      "results_url": "http://www.thefa.com/competitions/fa-youth-cup/results",
+      "table_url": "https://fulltime.thefa.com/index.html?league=5682027"
+    },
+    {
+      "name": "The FA Inter-League Cup",
+      "url": "http://www.thefa.com/competitions/grassroots/fa-inter-league-cup",
+      "fixtures_url": "http://www.thefa.com/competitions/grassroots/fa-inter-league-cup/fixtures",
+      "results_url": "http://www.thefa.com/competitions/grassroots/fa-inter-league-cup/results",
+      "table_url": "http://www.thefa.com/news/2023/jun/29/the-fa-inter-league-cup-2023-24-season-details-draws"
+    },
+    {
+      "name": "ViewtheEnglandYouTubechannel",
+      "url": "https://www.youtube.com/channel/UCNT2e7Og56vm5_V-yJWvglA",
+      "fixtures_url": null,
+      "results_url": null,
+      "table_url": null
+    },
+    {
+      "name": "Scawthorpe Scorpions J.F.C. U11 RedLeague Name:Doncaster & District Youth Football League Sponsored by Doncaster Rovers FC",
+      "url": "https://fulltime.thefa.com/DisplayTeam.do?teamID=485868691&league=8057112",
+      "fixtures_url": "https://fulltime.thefa.com/fixtures.html?league=8057112",
+      "results_url": "https://fulltime.thefa.com/results.html?league=8057112",
+      "table_url": "https://fulltime.thefa.com/table.html?league=8057112&selectedSeason=895948809&selectedDivision=530755203&selectedCompetition=0&selectedFixtureGroupKey=1_24938566"
+    },
+    {
+      "name": "County FAs",
+      "url": "http://www.thefa.com/about-football-association/who-we-are/county-fas",
+      "fixtures_url": "http://www.thefa.com/competitions/fa-youth-cup/fixtures",
+      "results_url": "http://www.thefa.com/competitions/fa-youth-cup/results",
+      "table_url": "https://www.englandfootball.com/participate/leagues-and-clubs/helpful-apps-and-websites"
+    },
+    {
+      "name": "The FA Women's National League",
+      "url": "https://womenscompetitions.thefa.com/News/WNL",
+      "fixtures_url": "https://fulltime.thefa.com/en/Fixtures-Results",
+      "results_url": null,
+      "table_url": "https://fulltime.thefa.com/en/League-Tables/League-tables"
+    },
+    {
+      "name": "Whereabouts System",
+      "url": "https://antidoping.thefa.com",
+      "fixtures_url": null,
+      "results_url": null,
+      "table_url": null
+    },
+    {
+      "name": "About",
+      "url": "http://www.thefa.com/competitions/fa-youth-cup/about",
+      "fixtures_url": "http://www.thefa.com/competitions/fa-youth-cup/fixtures",
+      "results_url": "http://www.thefa.com/competitions/fa-youth-cup/results",
+      "table_url": "https://www.englandfootball.com/participate/leagues-and-clubs/helpful-apps-and-websites"
+    },
+    {
+      "name": "Qualifying Rounds Results",
+      "url": "http://www.thefa.com/competitions/thefacup/qualifying-rounds",
+      "fixtures_url": "http://www.thefa.com/competitions/thefacup/fixtures",
+      "results_url": "http://www.thefa.com/competitions/thefacup/qualifying-rounds",
+      "table_url": "https://www.englandfootball.com/participate/leagues-and-clubs/helpful-apps-and-websites"
+    },
+    {
+      "name": "Scawthorpe Scorpions J.F.C. U11 girls OrLeague Name:Doncaster & District Youth Football League Sponsored by Doncaster Rovers FC",
+      "url": "https://fulltime.thefa.com/DisplayTeam.do?teamID=171539866&league=8057112",
+      "fixtures_url": "https://fulltime.thefa.com/fixtures.html?league=8057112",
+      "results_url": "https://fulltime.thefa.com/results.html?league=8057112",
+      "table_url": "https://fulltime.thefa.com/table.html?league=8057112&selectedSeason=895948809&selectedDivision=530755203&selectedCompetition=0&selectedFixtureGroupKey=1_24938566"
+    },
+    {
+      "name": "ViewtheAdobeWomen'sFACupYouTubechannel",
+      "url": "https://www.youtube.com/@AdobeWomensFACup",
+      "fixtures_url": null,
+      "results_url": null,
+      "table_url": null
+    },
+    {
+      "name": "EE Disability FA Cup",
+      "url": "http://www.thefa.com/get-involved/player/disability/disability-cup-overview",
+      "fixtures_url": "http://www.thefa.com/competitions/fa-youth-cup/fixtures",
+      "results_url": "http://www.thefa.com/competitions/fa-youth-cup/results",
+      "table_url": "#collapse-35f862e0-92de-4abc-894f-ed7dd0bf1293"
+    },
+    {
+      "name": "The Isuzu FA Vase",
+      "url": "http://www.thefa.com/competitions/fa-vase",
+      "fixtures_url": "http://www.thefa.com/competitions/fa-vase/fixtures",
+      "results_url": "http://www.thefa.com/competitions/fa-vase/results",
+      "table_url": "https://www.englandfootball.com/participate/leagues-and-clubs/helpful-apps-and-websites"
+    },
+    {
+      "name": "Scawthorpe Scorpions J.F.C. U18 BlueLeague Name:Sheffield & Hallamshire Women & Girls League",
+      "url": "https://fulltime.thefa.com/DisplayTeam.do?teamID=218284156&league=6066158",
+      "fixtures_url": "https://fulltime.thefa.com/fixtures.html?league=6066158",
+      "results_url": "https://fulltime.thefa.com/results.html?league=6066158",
+      "table_url": "https://fulltime.thefa.com/table.html?league=6066158&selectedSeason=53476535&selectedDivision=493877828&selectedCompetition=0&selectedFixtureGroupKey=1_97972546"
+    },
+    {
+      "name": "The FA Community Shield",
+      "url": "http://www.thefa.com/competitions/the-fa-community-shield",
+      "fixtures_url": "http://www.thefa.com/competitions/fa-youth-cup/fixtures",
+      "results_url": "http://www.thefa.com/competitions/fa-youth-cup/results",
+      "table_url": "https://www.englandfootball.com/participate/leagues-and-clubs/helpful-apps-and-websites"
+    },
+    {
+      "name": "Respect Guide",
+      "url": "http://www.thefa.com/get-involved/respect",
+      "fixtures_url": "https://fulltime.thefa.com/england/womens-senior-team/fixtures-results",
+      "results_url": null,
+      "table_url": "https://fulltime.thefa.com/participate/behaviour/inclusive-football/Respect/Respect-the-Referee"
+    },
+    {
+      "name": "ViewtheAdobeWomen'sFACupInstagramchannel",
+      "url": "https://www.instagram.com/adobewomensfacup/?hl=en",
+      "fixtures_url": null,
+      "results_url": null,
+      "table_url": null
+    },
+    {
+      "name": "Scawthorpe Scorpions J.F.C. U15 RedLeague Name:Doncaster & District Youth Football League Sponsored by Doncaster Rovers FC",
+      "url": "https://fulltime.thefa.com/DisplayTeam.do?teamID=217518884&league=8057112",
+      "fixtures_url": "https://fulltime.thefa.com/fixtures.html?league=8057112",
+      "results_url": "https://fulltime.thefa.com/results.html?league=8057112",
+      "table_url": "https://fulltime.thefa.com/table.html?league=8057112&selectedSeason=895948809&selectedDivision=530755203&selectedCompetition=0&selectedFixtureGroupKey=1_24938566"
+    },
+    {
+      "name": "Results",
+      "url": "http://www.thefa.com/competitions/fa-trophy/results",
+      "fixtures_url": "http://www.thefa.com/competitions/fa-trophy/fixtures",
+      "results_url": "http://www.thefa.com/competitions/fa-trophy/results",
+      "table_url": "https://www.englandfootball.com/participate/leagues-and-clubs/helpful-apps-and-websites"
+    },
+    {
+      "name": "Terms of use",
+      "url": "https://fulltime.thefa.com//www.thefa.com/public/terms",
+      "fixtures_url": null,
+      "results_url": null,
+      "table_url": null
+    },
+    {
+      "name": "England Supporters Club",
+      "url": "https://www.englandfootball.com/england/mens-senior-team/England-Supporters-Travel-Club",
+      "fixtures_url": "https://fulltime.thefa.com/articles/2026/Feb/13/uefa-nations-league-2026-27-fixture-dates-confirmed-20261302",
+      "results_url": "https://fulltime.thefa.com/articles/2026/Feb/05/FIFA-World-Cup-2026-Application-and-Ballot-Results",
+      "table_url": "https://fulltime.thefa.com/articles/2026/Feb/12/uefa-nations-league-2026-27-draw-made-20261202"
+    },
+    {
+      "name": "Results",
+      "url": "http://www.thefa.com/competitions/thefacup/results",
+      "fixtures_url": "http://www.thefa.com/competitions/thefacup/fixtures",
+      "results_url": "http://www.thefa.com/competitions/thefacup/qualifying-rounds",
+      "table_url": "https://www.englandfootball.com/participate/leagues-and-clubs/helpful-apps-and-websites"
+    },
+    {
+      "name": "Community",
+      "url": "https://community.thefa.com/",
+      "fixtures_url": null,
+      "results_url": null,
+      "table_url": null
+    },
+    {
+      "name": "ViewtheWembleyStadiumInstagramchannel",
+      "url": "https://www.instagram.com/wembleystadium/",
+      "fixtures_url": null,
+      "results_url": null,
+      "table_url": null
+    },
+    {
+      "name": "Scawthorpe Scorpions J.F.C. U16League Name:Sheffield & Hallamshire FA County Cups",
+      "url": "https://fulltime.thefa.com/DisplayTeam.do?teamID=691128330&league=446340283",
+      "fixtures_url": null,
+      "results_url": null,
+      "table_url": null
+    },
+    {
+      "name": "Scawthorpe Scorpions J.F.C. U12 GirlsLeague Name:Doncaster & District Youth Football League Sponsored by Doncaster Rovers FC",
+      "url": "https://fulltime.thefa.com/DisplayTeam.do?teamID=847549540&league=8057112",
+      "fixtures_url": "https://fulltime.thefa.com/fixtures.html?league=8057112",
+      "results_url": "https://fulltime.thefa.com/results.html?league=8057112",
+      "table_url": "https://fulltime.thefa.com/table.html?league=8057112&selectedSeason=895948809&selectedDivision=530755203&selectedCompetition=0&selectedFixtureGroupKey=1_24938566"
+    },
+    {
+      "name": "The Adobe Women's FA Cup",
+      "url": "http://www.thefa.com/competitions/the-womens-fa-cup",
+      "fixtures_url": "http://www.thefa.com/competitions/the-womens-fa-cup/fixtures",
+      "results_url": "http://www.thefa.com/competitions/the-womens-fa-cup/results-archive",
+      "table_url": "https://www.englandfootball.com/participate/leagues-and-clubs/helpful-apps-and-websites"
+    },
+    {
+      "name": "Round dates",
+      "url": "http://www.thefa.com/competitions/thefacup/round-dates",
+      "fixtures_url": " https://www.thefa.com/competitions/thefacup/fixtures ",
+      "results_url": "http://www.thefa.com/competitions/thefacup/qualifying-rounds",
+      "table_url": "https://www.englandfootball.com/participate/leagues-and-clubs/helpful-apps-and-websites"
+    },
+    {
+      "name": "Safeguarding",
+      "url": "http://www.thefa.com/football-rules-governance/safeguarding",
+      "fixtures_url": "http://www.thefa.com/competitions/fa-youth-cup/fixtures",
+      "results_url": "http://www.thefa.com/competitions/fa-youth-cup/results",
+      "table_url": "https://www.englandfootball.com/participate/leagues-and-clubs/helpful-apps-and-websites"
+    },
+    {
+      "name": "Full-Time",
+      "url": "http://full-time.thefa.com/",
+      "fixtures_url": "http://www.thefa.com/competitions/fa-youth-cup/fixtures",
+      "results_url": "http://www.thefa.com/competitions/fa-youth-cup/results",
+      "table_url": "https://grassrootstechnology.freshdesk.com/support/solutions/articles/48000555993-step-by-step-process-for-integration"
+    },
+    {
+      "name": "Scawthorpe Scorpions J.F.C. Scawthorpe SLeague Name:Sheffield & Hallamshire Women & Girls League",
+      "url": "https://fulltime.thefa.com/DisplayTeam.do?teamID=499942636&league=6066158",
+      "fixtures_url": "https://fulltime.thefa.com/fixtures.html?league=6066158",
+      "results_url": "https://fulltime.thefa.com/results.html?league=6066158",
+      "table_url": "https://fulltime.thefa.com/table.html?league=6066158&selectedSeason=53476535&selectedDivision=493877828&selectedCompetition=0&selectedFixtureGroupKey=1_97972546"
+    },
+    {
+      "name": "Results",
+      "url": "http://www.thefa.com/competitions/fa-youth-cup/results",
+      "fixtures_url": "http://www.thefa.com/competitions/fa-youth-cup/fixtures",
+      "results_url": "http://www.thefa.com/competitions/fa-youth-cup/results",
+      "table_url": "https://www.englandfootball.com/participate/leagues-and-clubs/helpful-apps-and-websites"
+    },
+    {
+      "name": "ViewtheEnglandFacebookchannel",
+      "url": "https://www.facebook.com/EnglandTeam",
+      "fixtures_url": null,
+      "results_url": null,
+      "table_url": null
+    },
+    {
+      "name": "Scawthorpe Scorpions J.F.C. U16 GirlsLeague Name:Sheffield & Hallamshire FA County Cups",
+      "url": "https://fulltime.thefa.com/DisplayTeam.do?teamID=218806227&league=446340283",
+      "fixtures_url": null,
+      "results_url": null,
+      "table_url": null
+    },
+    {
+      "name": "Just Play",
+      "url": "http://justplay.thefa.com/",
+      "fixtures_url": null,
+      "results_url": null,
+      "table_url": null
+    },
+    {
+      "name": "England development teams",
+      "url": "https://www.englandfootball.com/england/youth",
+      "fixtures_url": "https://fulltime.thefa.com/england/womens-senior-team/fixtures-results",
+      "results_url": null,
+      "table_url": "https://fulltime.thefa.com/participate/leagues-and-clubs"
+    },
+    {
+      "name": "Scawthorpe Scorpions J.F.C. U7 RedLeague Name:Doncaster & District Youth Football League Sponsored by Doncaster Rovers FC",
+      "url": "https://fulltime.thefa.com/DisplayTeam.do?teamID=934782069&league=8057112",
+      "fixtures_url": "https://fulltime.thefa.com/fixtures.html?league=8057112",
+      "results_url": "https://fulltime.thefa.com/results.html?league=8057112",
+      "table_url": "https://fulltime.thefa.com/table.html?league=8057112&selectedSeason=895948809&selectedDivision=530755203&selectedCompetition=0&selectedFixtureGroupKey=1_24938566"
+    },
+    {
+      "name": "Find learning opportunities",
+      "url": "http://www.thefa.com/bootroom/learning/find-learning-opportunities",
+      "fixtures_url": null,
+      "results_url": null,
+      "table_url": null
+    },
+    {
+      "name": "Scawthorpe Scorpions J.F.C. U13 GirlsLeague Name:Sheffield & Hallamshire Women & Girls League",
+      "url": "https://fulltime.thefa.com/DisplayTeam.do?teamID=206159523&league=6066158",
+      "fixtures_url": "https://fulltime.thefa.com/fixtures.html?league=6066158",
+      "results_url": "https://fulltime.thefa.com/results.html?league=6066158",
+      "table_url": "https://fulltime.thefa.com/table.html?league=6066158&selectedSeason=53476535&selectedDivision=493877828&selectedCompetition=0&selectedFixtureGroupKey=1_97972546"
+    },
+    {
+      "name": "The FA Sunday Cup",
+      "url": "http://www.thefa.com/competitions/grassroots/fa-sunday-cup",
+      "fixtures_url": "http://www.thefa.com/competitions/grassroots/fa-sunday-cup/fixtures",
+      "results_url": "http://www.thefa.com/competitions/grassroots/fa-sunday-cup/results",
+      "table_url": "http://www.thefa.com/competitions/grassroots/fa-inter-league-cup"
+    },
+    {
+      "name": "Our partners",
+      "url": "http://www.thefa.com/about-football-association/our-partners",
+      "fixtures_url": "http://www.thefa.com/competitions/fa-youth-cup/fixtures",
+      "results_url": "http://www.thefa.com/competitions/fa-youth-cup/results",
+      "table_url": "https://www.englandfootball.com/participate/leagues-and-clubs/helpful-apps-and-websites"
+    },
+    {
+      "name": "The Isuzu FA Trophy",
+      "url": "http://www.thefa.com/competitions/fa-trophy",
+      "fixtures_url": "http://www.thefa.com/competitions/fa-trophy/fixtures",
+      "results_url": "http://www.thefa.com/competitions/fa-trophy/results",
+      "table_url": "https://www.englandfootball.com/participate/leagues-and-clubs/helpful-apps-and-websites"
+    },
+    {
+      "name": "Fixtures",
+      "url": "http://www.thefa.com/competitions/fa-youth-cup/fixtures",
+      "fixtures_url": "http://www.thefa.com/competitions/fa-youth-cup/fixtures",
+      "results_url": "http://www.thefa.com/competitions/fa-youth-cup/results",
+      "table_url": "https://www.englandfootball.com/participate/leagues-and-clubs/helpful-apps-and-websites"
+    },
+    {
+      "name": "Heads Up",
+      "url": "http://www.thefa.com/about-football-association/heads-up",
+      "fixtures_url": "http://www.thefa.com/competitions/fa-youth-cup/fixtures",
+      "results_url": "http://www.thefa.com/competitions/fa-youth-cup/results",
+      "table_url": "https://www.englandfootball.com/participate/leagues-and-clubs/helpful-apps-and-websites"
+    },
+    {
+      "name": "Full-Time",
+      "url": "http://full-time.thefa.com",
+      "fixtures_url": "http://www.thefa.com/competitions/fa-youth-cup/fixtures",
+      "results_url": "http://www.thefa.com/competitions/fa-youth-cup/results",
+      "table_url": "https://grassrootstechnology.freshdesk.com/support/solutions/articles/48000555993-step-by-step-process-for-integration"
+    },
+    {
+      "name": "About Heads Up",
+      "url": "http://www.thefa.com/about-football-association/heads-up/about",
+      "fixtures_url": "http://www.thefa.com/competitions/fa-youth-cup/fixtures",
+      "results_url": "http://www.thefa.com/competitions/fa-youth-cup/results",
+      "table_url": "https://www.englandfootball.com/participate/leagues-and-clubs/helpful-apps-and-websites"
+    },
+    {
+      "name": "For Parents and Volunteers",
+      "url": "#",
+      "fixtures_url": null,
+      "results_url": null,
+      "table_url": null
+    },
+    {
+      "name": "Fixtures",
+      "url": "http://www.thefa.com/competitions/fa-vase/fixtures",
+      "fixtures_url": "http://www.thefa.com/competitions/fa-vase/fixtures",
+      "results_url": "http://www.thefa.com/competitions/fa-vase/results",
+      "table_url": "https://www.englandfootball.com/participate/leagues-and-clubs/helpful-apps-and-websites"
+    },
+    {
+      "name": "Experiences by Wembley Stadium",
+      "url": "http://www.clubwembley.com",
+      "fixtures_url": null,
+      "results_url": null,
+      "table_url": null
+    },
+    {
+      "name": "ViewtheLionessesYouTubechannel",
+      "url": "https://www.youtube.com/channel/UCNT2e7Og56vm5_V-yJWvglA",
+      "fixtures_url": null,
+      "results_url": null,
+      "table_url": null
+    },
+    {
+      "name": "ViewtheEmiratesFACupYouTubechannel",
+      "url": "https://www.youtube.com/user/thefacup",
+      "fixtures_url": null,
+      "results_url": null,
+      "table_url": null
+    },
+    {
+      "name": "Women's FA Cup Finals",
+      "url": "http://www.thefa.com/competitions/the-womens-fa-cup/womens-fa-cup-finals",
+      "fixtures_url": "http://www.thefa.com/competitions/fa-youth-cup/fixtures",
+      "results_url": "http://www.thefa.com/competitions/fa-youth-cup/results",
+      "table_url": "https://www.englandfootball.com/participate/leagues-and-clubs/helpful-apps-and-websites"
+    },
+    {
+      "name": "About",
+      "url": "http://www.thefa.com/competitions/fa-vase/about",
+      "fixtures_url": "http://www.thefa.com/competitions/fa-vase/fixtures",
+      "results_url": "http://www.thefa.com/competitions/fa-vase/results",
+      "table_url": "https://www.englandfootball.com/participate/leagues-and-clubs/helpful-apps-and-websites"
+    },
+    {
+      "name": "Rules & Regs",
+      "url": "http://www.thefa.com/football-rules-governance",
+      "fixtures_url": "http://www.thefa.com/competitions/fa-youth-cup/fixtures",
+      "results_url": "http://www.thefa.com/competitions/fa-youth-cup/results",
+      "table_url": "https://www.englandfootball.com/participate/leagues-and-clubs/helpful-apps-and-websites"
+    },
+    {
+      "name": "Player Status - Agents",
+      "url": "http://www.thefa.com/football-rules-governance/policies/player-status---agents",
+      "fixtures_url": "http://www.thefa.com/competitions/fa-youth-cup/fixtures",
+      "results_url": "http://www.thefa.com/competitions/fa-youth-cup/results",
+      "table_url": "https://www.englandfootball.com/participate/leagues-and-clubs/helpful-apps-and-websites"
+    },
+    {
+      "name": "Laws of the Game & FA Rules",
+      "url": "http://www.thefa.com/football-rules-governance/lawsandrules",
+      "fixtures_url": "http://www.thefa.com/competitions/fa-youth-cup/fixtures",
+      "results_url": "http://www.thefa.com/competitions/fa-youth-cup/results",
+      "table_url": "https://www.englandfootball.com/participate/leagues-and-clubs/helpful-apps-and-websites"
+    },
+    {
+      "name": "The FA in the Community",
+      "url": "http://www.thefa.com/about-football-association/the-fa-in-the-community",
+      "fixtures_url": "http://www.thefa.com/competitions/fa-youth-cup/fixtures",
+      "results_url": "http://www.thefa.com/competitions/fa-youth-cup/results",
+      "table_url": "https://www.englandfootball.com/participate/leagues-and-clubs/helpful-apps-and-websites"
+    },
+    {
+      "name": "Scawthorpe Scorpions J.F.C. U14 GirlsLeague Name:Sheffield & Hallamshire Women & Girls League",
+      "url": "https://fulltime.thefa.com/DisplayTeam.do?teamID=256179332&league=6066158",
+      "fixtures_url": "https://fulltime.thefa.com/fixtures.html?league=6066158",
+      "results_url": "https://fulltime.thefa.com/results.html?league=6066158",
+      "table_url": "https://fulltime.thefa.com/table.html?league=6066158&selectedSeason=53476535&selectedDivision=493877828&selectedCompetition=0&selectedFixtureGroupKey=1_97972546"
+    },
+    {
+      "name": "England para teams",
+      "url": "https://www.englandfootball.com/england/para",
+      "fixtures_url": "#panel-fixtures",
+      "results_url": "#panel-results",
+      "table_url": "https://fulltime.thefa.com/participate/leagues-and-clubs"
+    },
+    {
+      "name": "Scawthorpe Scorpions J.F.C. Scawthorpe SLeague Name:Sheffield & Hallamshire FA County Cups",
+      "url": "https://fulltime.thefa.com/DisplayTeam.do?teamID=511705732&league=446340283",
+      "fixtures_url": null,
+      "results_url": null,
+      "table_url": null
+    },
+    {
+      "name": "Scawthorpe Scorpions J.F.C. U8 WhiteLeague Name:Doncaster & District Youth Football League Sponsored by Doncaster Rovers FC",
+      "url": "https://fulltime.thefa.com/DisplayTeam.do?teamID=977927201&league=8057112",
+      "fixtures_url": "https://fulltime.thefa.com/fixtures.html?league=8057112",
+      "results_url": "https://fulltime.thefa.com/results.html?league=8057112",
+      "table_url": "https://fulltime.thefa.com/table.html?league=8057112&selectedSeason=895948809&selectedDivision=530755203&selectedCompetition=0&selectedFixtureGroupKey=1_24938566"
+    },
+    {
+      "name": "Features",
+      "url": "https://fulltime.thefa.com/home/features.html",
+      "fixtures_url": "http://www.thefa.com/competitions/fa-youth-cup/fixtures",
+      "results_url": "http://www.thefa.com/competitions/fa-youth-cup/results",
+      "table_url": "https://www.englandfootball.com/participate/leagues-and-clubs/helpful-apps-and-websites"
+    },
+    {
+      "name": "Round Dates",
+      "url": "http://www.thefa.com/competitions/the-womens-fa-cup/round-dates",
+      "fixtures_url": "http://www.thefa.com/competitions/the-womens-fa-cup/fixtures",
+      "results_url": "http://www.thefa.com/competitions/the-womens-fa-cup/results",
+      "table_url": "https://www.englandfootball.com/participate/leagues-and-clubs/helpful-apps-and-websites"
+    },
+    {
+      "name": "Football Facility Enquiry",
+      "url": "http://www.footballfacilityenquiry.co.uk/",
+      "fixtures_url": null,
+      "results_url": null,
+      "table_url": null
+    },
+    {
+      "name": "Young Referees",
+      "url": "http://yrdp.fareferees.com/",
+      "fixtures_url": null,
+      "results_url": null,
+      "table_url": null
+    },
+    {
+      "name": "County FA",
+      "url": "http://www.thefa.com/about-football-association/who-we-are/county-fas",
+      "fixtures_url": "http://www.thefa.com/competitions/fa-youth-cup/fixtures",
+      "results_url": "http://www.thefa.com/competitions/fa-youth-cup/results",
+      "table_url": "https://www.englandfootball.com/participate/leagues-and-clubs/helpful-apps-and-websites"
+    },
+    {
+      "name": "Scawthorpe Scorpions J.F.C. U16League Name:Doncaster & District Youth Football League Sponsored by Doncaster Rovers FC",
+      "url": "https://fulltime.thefa.com/DisplayTeam.do?teamID=379271952&league=8057112",
+      "fixtures_url": "https://fulltime.thefa.com/fixtures.html?league=8057112",
+      "results_url": "https://fulltime.thefa.com/results.html?league=8057112",
+      "table_url": "https://fulltime.thefa.com/table.html?league=8057112&selectedSeason=895948809&selectedDivision=530755203&selectedCompetition=0&selectedFixtureGroupKey=1_24938566"
+    },
+    {
+      "name": "Scawthorpe Scorpions J.F.C. U11 PinkLeague Name:Doncaster & District Youth Football League Sponsored by Doncaster Rovers FC",
+      "url": "https://fulltime.thefa.com/DisplayTeam.do?teamID=480937210&league=8057112",
+      "fixtures_url": "https://fulltime.thefa.com/fixtures.html?league=8057112",
+      "results_url": "https://fulltime.thefa.com/results.html?league=8057112",
+      "table_url": "https://fulltime.thefa.com/table.html?league=8057112&selectedSeason=895948809&selectedDivision=530755203&selectedCompetition=0&selectedFixtureGroupKey=1_24938566"
+    },
+    {
+      "name": "Scawthorpe Scorpions J.F.C. U16 GirlsLeague Name:Sheffield & Hallamshire Women & Girls League",
+      "url": "https://fulltime.thefa.com/DisplayTeam.do?teamID=395474278&league=6066158",
+      "fixtures_url": "https://fulltime.thefa.com/fixtures.html?league=6066158",
+      "results_url": "https://fulltime.thefa.com/results.html?league=6066158",
+      "table_url": "https://fulltime.thefa.com/table.html?league=6066158&selectedSeason=53476535&selectedDivision=493877828&selectedCompetition=0&selectedFixtureGroupKey=1_97972546"
+    },
+    {
+      "name": "Sustainability",
+      "url": "http://www.thefa.com/about-football-association/what-we-do/sustainability-at-the-fa",
+      "fixtures_url": "http://www.thefa.com/competitions/fa-youth-cup/fixtures",
+      "results_url": "http://www.thefa.com/competitions/fa-youth-cup/results",
+      "table_url": "https://www.englandfootball.com/participate/leagues-and-clubs/helpful-apps-and-websites"
+    },
+    {
+      "name": "Scawthorpe Scorpions J.F.C. U10 RedLeague Name:Doncaster & District Youth Football League Sponsored by Doncaster Rovers FC",
+      "url": "https://fulltime.thefa.com/DisplayTeam.do?teamID=888762707&league=8057112",
+      "fixtures_url": "https://fulltime.thefa.com/fixtures.html?league=8057112",
+      "results_url": "https://fulltime.thefa.com/results.html?league=8057112",
+      "table_url": "https://fulltime.thefa.com/table.html?league=8057112&selectedSeason=895948809&selectedDivision=530755203&selectedCompetition=0&selectedFixtureGroupKey=1_24938566"
+    },
+    {
+      "name": "Player Status - Registrations",
+      "url": "http://www.thefa.com/football-rules-governance/policies/player-registration",
+      "fixtures_url": "http://www.thefa.com/competitions/fa-youth-cup/fixtures",
+      "results_url": "http://www.thefa.com/competitions/fa-youth-cup/results",
+      "table_url": "https://www.englandfootball.com/participate/leagues-and-clubs/helpful-apps-and-websites"
+    },
+    {
+      "name": "Scawthorpe Scorpions J.F.C. U7 BlueLeague Name:Doncaster & District Youth Football League Sponsored by Doncaster Rovers FC",
+      "url": "https://fulltime.thefa.com/DisplayTeam.do?teamID=661020044&league=8057112",
+      "fixtures_url": "https://fulltime.thefa.com/fixtures.html?league=8057112",
+      "results_url": "https://fulltime.thefa.com/results.html?league=8057112",
+      "table_url": "https://fulltime.thefa.com/table.html?league=8057112&selectedSeason=895948809&selectedDivision=530755203&selectedCompetition=0&selectedFixtureGroupKey=1_24938566"
+    },
+    {
+      "name": "Scawthorpe Scorpions J.F.C. U13 BlackLeague Name:Sheffield & Hallamshire FA County Cups",
+      "url": "https://fulltime.thefa.com/DisplayTeam.do?teamID=942586386&league=446340283",
+      "fixtures_url": null,
+      "results_url": null,
+      "table_url": null
+    },
+    {
+      "name": "Scawthorpe Scorpions J.F.C. U13 GirlsLeague Name:Sheffield & Hallamshire FA County Cups",
+      "url": "https://fulltime.thefa.com/DisplayTeam.do?teamID=480456864&league=446340283",
+      "fixtures_url": null,
+      "results_url": null,
+      "table_url": null
+    },
+    {
+      "name": "Contact Us",
+      "url": "http://www.thefa.com/about-football-association/contact-us-fa",
+      "fixtures_url": "http://www.thefa.com/competitions/fa-youth-cup/fixtures",
+      "results_url": "http://www.thefa.com/competitions/fa-youth-cup/results",
+      "table_url": "https://www.englandfootball.com/participate/leagues-and-clubs/helpful-apps-and-websites"
+    },
+    {
+      "name": "For Club League Officials",
+      "url": "#",
+      "fixtures_url": null,
+      "results_url": null,
+      "table_url": null
+    },
+    {
+      "name": "Fixtures",
+      "url": "http://www.thefa.com/competitions/the-womens-fa-cup/fixtures",
+      "fixtures_url": "http://www.thefa.com/competitions/the-womens-fa-cup/fixtures",
+      "results_url": "http://www.thefa.com/competitions/the-womens-fa-cup/results",
+      "table_url": "https://www.englandfootball.com/participate/leagues-and-clubs/helpful-apps-and-websites"
+    },
+    {
+      "name": "Resources",
+      "url": "http://www.thefa.com/bootroom/resources",
+      "fixtures_url": null,
+      "results_url": null,
+      "table_url": "https://www.englandfootball.com/participate/leagues-and-clubs/helpful-apps-and-websites"
+    },
+    {
+      "name": "England women's senior team",
+      "url": "https://www.englandfootball.com/england/womens-senior-team",
+      "fixtures_url": "https://fulltime.thefa.com/england/womens-senior-team/fixtures-results",
+      "results_url": null,
+      "table_url": "#panel-table"
+    },
+    {
+      "name": "ViewtheAdobeWomen'sFACupFacebookchannel",
+      "url": "https://www.facebook.com/AdobeWomensFACup",
+      "fixtures_url": null,
+      "results_url": null,
+      "table_url": null
+    },
+    {
+      "name": "ViewtheEmiratesFACupInstagramchannel",
+      "url": "https://www.instagram.com/emiratesfacup/",
+      "fixtures_url": null,
+      "results_url": null,
+      "table_url": null
+    },
+    {
+      "name": "South Asians in Football",
+      "url": "http://www.thefa.com/inclusion-and-anti-discrimination/south-asians-in-football",
+      "fixtures_url": "http://www.thefa.com/competitions/fa-youth-cup/fixtures",
+      "results_url": "http://www.thefa.com/competitions/fa-youth-cup/results",
+      "table_url": "https://www.englandfootball.com/participate/leagues-and-clubs/helpful-apps-and-websites"
+    },
+    {
+      "name": "Scawthorpe Scorpions J.F.C. U9 GreenLeague Name:Doncaster & District Youth Football League Sponsored by Doncaster Rovers FC",
+      "url": "https://fulltime.thefa.com/DisplayTeam.do?teamID=330957981&league=8057112",
+      "fixtures_url": "https://fulltime.thefa.com/fixtures.html?league=8057112",
+      "results_url": "https://fulltime.thefa.com/results.html?league=8057112",
+      "table_url": "https://fulltime.thefa.com/table.html?league=8057112&selectedSeason=895948809&selectedDivision=530755203&selectedCompetition=0&selectedFixtureGroupKey=1_24938566"
+    },
+    {
+      "name": "Equality & Inclusion",
+      "url": "http://www.thefa.com/inclusion-and-anti-discrimination",
+      "fixtures_url": "http://www.thefa.com/competitions/fa-youth-cup/fixtures",
+      "results_url": "http://www.thefa.com/competitions/fa-youth-cup/results",
+      "table_url": "https://www.englandfootball.com/participate/leagues-and-clubs/helpful-apps-and-websites"
+    },
+    {
+      "name": "ViewtheWembleyStadiumFacebookchannel",
+      "url": "https://en-gb.facebook.com/WembleyStadium/",
+      "fixtures_url": null,
+      "results_url": null,
+      "table_url": null
+    },
+    {
+      "name": "Scawthorpe Scorpions J.F.C. U11 BlueLeague Name:Doncaster & District Youth Football League Sponsored by Doncaster Rovers FC",
+      "url": "https://fulltime.thefa.com/DisplayTeam.do?teamID=489333434&league=8057112",
+      "fixtures_url": "https://fulltime.thefa.com/fixtures.html?league=8057112",
+      "results_url": "https://fulltime.thefa.com/results.html?league=8057112",
+      "table_url": "https://fulltime.thefa.com/table.html?league=8057112&selectedSeason=895948809&selectedDivision=530755203&selectedCompetition=0&selectedFixtureGroupKey=1_24938566"
+    },
+    {
+      "name": "Scawthorpe Scorpions J.F.C. U9 BlueLeague Name:Doncaster & District Youth Football League Sponsored by Doncaster Rovers FC",
+      "url": "https://fulltime.thefa.com/DisplayTeam.do?teamID=534149249&league=8057112",
+      "fixtures_url": "https://fulltime.thefa.com/fixtures.html?league=8057112",
+      "results_url": "https://fulltime.thefa.com/results.html?league=8057112",
+      "table_url": "https://fulltime.thefa.com/table.html?league=8057112&selectedSeason=895948809&selectedDivision=530755203&selectedCompetition=0&selectedFixtureGroupKey=1_24938566"
+    },
+    {
+      "name": "3G Football Turf Pitch Register",
+      "url": "http://3g.thefa.me.uk/",
+      "fixtures_url": null,
+      "results_url": null,
+      "table_url": null
+    },
+    {
+      "name": "The FA Youth Cup",
+      "url": "http://www.thefa.com/competitions/fa-youth-cup",
+      "fixtures_url": "http://www.thefa.com/competitions/fa-youth-cup/fixtures",
+      "results_url": "http://www.thefa.com/competitions/fa-youth-cup/results",
+      "table_url": "https://www.englandfootball.com/participate/leagues-and-clubs/helpful-apps-and-websites"
+    },
+    {
+      "name": "Scawthorpe Scorpions J.F.C. U13League Name:Sheffield & Hallamshire FA County Cups",
+      "url": "https://fulltime.thefa.com/DisplayTeam.do?teamID=718945801&league=446340283",
+      "fixtures_url": null,
+      "results_url": null,
+      "table_url": null
+    },
+    {
+      "name": "Fixtures",
+      "url": "http://www.thefa.com/competitions/thefacup/fixtures",
+      "fixtures_url": "http://www.thefa.com/competitions/thefacup/fixtures",
+      "results_url": "http://www.thefa.com/competitions/thefacup/qualifying-rounds",
+      "table_url": "https://www.englandfootball.com/participate/leagues-and-clubs/helpful-apps-and-websites"
+    },
+    {
+      "name": "Fixtures",
+      "url": "http://www.thefa.com/competitions/fa-trophy/fixtures",
+      "fixtures_url": "http://www.thefa.com/competitions/fa-trophy/fixtures",
+      "results_url": "http://www.thefa.com/competitions/fa-trophy/results",
+      "table_url": "https://www.englandfootball.com/participate/leagues-and-clubs/helpful-apps-and-websites"
+    },
+    {
+      "name": "Scawthorpe Scorpions J.F.C. U13League Name:Doncaster & District Youth Football League Sponsored by Doncaster Rovers FC",
+      "url": "https://fulltime.thefa.com/DisplayTeam.do?teamID=598735408&league=8057112",
+      "fixtures_url": "https://fulltime.thefa.com/fixtures.html?league=8057112",
+      "results_url": "https://fulltime.thefa.com/results.html?league=8057112",
+      "table_url": "https://fulltime.thefa.com/table.html?league=8057112&selectedSeason=895948809&selectedDivision=530755203&selectedCompetition=0&selectedFixtureGroupKey=1_24938566"
+    },
+    {
+      "name": "Scawthorpe Scorpions J.F.C. U14 Girls BlLeague Name:Doncaster & District Youth Football League Sponsored by Doncaster Rovers FC",
+      "url": "https://fulltime.thefa.com/DisplayTeam.do?teamID=733758577&league=8057112",
+      "fixtures_url": "https://fulltime.thefa.com/fixtures.html?league=8057112",
+      "results_url": "https://fulltime.thefa.com/results.html?league=8057112",
+      "table_url": "https://fulltime.thefa.com/table.html?league=8057112&selectedSeason=895948809&selectedDivision=530755203&selectedCompetition=0&selectedFixtureGroupKey=1_24938566"
+    },
+    {
+      "name": "Scawthorpe Scorpions J.F.C. U18League Name:Doncaster & District Youth Football League Sponsored by Doncaster Rovers FC",
+      "url": "https://fulltime.thefa.com/DisplayTeam.do?teamID=403008395&league=8057112",
+      "fixtures_url": "https://fulltime.thefa.com/fixtures.html?league=8057112",
+      "results_url": "https://fulltime.thefa.com/results.html?league=8057112",
+      "table_url": "https://fulltime.thefa.com/table.html?league=8057112&selectedSeason=895948809&selectedDivision=530755203&selectedCompetition=0&selectedFixtureGroupKey=1_24938566"
+    },
+    {
+      "name": "Tutor Stores",
+      "url": "http://www.fatutorstore.com",
+      "fixtures_url": null,
+      "results_url": null,
+      "table_url": null
+    },
+    {
+      "name": "Results",
+      "url": "http://www.thefa.com/competitions/fa-vase/results",
+      "fixtures_url": "http://www.thefa.com/competitions/fa-vase/fixtures",
+      "results_url": "http://www.thefa.com/competitions/fa-vase/results",
+      "table_url": "https://www.englandfootball.com/participate/leagues-and-clubs/helpful-apps-and-websites"
+    },
+    {
+      "name": "ViewtheEnglandFootballLearningYouTubechannel",
+      "url": "https://www.youtube.com/c/englandfootballlearning",
+      "fixtures_url": null,
+      "results_url": null,
+      "table_url": null
+    },
+    {
+      "name": "Scawthorpe Scorpions J.F.C. U12 RedLeague Name:Doncaster & District Youth Football League Sponsored by Doncaster Rovers FC",
+      "url": "https://fulltime.thefa.com/DisplayTeam.do?teamID=563868205&league=8057112",
+      "fixtures_url": "https://fulltime.thefa.com/fixtures.html?league=8057112",
+      "results_url": "https://fulltime.thefa.com/results.html?league=8057112",
+      "table_url": "https://fulltime.thefa.com/table.html?league=8057112&selectedSeason=895948809&selectedDivision=530755203&selectedCompetition=0&selectedFixtureGroupKey=1_24938566"
+    },
+    {
+      "name": "Contact Us",
+      "url": "https://help.thefa.com/support/home",
+      "fixtures_url": null,
+      "results_url": null,
+      "table_url": null
+    },
+    {
+      "name": "Betting Rules",
+      "url": "http://www.thefa.com/football-rules-governance/policies/betting-rules",
+      "fixtures_url": "http://www.thefa.com/competitions/fa-youth-cup/fixtures",
+      "results_url": "http://www.thefa.com/competitions/fa-youth-cup/results",
+      "table_url": "https://www.englandfootball.com/participate/leagues-and-clubs/helpful-apps-and-websites"
+    }
+  ],
+  "scraped_at": "2026-02-23T14:59:43.985677"
+}
