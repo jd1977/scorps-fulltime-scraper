@@ -756,8 +756,14 @@ class CompleteSocialMediaAgent:
                 date_font = self.subtitle_font
             
             # Draw date with shadow for visibility
-            bbox = draw.textbbox((0, 0), date_text, font=date_font)
-            text_width = bbox[2] - bbox[0]
+            try:
+                # Try new method first
+                bbox = draw.textbbox((0, 0), date_text, font=date_font)
+                text_width = bbox[2] - bbox[0]
+            except AttributeError:
+                # Fallback to old method
+                text_width = draw.textsize(date_text, font=date_font)[0]
+            
             text_x = (self.width // 2) - (text_width // 2)
             
             # Shadow
@@ -823,8 +829,14 @@ class CompleteSocialMediaAgent:
         except:
             footer_font = self.subtitle_font
         
-        bbox = draw.textbbox((0, 0), footer_text, font=footer_font)
-        text_width = bbox[2] - bbox[0]
+        try:
+            # Try new method first
+            bbox = draw.textbbox((0, 0), footer_text, font=footer_font)
+            text_width = bbox[2] - bbox[0]
+        except AttributeError:
+            # Fallback to old method
+            text_width = draw.textsize(footer_text, font=footer_font)[0]
+        
         text_x = (self.width // 2) - (text_width // 2)
         
         # Shadow
