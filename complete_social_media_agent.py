@@ -47,12 +47,24 @@ class TableEntry:
     points: int
 
 class CompleteSocialMediaAgent:
+    # List of realistic user agents to rotate through
+    USER_AGENTS = [
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:122.0) Gecko/20100101 Firefox/122.0',
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15',
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36 Edg/121.0.0.0',
+        'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0',
+        'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:122.0) Gecko/20100101 Firefox/122.0'
+    ]
+    
     def __init__(self):
         # Scraper setup
         self.session = requests.Session()
-        self.session.headers.update({
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-        })
+        self._rotate_user_agent()
         self.teams = self.load_teams()
         
         # Club-wide fixtures URL
@@ -79,6 +91,21 @@ class CompleteSocialMediaAgent:
             self.subtitle_font = ImageFont.load_default()
             self.text_font = ImageFont.load_default()
             self.small_font = ImageFont.load_default()
+    
+    def _rotate_user_agent(self):
+        """Rotate to a random user agent."""
+        import random
+        import time
+        user_agent = random.choice(self.USER_AGENTS)
+        self.session.headers.update({
+            'User-Agent': user_agent,
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'Accept-Language': 'en-GB,en;q=0.9',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'DNT': '1',
+            'Connection': 'keep-alive',
+            'Upgrade-Insecure-Requests': '1'
+        })
 
     def load_teams(self) -> Dict[str, Any]:
         """Load team data"""
@@ -220,6 +247,7 @@ class CompleteSocialMediaAgent:
         fixtures_url = f"https://fulltime.thefa.com/fixtures.html?selectedSeason={self.SEASON_ID}&selectedFixtureGroupAgeGroup=0&selectedFixtureGroupKey=&selectedRelatedFixtureOption=3&selectedClub={self.CLUB_ID}&selectedTeam={team_id}&selectedDateCode=all&previousSelectedFixtureGroupAgeGroup=&previousSelectedFixtureGroupKey=&previousSelectedClub={self.CLUB_ID}"
         
         try:
+            self._rotate_user_agent()  # Rotate user agent before request
             response = self.session.get(fixtures_url, timeout=15)
             time.sleep(3)  # Add delay to avoid CAPTCHA
             if response.status_code == 200:
@@ -334,6 +362,7 @@ class CompleteSocialMediaAgent:
         print(f"[CLUB] Scraping club-wide fixtures...")
         
         try:
+            self._rotate_user_agent()  # Rotate user agent before request
             response = self.session.get(self.club_fixtures_url, timeout=15)
             time.sleep(3)  # Add delay to avoid CAPTCHA
             if response.status_code == 200:
@@ -425,6 +454,7 @@ class CompleteSocialMediaAgent:
         table_url = f"https://fulltime.thefa.com/table.html?league={league_id}"
         
         try:
+            self._rotate_user_agent()  # Rotate user agent before request
             response = self.session.get(table_url, timeout=10)
             time.sleep(3)  # Add delay to avoid CAPTCHA
             if response.status_code == 200:

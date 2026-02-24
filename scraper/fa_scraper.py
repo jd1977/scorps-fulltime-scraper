@@ -5,6 +5,8 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 from typing import List, Optional
 import re
+import random
+import time
 
 from .data_models import Team, Fixture, Result, TableEntry, LeagueTable
 from config.settings import FA_FULLTIME_BASE_URL, CLUB_SEARCH_TERM
@@ -13,12 +15,44 @@ from config.settings import FA_FULLTIME_BASE_URL, CLUB_SEARCH_TERM
 class FAFulltimeScraper:
     """Scraper for FA Fulltime website."""
     
+    # List of realistic user agents to rotate through
+    USER_AGENTS = [
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:122.0) Gecko/20100101 Firefox/122.0',
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15',
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36 Edg/121.0.0.0',
+        'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0',
+        'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:122.0) Gecko/20100101 Firefox/122.0'
+    ]
+    
     def __init__(self):
         self.session = requests.Session()
-        self.session.headers.update({
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-        })
+        self._rotate_user_agent()
         self.club_teams = []
+        self.request_delay = 3  # Delay between requests in seconds
+    
+    def _rotate_user_agent(self):
+        """Rotate to a random user agent."""
+        user_agent = random.choice(self.USER_AGENTS)
+        self.session.headers.update({
+            'User-Agent': user_agent,
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'Accept-Language': 'en-GB,en;q=0.9',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'DNT': '1',
+            'Connection': 'keep-alive',
+            'Upgrade-Insecure-Requests': '1'
+        })
+    
+    def _make_request(self, url, **kwargs):
+        """Make a request with user agent rotation and delay."""
+        self._rotate_user_agent()
+        time.sleep(self.request_delay)
+        return self.session.get(url, **kwargs)
     
     def search_club_teams(self) -> List[Team]:
         """Find all teams for Scawthorpe Scorpions."""
@@ -27,7 +61,7 @@ class FAFulltimeScraper:
             search_url = f"{FA_FULLTIME_BASE_URL}/search"
             params = {'q': CLUB_SEARCH_TERM}
             
-            response = self.session.get(search_url, params=params)
+            response = self._make_request(search_url, params=params)
             response.raise_for_status()
             
             soup = BeautifulSoup(response.content, 'html.parser')
@@ -70,7 +104,7 @@ class FAFulltimeScraper:
             if not team_url:
                 return fixtures
             
-            response = self.session.get(f"{FA_FULLTIME_BASE_URL}{team_url}/fixtures")
+            response = self._make_request(f"{FA_FULLTIME_BASE_URL}{team_url}/fixtures")
             response.raise_for_status()
             
             soup = BeautifulSoup(response.content, 'html.parser')
@@ -98,7 +132,7 @@ class FAFulltimeScraper:
             if not team_url:
                 return results
             
-            response = self.session.get(f"{FA_FULLTIME_BASE_URL}{team_url}/results")
+            response = self._make_request(f"{FA_FULLTIME_BASE_URL}{team_url}/results")
             response.raise_for_status()
             
             soup = BeautifulSoup(response.content, 'html.parser')
@@ -125,7 +159,7 @@ class FAFulltimeScraper:
             
             # Placeholder implementation
             table_url = f"{FA_FULLTIME_BASE_URL}/league/{division}/table"
-            response = self.session.get(table_url)
+            response = self._make_request(table_url)
             response.raise_for_status()
             
             soup = BeautifulSoup(response.content, 'html.parser')
