@@ -310,27 +310,130 @@ def list_all_fixtures(agent, teams):
         print("   Check back later for upcoming matches!")
 
 def show_tables_by_team(agent, teams):
-    """Option 3: Show tables by team - COMING SOON"""
+    """Option 3: Show tables by team"""
     print("\n📊 SHOW TABLES BY TEAM")
     print("=" * 60)
-    print("\n⚠️  LEAGUE TABLES - COMING SOON")
-    print("=" * 60)
-    print("\nWe're working on a reliable way to scrape league tables from")
-    print("the FA Full-Time website. The website uses complex JavaScript")
-    print("rendering that makes automated scraping challenging.")
-    print("\n💡 IN THE MEANTIME:")
-    print("   • Visit https://fulltime.thefa.com directly in your browser")
-    print("   • Use Option 4 to see recent results for your team")
-    print("   • Use Option 1 to see upcoming fixtures")
-    print("   • Use Option 5 to see all recent results")
-    print("\n✅ WHAT'S WORKING:")
-    print("   • Option 1: List Fixtures by Team")
-    print("   • Option 2: List All Fixtures")
-    print("   • Option 4: Show Results by Team (with correct scores!)")
-    print("   • Option 5: Show All This Week's Results")
-    print("\nThank you for your patience!")
     
-    input("\nPress Enter to return to main menu...")
+    sorted_teams = display_teams_compact(teams)
+    selected_team = get_team_choice(sorted_teams)
+    
+    if selected_team is None:
+        return
+    
+    team_name = selected_team['name']
+    league_id = selected_team.get('league_id')
+    division_id = selected_team.get('division_id')
+    
+    if not league_id or not division_id:
+        print(f"\n❌ Missing league or division ID for {team_name}")
+        return
+    
+    print(f"\n🔍 Getting league table for: {team_name}")
+    print(f"   League ID: {league_id}, Division ID: {division_id}")
+    
+    # Build table URL
+    table_url = f"https://fulltime.thefa.com/table.html?league={league_id}&division={division_id}"
+    
+    import requests
+    from bs4 import BeautifulSoup
+    import time
+    import random
+    
+    # User agents for rotation
+    USER_AGENTS = [
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:122.0) Gecko/20100101 Firefox/122.0',
+    ]
+    
+    try:
+        session = requests.Session()
+        session.headers.update({
+            'User-Agent': random.choice(USER_AGENTS),
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'Accept-Language': 'en-GB,en;q=0.9',
+        })
+        
+        print(f"   🌐 Fetching table from FA Fulltime...")
+        response = session.get(table_url, timeout=15)
+        time.sleep(3)
+        
+        if response.status_code == 200:
+            soup = BeautifulSoup(response.content, 'html.parser')
+            
+            # Find the league table
+            table = soup.find('table', class_='table')
+            
+            if table:
+                rows = table.find_all('tr')
+                table_data = []
+                
+                for row in rows[1:]:  # Skip header row
+                    cells = row.find_all('td')
+                    if len(cells) >= 10:
+                        try:
+                            pos = cells[0].get_text(strip=True)
+                            team = cells[1].get_text(strip=True)
+                            played = cells[2].get_text(strip=True)
+                            won = cells[3].get_text(strip=True)
+                            drawn = cells[4].get_text(strip=True)
+                            lost = cells[5].get_text(strip=True)
+                            gf = cells[6].get_text(strip=True)
+                            ga = cells[7].get_text(strip=True)
+                            gd = cells[8].get_text(strip=True)
+                            pts = cells[9].get_text(strip=True)
+                            
+                            table_data.append({
+                                'pos': pos,
+                                'team': team,
+                                'played': played,
+                                'won': won,
+                                'drawn': drawn,
+                                'lost': lost,
+                                'gf': gf,
+                                'ga': ga,
+                                'gd': gd,
+                                'pts': pts
+                            })
+                        except:
+                            continue
+                
+                if table_data:
+                    print(f"\n📊 LEAGUE TABLE - {selected_team.get('league_info', 'League')}")
+                    print("=" * 60)
+                    print(f"{'Pos':<4} {'Team':<30} {'P':<3} {'W':<3} {'D':<3} {'L':<3} {'GF':<4} {'GA':<4} {'GD':<4} {'Pts':<4}")
+                    print("-" * 60)
+                    
+                    for entry in table_data:
+                        team_display = entry['team']
+                        # Highlight our team
+                        if 'scawthorpe' in team_display.lower() or 'scorpions' in team_display.lower():
+                            team_display = f"🦂 {format_team_name(team_display)}"
+                        else:
+                            team_display = format_team_name(team_display)
+                        
+                        # Truncate long team names
+                        if len(team_display) > 30:
+                            team_display = team_display[:27] + "..."
+                        
+                        print(f"{entry['pos']:<4} {team_display:<30} {entry['played']:<3} {entry['won']:<3} {entry['drawn']:<3} {entry['lost']:<3} {entry['gf']:<4} {entry['ga']:<4} {entry['gd']:<4} {entry['pts']:<4}")
+                    
+                    # Create post option
+                    create = input("\n📱 Create social media post? (y/n): ").strip().lower()
+                    if create == 'y':
+                        filename = agent.create_table_post(selected_team, table_data)
+                        print(f"✅ Created: {filename}")
+                else:
+                    print(f"\n❌ No table data found")
+            else:
+                print(f"\n❌ Could not find table on page")
+        else:
+            print(f"\n❌ HTTP {response.status_code}")
+            
+    except Exception as e:
+        print(f"\n❌ Error: {e}")
+        import traceback
+        traceback.print_exc()
 
 def show_all_this_weeks_results(agent, teams):
     """Option 4: Show all this week's results (last 7 days)"""
