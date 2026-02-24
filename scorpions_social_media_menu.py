@@ -349,6 +349,7 @@ def show_tables_by_team(agent, teams):
     # Format: https://fulltime.thefa.com/index.html?selectedSeason=895948809&selectedFixtureGroupAgeGroup=0&selectedDivision={division_id}&selectedCompetition=0
     SEASON_ID = "895948809"
     table_url = f"https://fulltime.thefa.com/index.html?selectedSeason={SEASON_ID}&selectedFixtureGroupAgeGroup=0&selectedDivision={division_id}&selectedCompetition=0"
+    print(f"   🌐 URL: {table_url}")
     
     import requests
     from bs4 import BeautifulSoup
