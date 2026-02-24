@@ -148,6 +148,86 @@ class CompleteSocialMediaAgent:
         
         return posts
 
+    def get_team_fixtures_only(self, team_name: str) -> Dict[str, Any]:
+        """Get only fixtures for a team - simplified for option 1"""
+        print(f"[*] Getting fixtures for: {team_name}")
+        
+        # Find the team
+        matching_team = None
+        for team in self.teams.get('teams', []):
+            if team_name.lower() in team['name'].lower():
+                matching_team = team
+                break
+        
+        if not matching_team:
+            print(f"[ERROR] Team '{team_name}' not found")
+            return {}
+        
+        team_id = matching_team['team_id']
+        print(f"   [OK] Found team ID: {team_id}")
+        
+        # Get fixtures using team-specific URL only
+        fixtures_url = f"https://fulltime.thefa.com/fixtures.html?selectedSeason={self.SEASON_ID}&selectedFixtureGroupAgeGroup=0&selectedFixtureGroupKey=&selectedRelatedFixtureOption=3&selectedClub={self.CLUB_ID}&selectedTeam={team_id}&selectedDateCode=all&previousSelectedFixtureGroupAgeGroup=&previousSelectedFixtureGroupKey=&previousSelectedClub={self.CLUB_ID}"
+        
+        fixtures = []
+        try:
+            print(f"   [WEB] Fetching fixtures from FA Fulltime...")
+            self._rotate_user_agent()
+            response = self.session.get(fixtures_url, timeout=15)
+            time.sleep(3)
+            
+            if response.status_code == 200:
+                soup = BeautifulSoup(response.content, 'html.parser')
+                fixtures_table = soup.find('div', class_='fixtures-table')
+                
+                if fixtures_table:
+                    rows = fixtures_table.find_all('tr')
+                    
+                    for row in rows:
+                        if row.find('th'):
+                            continue
+                        
+                        cells = row.find_all('td')
+                        if len(cells) < 7:
+                            continue
+                        
+                        try:
+                            date_cell = cells[1]
+                            date_span = date_cell.find('span')
+                            date = date_span.get_text(strip=True) if date_span else ""
+                            time_span = date_cell.find('span', class_='color-dark-grey')
+                            fixture_time = time_span.get_text(strip=True) if time_span else ""
+                            
+                            home_team = cells[2].get_text(strip=True)
+                            away_team = cells[6].get_text(strip=True)
+                            venue = cells[7].get_text(strip=True) if len(cells) > 7 else ""
+                            competition = cells[8].get_text(strip=True) if len(cells) > 8 else ""
+                            
+                            if home_team and away_team:
+                                fixture = {
+                                    'date': date,
+                                    'time': fixture_time,
+                                    'home_team': home_team,
+                                    'away_team': away_team,
+                                    'venue': venue,
+                                    'competition': competition
+                                }
+                                fixtures.append(fixture)
+                        except:
+                            continue
+                
+                print(f"   [OK] Found {len(fixtures)} fixtures")
+            else:
+                print(f"   [ERROR] HTTP {response.status_code}")
+                
+        except Exception as e:
+            print(f"   [ERROR] {e}")
+        
+        return {
+            'team': matching_team,
+            'fixtures': fixtures
+        }
+
     def get_team_data(self, team_name: str) -> Dict[str, Any]:
         """Get comprehensive data for a team (aggregates from all leagues if team plays in multiple)"""
         print(f"[*] Scraping data for: {team_name}")

@@ -165,7 +165,7 @@ def list_fixtures_by_team(agent, teams):
     team_name = selected_team['name'].replace('Scawthorpe Scorpions J.F.C.', '').strip()
     print(f"\n[SEARCH] Getting fixtures for: {selected_team['name']}")
     
-    data = agent.get_team_data(team_name)
+    data = agent.get_team_fixtures_only(team_name)
     
     if data and data['fixtures']:
         print(f"\n[FIXTURES] UPCOMING FIXTURES - {selected_team['name']}")
