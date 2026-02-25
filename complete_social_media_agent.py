@@ -1073,31 +1073,6 @@ class CompleteSocialMediaAgent:
             
             current_x += word_width
 
-    def _get_pitch_size(self, team_name: str) -> str:
-        """Get pitch size based on FA age group rules"""
-        import re
-        
-        # Extract age group from team name (e.g., U10, U15)
-        match = re.search(r'U(\d+)', team_name, re.IGNORECASE)
-        if not match:
-            return ""
-        
-        age = int(match.group(1))
-        
-        # FA pitch size rules
-        # U8 & U9: 5v5
-        # U10 & U11: 7v7
-        # U12 & U13: 9v9
-        # U14 and above: 11v11
-        if age <= 9:
-            return "5v5 pitch"
-        elif age <= 11:
-            return "7v7 pitch"
-        elif age <= 13:
-            return "9v9 pitch"
-        else:
-            return "11v11 pitch"
-
     def _clean_team_name(self, name: str) -> str:
         """Clean team name for display"""
         return name.replace('Scawthorpe Scorpions J.F.C.', 'Scorpions').strip()

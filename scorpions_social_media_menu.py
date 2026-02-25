@@ -45,31 +45,6 @@ def format_team_name(team_name):
     formatted = formatted.replace('Scawthorpe Scorpions', 'Scorps').strip()
     return formatted
 
-def get_pitch_size(team_name):
-    """Get pitch size based on FA age group rules"""
-    import re
-    
-    # Extract age group from team name (e.g., U10, U15)
-    match = re.search(r'U(\d+)', team_name, re.IGNORECASE)
-    if not match:
-        return ""
-    
-    age = int(match.group(1))
-    
-    # FA pitch size rules
-    # U8 & U9: 5v5
-    # U10 & U11: 7v7
-    # U12 & U13: 9v9
-    # U14 and above: 11v11
-    if age <= 9:
-        return "5v5"
-    elif age <= 11:
-        return "7v7"
-    elif age <= 13:
-        return "9v9"
-    else:
-        return "11v11"
-
 def get_age_group_sort_key(team_name):
     """Extract age group from team name for sorting (U7=7, U8=8, etc.)"""
     import re
@@ -204,12 +179,6 @@ def list_fixtures_by_team(agent, teams):
             print(f"   {home} vs {away}")
             if fixture.get('venue'):
                 print(f"   📍 Venue: {fixture.get('venue')}")
-            
-            # Add pitch size
-            pitch_size = get_pitch_size(selected_team['name'])
-            if pitch_size:
-                print(f"   ⚽ Pitch: {pitch_size}")
-            
             if fixture.get('competition'):
                 print(f"   🏆 Competition: {fixture.get('competition')}")
         
@@ -342,12 +311,6 @@ def list_all_fixtures(agent, teams):
             print(f"   {home} vs {away}")
             if fixture.get('venue'):
                 print(f"   📍 Venue: {fixture['venue']}")
-            
-            # Add pitch size based on team name
-            pitch_size = get_pitch_size(fixture.get('team', ''))
-            if pitch_size:
-                print(f"   ⚽ Pitch: {pitch_size}")
-            
             if fixture.get('competition'):
                 print(f"   🏆 Competition: {fixture.get('competition')}")
         
