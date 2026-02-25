@@ -871,7 +871,8 @@ def add_kick_off_times_and_pitch(agent, teams):
     
     all_fixtures = []
     for team in teams:
-        data = agent.get_fixtures_by_team(team['team_id'], team['name'])
+        team_name = team['name'].replace('Scawthorpe Scorpions J.F.C.', '').strip()
+        data = agent.get_team_fixtures_only(team_name)
         if data and data.get('fixtures'):
             for fixture in data['fixtures']:
                 fixture['team'] = format_team_name(team['name'])
