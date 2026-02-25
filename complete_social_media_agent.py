@@ -839,8 +839,8 @@ class CompleteSocialMediaAgent:
             opponent = opponent.replace('Scawthorpe Scorpions J.F.C.', '').replace('J.F.C.', '').strip()
             
             # Draw fixture in column
-            # Line 1: Scorps team name with color-coded color words
-            self._draw_team_name_with_colored_words(draw, scorps_name, x_pos, y_pos, team_font)
+            # Line 1: Scorps team name in orange
+            draw.text((x_pos, y_pos), scorps_name, fill="#FF8C00", font=team_font)
             
             # Line 2: HOME/AWAY indicator and "vs"
             draw.text((x_pos, y_pos + 25), f"{venue_indicator} vs", fill=venue_color, font=vs_font)
@@ -1054,45 +1054,6 @@ class CompleteSocialMediaAgent:
             
             draw.ellipse([x-size//2, y-size//2, x+size//2, y+size//2], 
                         fill=splash_color, outline=None)
-
-    def _draw_team_name_with_colored_words(self, draw, team_name: str, x: int, y: int, font):
-        """Draw team name with color words rendered in their respective colors"""
-        # Color mapping for team color words
-        color_map = {
-            'red': '#FF0000',
-            'blue': '#0000FF',
-            'green': '#00FF00',
-            'orange': '#FF8C00',
-            'white': '#FFFFFF',
-            'black': '#000000',
-            'pink': '#FF69B4',
-            'yellow': '#FFFF00'
-        }
-        
-        # Split team name into words
-        words = team_name.split()
-        current_x = x
-        
-        for i, word in enumerate(words):
-            word_lower = word.lower()
-            
-            # Check if this word is a color
-            if word_lower in color_map:
-                text_color = color_map[word_lower]
-            else:
-                text_color = "#FF8C00"  # Default orange for non-color words
-            
-            # Draw the word
-            draw.text((current_x, y), word, fill=text_color, font=font)
-            
-            # Calculate width for next word position
-            try:
-                bbox = draw.textbbox((0, 0), word + " ", font=font)
-                word_width = bbox[2] - bbox[0]
-            except AttributeError:
-                word_width = draw.textsize(word + " ", font=font)[0]
-            
-            current_x += word_width
 
     def _clean_team_name(self, name: str) -> str:
         """Clean team name for display"""
