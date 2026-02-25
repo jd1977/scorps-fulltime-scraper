@@ -840,17 +840,26 @@ class CompleteSocialMediaAgent:
         img.paste(overlay, (0, 0), overlay)
         draw = ImageDraw.Draw(img)
         
-        # Fonts
+        # Fonts - using more interesting fonts with adjusted sizes
         try:
-            team_font = ImageFont.truetype("arialbd.ttf", 20)  # For Scorps team name
-            opponent_font = ImageFont.truetype("arial.ttf", 18)  # For opponent
-            venue_font = ImageFont.truetype("arial.ttf", 14)  # For venue
-            vs_font = ImageFont.truetype("arial.ttf", 16)  # For "vs"
+            # Try to use Segoe UI (modern, clean font available on Windows)
+            team_font = ImageFont.truetype("seguibl.ttf", 26)  # Segoe UI Bold for team name (increased from 24)
+            opponent_font = ImageFont.truetype("segoeui.ttf", 24)  # Segoe UI for opponent (increased from 22)
+            venue_font = ImageFont.truetype("segoeui.ttf", 14)  # Segoe UI for venue (decreased from 16)
+            vs_font = ImageFont.truetype("seguisb.ttf", 22)  # Segoe UI Semibold for HOME/AWAY (increased from 20)
         except:
-            team_font = self.text_font
-            opponent_font = self.text_font
-            venue_font = self.small_font
-            vs_font = self.text_font
+            try:
+                # Fallback to Arial Bold if Segoe UI not available
+                team_font = ImageFont.truetype("arialbd.ttf", 26)
+                opponent_font = ImageFont.truetype("arial.ttf", 24)
+                venue_font = ImageFont.truetype("arial.ttf", 14)
+                vs_font = ImageFont.truetype("arialbd.ttf", 22)
+            except:
+                # Final fallback to default fonts
+                team_font = self.text_font
+                opponent_font = self.text_font
+                venue_font = self.small_font
+                vs_font = self.text_font
         
         # Layout: 2 columns, 3 rows - wider columns with more spacing
         col_width = (self.width - 80) // 2  # Wider columns (less total padding)
@@ -888,25 +897,25 @@ class CompleteSocialMediaAgent:
             # Clean opponent name (no truncation)
             opponent = opponent.replace('Scawthorpe Scorpions J.F.C.', '').replace('J.F.C.', '').strip()
             
-            # Draw fixture in column
+            # Draw fixture in column with increased spacing for larger fonts
             # Line 1: Scorps team name in orange
             draw.text((x_pos, y_pos), scorps_name, fill="#FF8C00", font=team_font)
             
-            # Line 2: HOME/AWAY indicator and "vs"
-            draw.text((x_pos, y_pos + 25), f"{venue_indicator} vs", fill=venue_color, font=vs_font)
+            # Line 2: HOME/AWAY indicator and "vs" (increased spacing from 25 to 30)
+            draw.text((x_pos, y_pos + 30), f"{venue_indicator} vs", fill=venue_color, font=vs_font)
             
-            # Line 3: Opponent (full text)
-            draw.text((x_pos, y_pos + 45), opponent, fill="#FFFFFF", font=opponent_font)
+            # Line 3: Opponent (increased spacing from 45 to 56)
+            draw.text((x_pos, y_pos + 56), opponent, fill="#FFFFFF", font=opponent_font)
             
-            # Line 4: Venue (full text)
-            current_y = y_pos + 68
+            # Line 4: Venue (increased spacing from 68 to 84)
+            current_y = y_pos + 84
             venue_loc = fixture.get('venue', '')
             if venue_loc:
                 venue_loc = venue_loc.replace(' Playing Fields', '').replace(' Sports Ground', '')
                 venue_loc = venue_loc.replace(' Recreation Ground', '').replace(' Sports Centre', '')
                 # No truncation - show full venue name
                 draw.text((x_pos, current_y), f"@ {venue_loc}", fill="#AAAAAA", font=venue_font)
-                current_y += 18
+                current_y += 20  # Increased from 18 to 20
             
             # Line 5: Kick-off time and Pitch on same line (use same color)
             kick_off_time = fixture.get('kick_off_time') or fixture.get('time')
