@@ -815,6 +815,9 @@ class CompleteSocialMediaAgent:
             # Format Scorps team name (e.g., "Scorps U10 Red")
             scorps_name = our_team.replace('Scawthorpe Scorpions J.F.C.', 'Scorps').replace('Scawthorpe Scorpions', 'Scorps').strip()
             
+            # Get pitch size based on age group
+            pitch_size = self._get_pitch_size(scorps_name)
+            
             # Clean opponent name (no truncation)
             opponent = opponent.replace('Scawthorpe Scorpions J.F.C.', '').replace('J.F.C.', '').strip()
             
@@ -835,6 +838,10 @@ class CompleteSocialMediaAgent:
                 venue_loc = venue_loc.replace(' Recreation Ground', '').replace(' Sports Centre', '')
                 # No truncation - show full venue name
                 draw.text((x_pos, y_pos + 68), f"@ {venue_loc}", fill="#AAAAAA", font=venue_font)
+            
+            # Line 5: Pitch size
+            if pitch_size:
+                draw.text((x_pos, y_pos + 88), pitch_size, fill="#888888", font=venue_font)
         
         # Footer
         footer_text = "COME ON SCORPS! 🦂"
@@ -1061,6 +1068,31 @@ class CompleteSocialMediaAgent:
                 word_width = draw.textsize(word + " ", font=font)[0]
             
             current_x += word_width
+
+    def _get_pitch_size(self, team_name: str) -> str:
+        """Get pitch size based on FA age group rules"""
+        import re
+        
+        # Extract age group from team name (e.g., U10, U15)
+        match = re.search(r'U(\d+)', team_name, re.IGNORECASE)
+        if not match:
+            return ""
+        
+        age = int(match.group(1))
+        
+        # FA pitch size rules
+        # U8 & U9: 5v5
+        # U10 & U11: 7v7
+        # U12 & U13: 9v9
+        # U14 and above: 11v11
+        if age <= 9:
+            return "5v5 pitch"
+        elif age <= 11:
+            return "7v7 pitch"
+        elif age <= 13:
+            return "9v9 pitch"
+        else:
+            return "11v11 pitch"
 
     def _clean_team_name(self, name: str) -> str:
         """Clean team name for display"""
