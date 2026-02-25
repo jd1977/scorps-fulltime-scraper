@@ -378,7 +378,7 @@ def list_all_fixtures(agent, teams):
                             fixture_dict.update(fixture_details[fixture_key])
                         fixture_dicts.append(fixture_dict)
                     
-                    filename = agent.create_fixtures_post({'name': 'Boys Teams'}, fixture_dicts)
+                    filename = agent.create_fixtures_post({'name': 'Boys Teams'}, fixture_dicts, template='boys')
                     created_posts.append(filename)
                     print(f"   ✅ Boys fixtures post {len(created_posts)}: {filename}")
             
@@ -402,7 +402,7 @@ def list_all_fixtures(agent, teams):
                             fixture_dict.update(fixture_details[fixture_key])
                         fixture_dicts.append(fixture_dict)
                     
-                    filename = agent.create_fixtures_post({'name': 'Girls Teams'}, fixture_dicts)
+                    filename = agent.create_fixtures_post({'name': 'Girls Teams'}, fixture_dicts, template='girls')
                     created_posts.append(filename)
                     print(f"   ✅ Girls fixtures post {len(created_posts)}: {filename}")
             

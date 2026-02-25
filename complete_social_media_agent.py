@@ -715,20 +715,40 @@ class CompleteSocialMediaAgent:
         except AttributeError:
             return draw.textsize(text, font=font)[0]
 
-    def create_fixtures_post(self, team_data: dict, fixtures: list) -> str:
-        """Create a fixtures post using the new template"""
+    def create_fixtures_post(self, team_data: dict, fixtures: list, template: str = None) -> str:
+        """Create a fixtures post using the new template
+        
+        Args:
+            team_data: Dictionary with team information
+            fixtures: List of fixture dictionaries
+            template: Optional template name ('boys' or 'girls') to use specific background
+        """
         print(f"🎨 Creating fixtures post...")
         
         # Try to load the background image
         import os
         import random
         
-        # Try multiple possible filenames
-        possible_paths = [
-            os.path.join('assets', 'Scawthorpe Scorpions fixture announcement.png'),
-            os.path.join('assets', 'fixtures_background.png'),
-            os.path.join('assets', 'fixture_announcement.png')
-        ]
+        # Determine which template to use
+        if template == 'boys':
+            possible_paths = [
+                os.path.join('assets', 'boys_fixtures_template.png'),
+                os.path.join('assets', 'Scawthorpe Scorpions fixture announcement.png'),
+                os.path.join('assets', 'fixtures_background.png')
+            ]
+        elif template == 'girls':
+            possible_paths = [
+                os.path.join('assets', 'girls_fixtures_template.png'),
+                os.path.join('assets', 'Scawthorpe Scorpions fixture announcement.png'),
+                os.path.join('assets', 'fixtures_background.png')
+            ]
+        else:
+            # Default fallback order
+            possible_paths = [
+                os.path.join('assets', 'Scawthorpe Scorpions fixture announcement.png'),
+                os.path.join('assets', 'fixtures_background.png'),
+                os.path.join('assets', 'fixture_announcement.png')
+            ]
         
         bg_path = None
         for path in possible_paths:
