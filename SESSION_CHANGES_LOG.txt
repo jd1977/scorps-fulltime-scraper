@@ -196,3 +196,38 @@ FILES MODIFIED:
 
 RESULT:
 Cleaner, more professional look with color-coded team names instead of emojis.
+
+
+==========================================
+PITCH SIZE INFORMATION - February 24, 2026
+==========================================
+
+CHANGE: Added pitch size information to fixture posts based on FA age group rules
+
+IMPLEMENTATION:
+- Added new method: _get_pitch_size(team_name)
+- Extracts age group from team name (e.g., U10, U15)
+- Returns appropriate pitch size based on FA rules:
+  * U7 and below: 5v5 pitch
+  * U8-U9: 7v7 pitch
+  * U10-U11: 9v9 pitch
+  * U12 and above: 11v11 pitch
+
+DISPLAY:
+- Pitch size appears as Line 5 in each fixture
+- Positioned below venue information
+- Displayed in gray color (#888888)
+- Uses small font size for compact display
+
+EXAMPLE OUTPUT:
+Line 1: Scorps U10 Red (with "Red" in red color)
+Line 2: HOME vs (in orange)
+Line 3: Opponent Team Name (in white)
+Line 4: @ Venue Name (in gray)
+Line 5: 9v9 pitch (in gray)
+
+FILES MODIFIED:
+- complete_social_media_agent.py (added pitch size display and helper method)
+
+RESULT:
+Fixture posts now include helpful pitch size information for parents and players.
