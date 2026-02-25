@@ -172,6 +172,9 @@ def list_fixtures_by_team(agent, teams):
         print(f"\n📅 UPCOMING FIXTURES - {selected_team['name']}")
         print("=" * 60)
         
+        # Load saved fixture details
+        fixture_details = load_fixture_details()
+        
         for i, fixture in enumerate(data['fixtures'][:10], 1):
             print(f"\n{i}. {fixture.get('date', 'TBC')} at {fixture.get('time', 'TBC')}")
             home = format_team_name(fixture.get('home_team', 'TBC'))
@@ -179,6 +182,15 @@ def list_fixtures_by_team(agent, teams):
             print(f"   {home} vs {away}")
             if fixture.get('venue'):
                 print(f"   📍 Venue: {fixture.get('venue')}")
+            
+            # Show saved kick-off time and pitch if available
+            fixture_key = get_fixture_key(fixture)
+            if fixture_key in fixture_details:
+                if fixture_details[fixture_key].get('kick_off_time'):
+                    print(f"   ⏰ Kick-off: {fixture_details[fixture_key]['kick_off_time']}")
+                if fixture_details[fixture_key].get('pitch'):
+                    print(f"   🏟️  Pitch: {fixture_details[fixture_key]['pitch']}")
+            
             if fixture.get('competition'):
                 print(f"   🏆 Competition: {fixture.get('competition')}")
         
@@ -303,6 +315,9 @@ def list_all_fixtures(agent, teams):
         print("   (Ordered by age group: U7, U8, U9, U10, U11, U12, U13, U14, U15, U16, U18)")
         print("=" * 60)
         
+        # Load saved fixture details
+        fixture_details = load_fixture_details()
+        
         for i, fixture in enumerate(all_fixtures[:20], 1):
             print(f"\n{i}. [{fixture.get('team', 'Unknown')}]")
             print(f"   {fixture['date']} at {fixture.get('time', 'TBC')}")
@@ -311,6 +326,14 @@ def list_all_fixtures(agent, teams):
             print(f"   {home} vs {away}")
             if fixture.get('venue'):
                 print(f"   📍 Venue: {fixture['venue']}")
+            
+            # Show saved kick-off time and pitch if available
+            fixture_key = get_fixture_key(fixture)
+            if fixture_key in fixture_details:
+                if fixture_details[fixture_key].get('kick_off_time'):
+                    print(f"   ⏰ Kick-off: {fixture_details[fixture_key]['kick_off_time']}")
+                if fixture_details[fixture_key].get('pitch'):
+                    print(f"   🏟️  Pitch: {fixture_details[fixture_key]['pitch']}")
             if fixture.get('competition'):
                 print(f"   🏆 Competition: {fixture.get('competition')}")
         
