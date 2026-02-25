@@ -45,6 +45,31 @@ def format_team_name(team_name):
     formatted = formatted.replace('Scawthorpe Scorpions', 'Scorps').strip()
     return formatted
 
+def get_pitch_size(team_name):
+    """Get pitch size based on FA age group rules"""
+    import re
+    
+    # Extract age group from team name (e.g., U10, U15)
+    match = re.search(r'U(\d+)', team_name, re.IGNORECASE)
+    if not match:
+        return ""
+    
+    age = int(match.group(1))
+    
+    # FA pitch size rules
+    # U8 & U9: 5v5
+    # U10 & U11: 7v7
+    # U12 & U13: 9v9
+    # U14 and above: 11v11
+    if age <= 9:
+        return "5v5"
+    elif age <= 11:
+        return "7v7"
+    elif age <= 13:
+        return "9v9"
+    else:
+        return "11v11"
+
 def get_age_group_sort_key(team_name):
     """Extract age group from team name for sorting (U7=7, U8=8, etc.)"""
     import re
@@ -98,6 +123,7 @@ def display_main_menu():
     print("  3. Show Tables by Team")
     print("  4. Show Results by Team")
     print("  5. Show All This Week's Results")
+    print("  6. Add Kick Off Times & Pitch")
     print("  q. Quit")
     print("\n" + "=" * 60)
 
@@ -178,12 +204,25 @@ def list_fixtures_by_team(agent, teams):
             print(f"   {home} vs {away}")
             if fixture.get('venue'):
                 print(f"   📍 Venue: {fixture.get('venue')}")
+            
+            # Add pitch size
+            pitch_size = get_pitch_size(selected_team['name'])
+            if pitch_size:
+                print(f"   ⚽ Pitch: {pitch_size}")
+            
             if fixture.get('competition'):
                 print(f"   🏆 Competition: {fixture.get('competition')}")
         
         # Create post
         create = input("\n📱 Create social media post? (y/n): ").strip().lower()
         if create == 'y':
+            # Load and merge fixture details (kick-off times and pitch info)
+            fixture_details = load_fixture_details()
+            for fixture in data['fixtures']:
+                fixture_key = get_fixture_key(fixture)
+                if fixture_key in fixture_details:
+                    fixture.update(fixture_details[fixture_key])
+            
             filename = agent.create_fixtures_post(data['team'], data['fixtures'])
             print(f"✅ Created: {filename}")
     else:
@@ -303,6 +342,12 @@ def list_all_fixtures(agent, teams):
             print(f"   {home} vs {away}")
             if fixture.get('venue'):
                 print(f"   📍 Venue: {fixture['venue']}")
+            
+            # Add pitch size based on team name
+            pitch_size = get_pitch_size(fixture.get('team', ''))
+            if pitch_size:
+                print(f"   ⚽ Pitch: {pitch_size}")
+            
             if fixture.get('competition'):
                 print(f"   🏆 Competition: {fixture.get('competition')}")
         
@@ -310,6 +355,9 @@ def list_all_fixtures(agent, teams):
         create = input("\n📱 Create social media post? (y/n): ").strip().lower()
         if create == 'y':
             print("\n🎨 Creating fixtures posts...")
+            
+            # Load fixture details
+            fixture_details = load_fixture_details()
             
             # Separate boys and girls fixtures
             boys_fixtures = []
@@ -330,14 +378,19 @@ def list_all_fixtures(agent, teams):
                     batch = boys_fixtures[i:i+6]
                     fixture_dicts = []
                     for f in batch:
-                        fixture_dicts.append({
+                        fixture_dict = {
                             'date': f['date'],
                             'time': f['time'],
                             'home_team': f['home_team'],
                             'away_team': f['away_team'],
                             'venue': f.get('venue', ''),
                             'competition': f.get('competition', '')
-                        })
+                        }
+                        # Merge saved details
+                        fixture_key = get_fixture_key(f)
+                        if fixture_key in fixture_details:
+                            fixture_dict.update(fixture_details[fixture_key])
+                        fixture_dicts.append(fixture_dict)
                     
                     filename = agent.create_fixtures_post({'name': 'Boys Teams'}, fixture_dicts)
                     created_posts.append(filename)
@@ -349,14 +402,19 @@ def list_all_fixtures(agent, teams):
                     batch = girls_fixtures[i:i+6]
                     fixture_dicts = []
                     for f in batch:
-                        fixture_dicts.append({
+                        fixture_dict = {
                             'date': f['date'],
                             'time': f['time'],
                             'home_team': f['home_team'],
                             'away_team': f['away_team'],
                             'venue': f.get('venue', ''),
                             'competition': f.get('competition', '')
-                        })
+                        }
+                        # Merge saved details
+                        fixture_key = get_fixture_key(f)
+                        if fixture_key in fixture_details:
+                            fixture_dict.update(fixture_details[fixture_key])
+                        fixture_dicts.append(fixture_dict)
                     
                     filename = agent.create_fixtures_post({'name': 'Girls Teams'}, fixture_dicts)
                     created_posts.append(filename)
@@ -779,6 +837,120 @@ def show_results_by_team(agent, teams):
     else:
         print(f"\n❌ No results found for {selected_team['name']}")
 
+def load_fixture_details():
+    """Load saved fixture details (kick-off times and pitch info)"""
+    try:
+        with open('fixture_details.json', 'r') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return {}
+
+def save_fixture_details(details):
+    """Save fixture details to JSON file"""
+    with open('fixture_details.json', 'w') as f:
+        json.dump(details, f, indent=2)
+
+def get_fixture_key(fixture):
+    """Generate a unique key for a fixture"""
+    # Use date, home team, and away team to create unique identifier
+    date = fixture.get('date', '')
+    home = fixture.get('home_team', '')
+    away = fixture.get('away_team', '')
+    return f"{date}|{home}|{away}"
+
+def add_kick_off_times_and_pitch(agent, teams):
+    """Add kick off times and pitch information to fixtures"""
+    print("\n⚽ ADD KICK OFF TIMES & PITCH")
+    print("=" * 60)
+    
+    # Get this week's fixtures
+    print("\n🔍 Getting this week's fixtures...")
+    today = datetime.now()
+    start_date = today.strftime('%d/%m/%y')
+    end_date = (today + timedelta(days=7)).strftime('%d/%m/%y')
+    
+    all_fixtures = []
+    for team in teams:
+        data = agent.get_fixtures_by_team(team['team_id'], team['name'])
+        if data and data.get('fixtures'):
+            for fixture in data['fixtures']:
+                fixture['team'] = format_team_name(team['name'])
+                all_fixtures.append(fixture)
+    
+    if not all_fixtures:
+        print("\n❌ No fixtures found for this week")
+        return
+    
+    # Sort by age group
+    all_fixtures.sort(key=lambda x: get_age_group_sort_key(x.get('team', '')))
+    
+    # Load existing details
+    fixture_details = load_fixture_details()
+    
+    print(f"\n📅 THIS WEEK'S FIXTURES ({len(all_fixtures)} found)")
+    print("=" * 60)
+    
+    for i, fixture in enumerate(all_fixtures, 1):
+        fixture_key = get_fixture_key(fixture)
+        saved_details = fixture_details.get(fixture_key, {})
+        
+        print(f"\n{i}. [{fixture.get('team', 'Unknown')}]")
+        print(f"   {fixture['date']} at {fixture.get('time', 'TBC')}")
+        home = format_team_name(fixture.get('home_team', 'TBC'))
+        away = format_team_name(fixture.get('away_team', 'TBC'))
+        print(f"   {home} vs {away}")
+        if fixture.get('venue'):
+            print(f"   📍 Venue: {fixture['venue']}")
+        
+        # Show saved details if any
+        if saved_details.get('kick_off_time'):
+            print(f"   ⏰ Kick-off: {saved_details['kick_off_time']}")
+        if saved_details.get('pitch'):
+            print(f"   🏟️  Pitch: {saved_details['pitch']}")
+    
+    # Select fixture to edit
+    print("\n" + "=" * 60)
+    choice = input(f"\n📝 Enter fixture number to edit (1-{len(all_fixtures)}) or 'b' to go back: ").strip()
+    
+    if choice.lower() == 'b':
+        return
+    
+    try:
+        fixture_num = int(choice)
+        if 1 <= fixture_num <= len(all_fixtures):
+            selected_fixture = all_fixtures[fixture_num - 1]
+            fixture_key = get_fixture_key(selected_fixture)
+            
+            print(f"\n✏️  EDITING: {selected_fixture.get('team', 'Unknown')}")
+            print(f"   {selected_fixture['date']} - {format_team_name(selected_fixture.get('home_team', ''))} vs {format_team_name(selected_fixture.get('away_team', ''))}")
+            
+            # Get kick-off time
+            current_time = fixture_details.get(fixture_key, {}).get('kick_off_time', '')
+            kick_off = input(f"\n⏰ Enter kick-off time (e.g., 10:30) [{current_time or 'none'}]: ").strip()
+            
+            # Get pitch info
+            current_pitch = fixture_details.get(fixture_key, {}).get('pitch', '')
+            pitch = input(f"🏟️  Enter pitch (e.g., Pitch 1, Main Pitch) [{current_pitch or 'none'}]: ").strip()
+            
+            # Save details
+            if kick_off or pitch:
+                if fixture_key not in fixture_details:
+                    fixture_details[fixture_key] = {}
+                
+                if kick_off:
+                    fixture_details[fixture_key]['kick_off_time'] = kick_off
+                if pitch:
+                    fixture_details[fixture_key]['pitch'] = pitch
+                
+                save_fixture_details(fixture_details)
+                print("\n✅ Details saved successfully!")
+            else:
+                print("\n⚠️  No changes made")
+        else:
+            print("\n❌ Invalid fixture number")
+    except ValueError:
+        print("\n❌ Invalid input")
+
 def main():
     """Main menu loop"""
     print("\n" + "=" * 60)
@@ -812,6 +984,8 @@ def main():
             show_results_by_team(agent, teams)
         elif choice == '5':
             show_all_this_weeks_results(agent, teams)
+        elif choice == '6':
+            add_kick_off_times_and_pitch(agent, teams)
         else:
             print("❌ Invalid option. Please try again.")
         

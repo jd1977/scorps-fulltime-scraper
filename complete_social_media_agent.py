@@ -815,9 +815,6 @@ class CompleteSocialMediaAgent:
             # Format Scorps team name (e.g., "Scorps U10 Red")
             scorps_name = our_team.replace('Scawthorpe Scorpions J.F.C.', 'Scorps').replace('Scawthorpe Scorpions', 'Scorps').strip()
             
-            # Get pitch size based on age group
-            pitch_size = self._get_pitch_size(scorps_name)
-            
             # Clean opponent name (no truncation)
             opponent = opponent.replace('Scawthorpe Scorpions J.F.C.', '').replace('J.F.C.', '').strip()
             
@@ -832,16 +829,23 @@ class CompleteSocialMediaAgent:
             draw.text((x_pos, y_pos + 45), opponent, fill="#FFFFFF", font=opponent_font)
             
             # Line 4: Venue (full text)
+            current_y = y_pos + 68
             venue_loc = fixture.get('venue', '')
             if venue_loc:
                 venue_loc = venue_loc.replace(' Playing Fields', '').replace(' Sports Ground', '')
                 venue_loc = venue_loc.replace(' Recreation Ground', '').replace(' Sports Centre', '')
                 # No truncation - show full venue name
-                draw.text((x_pos, y_pos + 68), f"@ {venue_loc}", fill="#AAAAAA", font=venue_font)
+                draw.text((x_pos, current_y), f"@ {venue_loc}", fill="#AAAAAA", font=venue_font)
+                current_y += 18
             
-            # Line 5: Pitch size
-            if pitch_size:
-                draw.text((x_pos, y_pos + 88), pitch_size, fill="#888888", font=venue_font)
+            # Line 5: Kick-off time (if available)
+            if fixture.get('kick_off_time'):
+                draw.text((x_pos, current_y), f"KO: {fixture['kick_off_time']}", fill="#FFD700", font=venue_font)
+                current_y += 18
+            
+            # Line 6: Pitch (if available)
+            if fixture.get('pitch'):
+                draw.text((x_pos, current_y), fixture['pitch'], fill="#90EE90", font=venue_font)
         
         # Footer
         footer_text = "COME ON SCORPS! 🦂"

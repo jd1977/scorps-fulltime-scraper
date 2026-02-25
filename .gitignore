@@ -43,6 +43,7 @@ posts/
 fixtures_*.png
 results_*.png
 table_*.png
+fixture_details.json
 
 # Sensitive data (if any)
 *.env
