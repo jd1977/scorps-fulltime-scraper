@@ -863,20 +863,99 @@ def add_kick_off_times_and_pitch(agent, teams):
     print("\n⚽ ADD KICK OFF TIMES & PITCH")
     print("=" * 60)
     
-    # Get this week's fixtures
+    # Get this week's fixtures using same logic as option 2
     print("\n🔍 Getting this week's fixtures...")
+    
+    # Calculate date range
     today = datetime.now()
-    start_date = today.strftime('%d/%m/%y')
-    end_date = (today + timedelta(days=7)).strftime('%d/%m/%y')
+    seven_days_later = today + timedelta(days=7)
+    
+    print(f"   Between {today.strftime('%d/%m/%y')} and {seven_days_later.strftime('%d/%m/%y')}...")
+    
+    # Use club-wide fixtures URL directly (same as option 2)
+    CLUB_ID = "105735333"
+    SEASON_ID = "895948809"
+    club_fixtures_url = f"https://fulltime.thefa.com/fixtures/1/100.html?selectedSeason={SEASON_ID}&selectedFixtureGroupAgeGroup=0&previousSelectedFixtureGroupAgeGroup=&selectedFixtureGroupKey=&previousSelectedFixtureGroupKey=&selectedDateCode=all&selectedRelatedFixtureOption=3&selectedClub={CLUB_ID}&previousSelectedClub={CLUB_ID}&selectedTeam=&selectedFixtureDateStatus=&selectedFixtureStatus="
     
     all_fixtures = []
-    for team in teams:
-        team_name = team['name'].replace('Scawthorpe Scorpions J.F.C.', '').strip()
-        data = agent.get_team_fixtures_only(team_name)
-        if data and data.get('fixtures'):
-            for fixture in data['fixtures']:
-                fixture['team'] = format_team_name(team['name'])
-                all_fixtures.append(fixture)
+    
+    try:
+        import requests
+        from bs4 import BeautifulSoup
+        
+        session = requests.Session()
+        session.headers.update({
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+        })
+        
+        response = session.get(club_fixtures_url, timeout=15)
+        
+        if response.status_code == 200:
+            soup = BeautifulSoup(response.content, 'html.parser')
+            fixtures_table = soup.find('div', class_='fixtures-table')
+            
+            if fixtures_table:
+                rows = fixtures_table.find_all('tr')
+                
+                for row in rows:
+                    if row.find('th'):
+                        continue
+                    
+                    cells = row.find_all('td')
+                    if len(cells) < 7:
+                        continue
+                    
+                    try:
+                        # Date/Time
+                        date_cell = cells[1]
+                        date_span = date_cell.find('span')
+                        date = date_span.get_text(strip=True) if date_span else ""
+                        time_span = date_cell.find('span', class_='color-dark-grey')
+                        time = time_span.get_text(strip=True) if time_span else ""
+                        
+                        # Teams
+                        home_team = cells[2].get_text(strip=True)
+                        away_team = cells[6].get_text(strip=True)
+                        
+                        # Venue
+                        venue = cells[7].get_text(strip=True) if len(cells) > 7 else ""
+                        
+                        # Competition
+                        competition = cells[8].get_text(strip=True) if len(cells) > 8 else ""
+                        
+                        # Parse date
+                        if date:
+                            fixture_date = datetime.strptime(date, '%d/%m/%y')
+                            
+                            # Only include if within next 7 days
+                            if (today <= fixture_date <= seven_days_later and
+                                home_team and away_team and venue and
+                                'tbc' not in home_team.lower() and
+                                'tbc' not in away_team.lower() and
+                                'tbc' not in venue.lower()):
+                                
+                                # Extract team name
+                                if 'scawthorpe' in home_team.lower() or 'scorpions' in home_team.lower():
+                                    team_name = home_team
+                                else:
+                                    team_name = away_team
+                                
+                                team_identifier = team_name.replace('Scawthorpe Scorpions J.F.C.', '').replace('Scawthorpe Scorpions', '').strip()
+                                
+                                all_fixtures.append({
+                                    'date': date,
+                                    'time': time,
+                                    'home_team': home_team,
+                                    'away_team': away_team,
+                                    'venue': venue,
+                                    'competition': competition,
+                                    'team': format_team_name(team_name)
+                                })
+                    except Exception as e:
+                        continue
+    except Exception as e:
+        print(f"\n❌ Error fetching fixtures: {e}")
+        return
     
     if not all_fixtures:
         print("\n❌ No fixtures found for this week")
