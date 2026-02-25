@@ -816,10 +816,10 @@ class CompleteSocialMediaAgent:
         
         draw = ImageDraw.Draw(img)
         
-        # Black box in bottom half - below the badge
-        # Position it lower in the image
-        overlay_top = int(self.height * 0.62)  # Start at 62% down the image (lower)
-        overlay_bottom = self.height - 60  # Leave less space for footer
+        # Black box in bottom half - below the badge (made bigger)
+        # Position it higher and extend it lower
+        overlay_top = int(self.height * 0.55)  # Start at 55% down (was 62%)
+        overlay_bottom = self.height - 50  # Leave less space for footer (was 60)
         
         # Add semi-transparent overlay
         overlay = Image.new('RGBA', (self.width, self.height), (0, 0, 0, 0))
@@ -843,12 +843,12 @@ class CompleteSocialMediaAgent:
             venue_font = self.small_font
             vs_font = self.text_font
         
-        # Layout: 2 columns, 3 rows - wider columns
+        # Layout: 2 columns, 3 rows - wider columns with more spacing
         col_width = (self.width - 80) // 2  # Wider columns (less total padding)
-        row_height = (overlay_bottom - overlay_top - 40) // 3  # Divide into 3 rows
+        row_height = (overlay_bottom - overlay_top - 60) // 3  # Divide into 3 rows with more spacing
         
         padding_left = 50  # Less left padding
-        padding_top = overlay_top + 20
+        padding_top = overlay_top + 30  # More top padding
         
         for i, fixture in enumerate(fixtures[:6]):  # Show up to 6 fixtures
             # Calculate position (2 columns, 3 rows)
@@ -899,20 +899,25 @@ class CompleteSocialMediaAgent:
                 draw.text((x_pos, current_y), f"@ {venue_loc}", fill="#AAAAAA", font=venue_font)
                 current_y += 18
             
-            # Line 5: Kick-off time (use manually entered time, or fall back to FA website time)
+            # Line 5: Kick-off time and Pitch on same line (use same color)
             kick_off_time = fixture.get('kick_off_time') or fixture.get('time')
-            if kick_off_time and kick_off_time.lower() != 'tbc':
-                draw.text((x_pos, current_y), f"KO: {kick_off_time}", fill="#FFD700", font=venue_font)
-                current_y += 18
+            pitch = fixture.get('pitch')
             
-            # Line 6: Pitch (if available)
-            if fixture.get('pitch'):
-                draw.text((x_pos, current_y), fixture['pitch'], fill="#90EE90", font=venue_font)
+            # Build the combined line
+            time_pitch_parts = []
+            if kick_off_time and kick_off_time.lower() != 'tbc':
+                time_pitch_parts.append(f"KO: {kick_off_time}")
+            if pitch:
+                time_pitch_parts.append(f"Pitch: {pitch}")
+            
+            if time_pitch_parts:
+                combined_text = " | ".join(time_pitch_parts)
+                draw.text((x_pos, current_y), combined_text, fill="#FFD700", font=venue_font)
         
         # Footer
-        footer_text = "COME ON SCORPS! 🦂"
+        footer_text = "COME ON SCORPS!"
         try:
-            footer_font = ImageFont.truetype("arialbd.ttf", 28)
+            footer_font = ImageFont.truetype("arialbd.ttf", 36)  # Increased from 28 to 36
         except:
             footer_font = self.subtitle_font
         
