@@ -726,15 +726,24 @@ class CompleteSocialMediaAgent:
         archive_dir = 'fixtures_archive'
         os.makedirs(archive_dir, exist_ok=True)
         
-        # Move existing fixture posts to archive
+        # Only archive fixture posts older than 1 hour
+        one_hour_ago = datetime.now() - timedelta(hours=1)
         fixture_files = glob.glob('fixtures_*.png')
+        archived_count = 0
+        
         if fixture_files:
-            print(f"   📦 Archiving {len(fixture_files)} old fixture post(s)...")
             for file in fixture_files:
                 try:
-                    shutil.move(file, os.path.join(archive_dir, file))
+                    file_time = datetime.fromtimestamp(os.path.getmtime(file))
+                    # Only archive if older than 1 hour
+                    if file_time < one_hour_ago:
+                        shutil.move(file, os.path.join(archive_dir, file))
+                        archived_count += 1
                 except Exception as e:
                     print(f"   ⚠️  Could not archive {file}: {e}")
+            
+            if archived_count > 0:
+                print(f"   📦 Archived {archived_count} fixture post(s) older than 1 hour")
         
         # Delete files older than 30 days from archive
         thirty_days_ago = datetime.now() - timedelta(days=30)
