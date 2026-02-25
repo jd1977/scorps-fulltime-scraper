@@ -858,9 +858,10 @@ class CompleteSocialMediaAgent:
                 draw.text((x_pos, current_y), f"@ {venue_loc}", fill="#AAAAAA", font=venue_font)
                 current_y += 18
             
-            # Line 5: Kick-off time (if available)
-            if fixture.get('kick_off_time'):
-                draw.text((x_pos, current_y), f"KO: {fixture['kick_off_time']}", fill="#FFD700", font=venue_font)
+            # Line 5: Kick-off time (use manually entered time, or fall back to FA website time)
+            kick_off_time = fixture.get('kick_off_time') or fixture.get('time')
+            if kick_off_time and kick_off_time.lower() != 'tbc':
+                draw.text((x_pos, current_y), f"KO: {kick_off_time}", fill="#FFD700", font=venue_font)
                 current_y += 18
             
             # Line 6: Pitch (if available)
