@@ -715,6 +715,44 @@ class CompleteSocialMediaAgent:
         except AttributeError:
             return draw.textsize(text, font=font)[0]
 
+    def _archive_old_fixtures(self):
+        """Archive old fixture posts and delete files older than 30 days"""
+        import os
+        import glob
+        import shutil
+        from datetime import datetime, timedelta
+        
+        # Create archive directory if it doesn't exist
+        archive_dir = 'fixtures_archive'
+        os.makedirs(archive_dir, exist_ok=True)
+        
+        # Move existing fixture posts to archive
+        fixture_files = glob.glob('fixtures_*.png')
+        if fixture_files:
+            print(f"   📦 Archiving {len(fixture_files)} old fixture post(s)...")
+            for file in fixture_files:
+                try:
+                    shutil.move(file, os.path.join(archive_dir, file))
+                except Exception as e:
+                    print(f"   ⚠️  Could not archive {file}: {e}")
+        
+        # Delete files older than 30 days from archive
+        thirty_days_ago = datetime.now() - timedelta(days=30)
+        archived_files = glob.glob(os.path.join(archive_dir, 'fixtures_*.png'))
+        deleted_count = 0
+        
+        for file in archived_files:
+            try:
+                file_time = datetime.fromtimestamp(os.path.getmtime(file))
+                if file_time < thirty_days_ago:
+                    os.remove(file)
+                    deleted_count += 1
+            except Exception as e:
+                print(f"   ⚠️  Could not delete old file {file}: {e}")
+        
+        if deleted_count > 0:
+            print(f"   🗑️  Deleted {deleted_count} file(s) older than 30 days from archive")
+
     def create_fixtures_post(self, team_data: dict, fixtures: list, template: str = None) -> str:
         """Create a fixtures post using the new template
         
@@ -724,6 +762,9 @@ class CompleteSocialMediaAgent:
             template: Optional template name ('boys' or 'girls') to use specific background
         """
         print(f"🎨 Creating fixtures post...")
+        
+        # Archive old fixture posts before creating new ones
+        self._archive_old_fixtures()
         
         # Try to load the background image
         import os

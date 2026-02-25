@@ -44,6 +44,7 @@ fixtures_*.png
 results_*.png
 table_*.png
 fixture_details.json
+fixtures_archive/
 
 # Sensitive data (if any)
 *.env
