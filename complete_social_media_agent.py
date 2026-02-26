@@ -1092,31 +1092,38 @@ class CompleteSocialMediaAgent:
         
         draw = ImageDraw.Draw(img)
         
-        # Title
-        title = "LEAGUE TABLE"
-        title_width = self._get_text_width(draw, title, self.title_font)
-        title_x = (self.width - title_width) // 2
-        draw.text((title_x, 60), title, fill=self.orange, font=self.title_font)
+        # Add black overlay box in bottom half (similar to fixtures)
+        overlay_top = int(self.height * 0.50)  # Start at 50% down
+        overlay_bottom = self.height - 50
         
-        # League name
-        league_name = "Doncaster & District Youth League"
-        league_width = self._get_text_width(draw, league_name, self.small_font)
-        league_x = (self.width - league_width) // 2
-        draw.text((league_x, 120), league_name, fill=self.white, font=self.small_font)
+        overlay = Image.new('RGBA', (self.width, self.height), (0, 0, 0, 0))
+        overlay_draw = ImageDraw.Draw(overlay)
+        overlay_draw.rectangle([(30, overlay_top), (self.width - 30, overlay_bottom)], 
+                              fill=(0, 0, 0, 200))
+        img.paste(overlay, (0, 0), overlay)
+        draw = ImageDraw.Draw(img)
         
-        # Table headers
-        y_pos = 180
+        # Table headers - positioned in the black box
+        y_pos = overlay_top + 30
+        
+        try:
+            header_font = ImageFont.truetype("seguisb.ttf", 18)  # Segoe UI Semibold
+            table_font = ImageFont.truetype("segoeui.ttf", 16)   # Segoe UI
+        except:
+            header_font = self.small_font
+            table_font = self.small_font
+        
         headers = ["Pos", "Team", "P", "W", "D", "L", "GF", "GA", "GD", "Pts"]
         x_positions = [50, 120, 450, 490, 530, 570, 610, 660, 710, 770]
         
         for i, header in enumerate(headers):
-            draw.text((x_positions[i], y_pos), header, fill=self.orange, font=self.small_font)
+            draw.text((x_positions[i], y_pos), header, fill=self.orange, font=header_font)
         
-        y_pos += 40
+        y_pos += 35
         
         # Table entries
         if table:
-            for i, entry in enumerate(table[:12]):
+            for i, entry in enumerate(table[:10]):  # Show max 10 teams to fit in box
                 pos = str(entry.get('position', i+1))
                 team = entry.get('team', 'Team')
                 played = str(entry.get('played', 0))
@@ -1132,6 +1139,7 @@ class CompleteSocialMediaAgent:
                 if 'scawthorpe' in team.lower() or 'scorpions' in team.lower():
                     color = self.orange
                     team = team.replace('Scawthorpe Scorpions J.F.C.', 'Scorpions')
+                    team = team.replace('Scawthorpe Scorpions', 'Scorps')
                 else:
                     color = self.white
                 
@@ -1142,17 +1150,26 @@ class CompleteSocialMediaAgent:
                 values = [pos, team, played, won, drawn, lost, gf, ga, gd, pts]
                 
                 for j, value in enumerate(values):
-                    draw.text((x_positions[j], y_pos), value, fill=color, font=self.small_font)
+                    draw.text((x_positions[j], y_pos), value, fill=color, font=table_font)
                 
-                y_pos += 35
+                y_pos += 32
         else:
-            draw.text((80, y_pos), "Table not available", fill=self.white, font=self.text_font)
+            draw.text((80, y_pos), "Table not available", fill=self.white, font=table_font)
         
         # Footer
-        footer = "🦂 SCAWTHORPE SCORPIONS J.F.C. 🦂"
-        footer_width = self._get_text_width(draw, footer, self.text_font)
+        footer = "COME ON SCORPS!"
+        try:
+            footer_font = ImageFont.truetype("arialbd.ttf", 36)
+        except:
+            footer_font = self.text_font
+        
+        footer_width = self._get_text_width(draw, footer, footer_font)
         footer_x = (self.width - footer_width) // 2
-        draw.text((footer_x, self.height - 60), footer, fill=self.orange, font=self.text_font)
+        
+        # Shadow
+        draw.text((footer_x + 2, self.height - 48), footer, fill="#000000", font=footer_font)
+        # Main text
+        draw.text((footer_x, self.height - 50), footer, fill="#FFFFFF", font=footer_font)
         
         team_name = self._clean_team_name(team_data['name'])
         filename = f"table_{team_name.replace(' ', '_').lower()}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
