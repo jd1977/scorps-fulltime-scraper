@@ -665,6 +665,12 @@ def show_all_this_weeks_results(agent, teams):
             print(f"   {home} {score_display} {away}")
             if result.get('competition'):
                 print(f"   🏆 Competition: {result.get('competition')}")
+        
+        # Create post option
+        create = input("\n📱 Create social media post? (y/n): ").strip().lower()
+        if create == 'y':
+            filename = agent.create_weekly_results_post(all_results, template='this_weeks_results')
+            print(f"✅ Created: {filename}")
     else:
         print(f"\n❌ No results found in the last 7 days")
 

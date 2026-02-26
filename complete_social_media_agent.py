@@ -1212,6 +1212,154 @@ class CompleteSocialMediaAgent:
         img.save(filename)
         return filename
 
+    def create_weekly_results_post(self, all_results: list, template: str = None) -> str:
+        """Create a post showing all results from the last 7 days in 2 columns
+        
+        Args:
+            all_results: List of result dictionaries from all teams
+            template: Optional template name to use specific background
+        """
+        print(f"🎨 Creating weekly results post...")
+        
+        # Try to load background template
+        import os
+        bg_path = None
+        if template:
+            template_path = os.path.join('assets', f'{template}_template.png')
+            if os.path.exists(template_path):
+                bg_path = template_path
+                print(f"   ✅ Using background: {template_path}")
+        
+        if bg_path:
+            # Load and resize background image
+            img = Image.open(bg_path)
+            try:
+                img = img.resize((self.width, self.height), Image.Resampling.LANCZOS)
+            except AttributeError:
+                img = img.resize((self.width, self.height), Image.LANCZOS)
+        else:
+            # Fallback: Create black background with orange accents
+            img = Image.new('RGB', (self.width, self.height), self.black)
+            draw_temp = ImageDraw.Draw(img)
+            self._add_paint_effects(draw_temp)
+        
+        draw = ImageDraw.Draw(img)
+        
+        # Calculate dynamic overlay size based on number of results (2 columns)
+        num_results = min(len(all_results) if all_results else 0, 20)  # Max 20 results
+        results_per_column = (num_results + 1) // 2  # Divide into 2 columns
+        result_height = 70  # Height per result
+        padding = 60  # Top and bottom padding
+        
+        results_box_height = padding + (results_per_column * result_height) + 40
+        
+        # Position overlay in bottom half
+        overlay_bottom = self.height - 50
+        overlay_top = overlay_bottom - results_box_height
+        
+        # Add black overlay box
+        overlay = Image.new('RGBA', (self.width, self.height), (0, 0, 0, 0))
+        overlay_draw = ImageDraw.Draw(overlay)
+        overlay_draw.rectangle([(30, overlay_top), (self.width - 30, overlay_bottom)], 
+                              fill=(0, 0, 0, 200))
+        img.paste(overlay, (0, 0), overlay)
+        draw = ImageDraw.Draw(img)
+        
+        # Fonts
+        try:
+            team_font = ImageFont.truetype("seguisb.ttf", 16)  # Segoe UI Semibold for team names
+            result_font = ImageFont.truetype("seguibl.ttf", 18)  # Segoe UI Bold for scores
+            date_font = ImageFont.truetype("seguisb.ttf", 14)  # Segoe UI Semibold for dates
+        except:
+            try:
+                team_font = ImageFont.truetype("arialbd.ttf", 16)
+                result_font = ImageFont.truetype("arialbd.ttf", 18)
+                date_font = ImageFont.truetype("arial.ttf", 14)
+            except:
+                team_font = self.small_font
+                result_font = self.text_font
+                date_font = self.small_font
+        
+        # Two columns
+        column_width = (self.width - 90) // 2  # Split available width
+        left_column_x = 50
+        right_column_x = left_column_x + column_width + 20
+        
+        y_pos_left = overlay_top + 30
+        y_pos_right = overlay_top + 30
+        
+        if all_results:
+            for i, result in enumerate(all_results[:20]):  # Max 20 results
+                # Determine which column
+                if i < results_per_column:
+                    x_pos = left_column_x
+                    y_pos = y_pos_left
+                else:
+                    x_pos = right_column_x
+                    y_pos = y_pos_right
+                
+                # Team name in orange
+                team_name = result.get('team', 'Team')
+                draw.text((x_pos, y_pos), team_name, fill=self.orange, font=team_font)
+                
+                # Result on next line
+                home = result.get('home_team', 'Team A')
+                away = result.get('away_team', 'Team B')
+                home_score = result.get('home_score', 0)
+                away_score = result.get('away_score', 0)
+                
+                # Shorten team names
+                home_display = home.replace('Scawthorpe Scorpions J.F.C.', 'Scorps').replace('J.F.C.', '').strip()
+                away_display = away.replace('Scawthorpe Scorpions J.F.C.', 'Scorps').replace('J.F.C.', '').strip()
+                
+                # Truncate if too long
+                max_team_len = 15
+                if len(home_display) > max_team_len:
+                    home_display = home_display[:max_team_len-2] + ".."
+                if len(away_display) > max_team_len:
+                    away_display = away_display[:max_team_len-2] + ".."
+                
+                # Check which team is Scorps
+                home_is_scorps = 'scawthorpe' in home.lower() or 'scorpions' in home.lower()
+                away_is_scorps = 'scawthorpe' in away.lower() or 'scorpions' in away.lower()
+                
+                # Result text
+                result_text = f"{home_display} {home_score}-{away_score} {away_display}"
+                
+                # Draw result in white
+                draw.text((x_pos, y_pos + 20), result_text, fill=self.white, font=result_font)
+                
+                # Date in small text
+                date_text = result.get('date', '')
+                draw.text((x_pos, y_pos + 45), date_text, fill=self.orange, font=date_font)
+                
+                # Update y position for next result in this column
+                if i < results_per_column:
+                    y_pos_left += result_height
+                else:
+                    y_pos_right += result_height
+        else:
+            draw.text((left_column_x, y_pos_left), "No results this week", fill=self.white, font=result_font)
+        
+        # Footer
+        footer = "COME ON SCORPS!"
+        try:
+            footer_font = ImageFont.truetype("arialbd.ttf", 36)
+        except:
+            footer_font = self.text_font
+        
+        footer_width = self._get_text_width(draw, footer, footer_font)
+        footer_x = (self.width - footer_width) // 2
+        
+        # Shadow
+        draw.text((footer_x + 2, self.height - 48), footer, fill="#000000", font=footer_font)
+        # Main text
+        draw.text((footer_x, self.height - 50), footer, fill="#FFFFFF", font=footer_font)
+        
+        filename = f"weekly_results_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
+        img.save(filename)
+        return filename
+
     def create_table_post(self, team_data: dict, table: list, template: str = None, results: list = None) -> str:
         """Create a league table post
         
