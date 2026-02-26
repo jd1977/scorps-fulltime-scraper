@@ -37,12 +37,14 @@ Thumbs.db
 *.bak
 *~
 
-# Generated content
+# Generated content (exclude generated posts but not templates)
 social_media_posts/
 posts/
-fixtures_*.png
-results_*.png
-table_*.png
+fixtures_boys_teams_*.png
+fixtures_girls_teams_*.png
+fixtures_scorpions_*.png
+results_scorpions_*.png
+table_scorpions_*.png
 fixture_details.json
 fixtures_archive/
 
