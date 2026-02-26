@@ -573,7 +573,7 @@ def show_tables_by_team(agent, teams):
                     # Create post option
                     create = input("\n📱 Create social media post? (y/n): ").strip().lower()
                     if create == 'y':
-                        filename = agent.create_table_post(selected_team, table_data)
+                        filename = agent.create_table_post(selected_team, table_data, template='league_table')
                         print(f"✅ Created: {filename}")
                 else:
                     print(f"\n❌ No table data found")
@@ -818,7 +818,7 @@ def show_results_by_team(agent, teams):
         create = input("\n📱 Create social media post? (y/n): ").strip().lower()
         if create == 'y':
             # Convert to format expected by create_results_post
-            filename = agent.create_results_post(selected_team, sorted_results[:10])
+            filename = agent.create_results_post(selected_team, sorted_results[:10], template='results')
             print(f"✅ Created: {filename}")
     else:
         print(f"\n❌ No results found for {selected_team['name']}")

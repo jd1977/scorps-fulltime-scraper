@@ -967,14 +967,39 @@ class CompleteSocialMediaAgent:
         img.save(filename)
         return filename
 
-    def create_results_post(self, team_data: dict, results: list) -> str:
-        """Create a results post"""
+    def create_results_post(self, team_data: dict, results: list, template: str = None) -> str:
+        """Create a results post
+        
+        Args:
+            team_data: Dictionary with team information
+            results: List of result dictionaries
+            template: Optional template name to use specific background
+        """
         print(f"🎨 Creating results post...")
         
-        img = Image.new('RGB', (self.width, self.height), self.black)
-        draw = ImageDraw.Draw(img)
+        # Try to load background template
+        import os
+        bg_path = None
+        if template:
+            template_path = os.path.join('assets', f'{template}_template.png')
+            if os.path.exists(template_path):
+                bg_path = template_path
+                print(f"   ✅ Using background: {template_path}")
         
-        self._add_paint_effects(draw)
+        if bg_path:
+            # Load and resize background image
+            img = Image.open(bg_path)
+            try:
+                img = img.resize((self.width, self.height), Image.Resampling.LANCZOS)
+            except AttributeError:
+                img = img.resize((self.width, self.height), Image.LANCZOS)
+        else:
+            # Fallback: Create black background with orange accents
+            img = Image.new('RGB', (self.width, self.height), self.black)
+            draw_temp = ImageDraw.Draw(img)
+            self._add_paint_effects(draw_temp)
+        
+        draw = ImageDraw.Draw(img)
         
         # Title
         title = "BOYS RESULTS"
@@ -1033,14 +1058,39 @@ class CompleteSocialMediaAgent:
         img.save(filename)
         return filename
 
-    def create_table_post(self, team_data: dict, table: list) -> str:
-        """Create a league table post"""
+    def create_table_post(self, team_data: dict, table: list, template: str = None) -> str:
+        """Create a league table post
+        
+        Args:
+            team_data: Dictionary with team information
+            table: List of table entries
+            template: Optional template name to use specific background
+        """
         print(f"🎨 Creating table post...")
         
-        img = Image.new('RGB', (self.width, self.height), self.black)
-        draw = ImageDraw.Draw(img)
+        # Try to load background template
+        import os
+        bg_path = None
+        if template:
+            template_path = os.path.join('assets', f'{template}_template.png')
+            if os.path.exists(template_path):
+                bg_path = template_path
+                print(f"   ✅ Using background: {template_path}")
         
-        self._add_paint_effects(draw)
+        if bg_path:
+            # Load and resize background image
+            img = Image.open(bg_path)
+            try:
+                img = img.resize((self.width, self.height), Image.Resampling.LANCZOS)
+            except AttributeError:
+                img = img.resize((self.width, self.height), Image.LANCZOS)
+        else:
+            # Fallback: Create black background with orange accents
+            img = Image.new('RGB', (self.width, self.height), self.black)
+            draw_temp = ImageDraw.Draw(img)
+            self._add_paint_effects(draw_temp)
+        
+        draw = ImageDraw.Draw(img)
         
         # Title
         title = "LEAGUE TABLE"
