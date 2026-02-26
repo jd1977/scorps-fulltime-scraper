@@ -977,6 +977,13 @@ class CompleteSocialMediaAgent:
         """
         print(f"🎨 Creating results post...")
         
+        # Sort results by date (most recent first)
+        from datetime import datetime
+        try:
+            sorted_results = sorted(results, key=lambda x: datetime.strptime(x.get('date', '01/01/00'), '%d/%m/%y'), reverse=True)
+        except:
+            sorted_results = results  # Fallback if date parsing fails
+        
         # Try to load background template
         import os
         bg_path = None
@@ -1001,12 +1008,13 @@ class CompleteSocialMediaAgent:
         
         draw = ImageDraw.Draw(img)
         
-        # Calculate dynamic overlay size based on number of results
-        num_results = min(len(results) if results else 0, 6)  # Max 6 results
+        # Calculate dynamic overlay size (max 4 results + form guide)
+        num_results = min(len(sorted_results) if sorted_results else 0, 4)  # Max 4 results
         result_height = 80  # Height per result
+        form_guide_height = 50  # Height for form guide
         padding = 60  # Top and bottom padding
         
-        results_box_height = padding + (num_results * result_height)
+        results_box_height = padding + form_guide_height + (num_results * result_height)
         
         # Position overlay in bottom half - dynamic size
         overlay_bottom = self.height - 50
@@ -1020,24 +1028,73 @@ class CompleteSocialMediaAgent:
         img.paste(overlay, (0, 0), overlay)
         draw = ImageDraw.Draw(img)
         
-        # Fonts - bold for results
+        # Fonts - bold for results and form guide
         try:
             date_font = ImageFont.truetype("seguisb.ttf", 18)  # Segoe UI Semibold
             result_font = ImageFont.truetype("seguibl.ttf", 22)  # Segoe UI Bold
+            form_font = ImageFont.truetype("seguibl.ttf", 28)  # Segoe UI Bold for form guide
         except:
             try:
                 date_font = ImageFont.truetype("arialbd.ttf", 18)
                 result_font = ImageFont.truetype("arialbd.ttf", 22)
+                form_font = ImageFont.truetype("arialbd.ttf", 28)
             except:
                 date_font = self.text_font
                 result_font = self.text_font
+                form_font = self.text_font
         
-        # Results - positioned in the black box
-        y_pos = overlay_top + 30
+        # Form Guide - show last 6 results (W/D/L) at top center
+        y_pos = overlay_top + 20
         
-        if results:
-            for i, result in enumerate(results[:6]):
+        if sorted_results:
+            form_guide = []
+            for result in sorted_results[:6]:  # Last 6 results
+                home = result.get('home_team', '')
+                home_score = result.get('home_score', 0)
+                away_score = result.get('away_score', 0)
+                
+                # Check if Scorps is home or away
+                scorps_is_home = 'scawthorpe' in home.lower() or 'scorpions' in home.lower()
+                
+                if scorps_is_home:
+                    our_score, their_score = home_score, away_score
+                else:
+                    our_score, their_score = away_score, home_score
+                
+                if our_score > their_score:
+                    form_guide.append(('W', (0, 255, 0)))  # Win - Green
+                elif our_score < their_score:
+                    form_guide.append(('L', (255, 0, 0)))  # Loss - Red
+                else:
+                    form_guide.append(('D', (0, 100, 255)))  # Draw - Blue
+            
+            # Draw form guide centered
+            form_text = " ".join([f[0] for f in form_guide])
+            try:
+                bbox = draw.textbbox((0, 0), form_text, font=form_font)
+                form_width = bbox[2] - bbox[0]
+            except AttributeError:
+                form_width = draw.textsize(form_text, font=form_font)[0]
+            
+            # Draw each letter with its color
+            x_start = (self.width - form_width) // 2
+            x_current = x_start
+            for letter, color in form_guide:
+                draw.text((x_current, y_pos), letter, fill=color, font=form_font)
+                try:
+                    bbox = draw.textbbox((0, 0), letter + " ", font=form_font)
+                    letter_width = bbox[2] - bbox[0]
+                except AttributeError:
+                    letter_width = draw.textsize(letter + " ", font=form_font)[0]
+                x_current += letter_width
+        
+        y_pos += 60  # Space after form guide
+        
+        # Results - positioned below form guide (max 4 most recent)
+        if sorted_results:
+            for i, result in enumerate(sorted_results[:4]):  # Max 4 results
                 date = result.get('date', 'Recent')
+                # Date in orange
                 draw.text((80, y_pos), date, fill=self.orange, font=date_font)
                 
                 home = result.get('home_team', 'Team A')
@@ -1045,27 +1102,51 @@ class CompleteSocialMediaAgent:
                 home_score = result.get('home_score', 0)
                 away_score = result.get('away_score', 0)
                 
+                # Check which team is Scorps
+                home_is_scorps = 'scawthorpe' in home.lower() or 'scorpions' in home.lower()
+                away_is_scorps = 'scawthorpe' in away.lower() or 'scorpions' in away.lower()
+                
                 # Shorten team names
-                home = home.replace('Scawthorpe Scorpions J.F.C.', 'Scorps').replace('J.F.C.', '').strip()
-                away = away.replace('Scawthorpe Scorpions J.F.C.', 'Scorps').replace('J.F.C.', '').strip()
+                home_display = home.replace('Scawthorpe Scorpions J.F.C.', 'Scorps').replace('J.F.C.', '').strip()
+                away_display = away.replace('Scawthorpe Scorpions J.F.C.', 'Scorps').replace('J.F.C.', '').strip()
                 
-                match_text = f"{home} {home_score} - {away_score} {away}"
+                # Draw result with Scorps team name in orange, rest in white
+                x_pos = 80
+                y_result = y_pos + 28
                 
-                # Determine result color
-                our_team = 'scawthorpe' in result.get('home_team', '').lower() or 'scorpions' in result.get('home_team', '').lower()
-                if our_team:
-                    our_score, their_score = home_score, away_score
+                # Home team
+                if home_is_scorps:
+                    draw.text((x_pos, y_result), home_display, fill=self.orange, font=result_font)
                 else:
-                    our_score, their_score = away_score, home_score
+                    draw.text((x_pos, y_result), home_display, fill=self.white, font=result_font)
                 
-                if our_score > their_score:
-                    color = (0, 255, 0)  # Green for win
-                elif our_score < their_score:
-                    color = (255, 100, 100)  # Red for loss
+                # Get width of home team text
+                try:
+                    bbox = draw.textbbox((0, 0), home_display, font=result_font)
+                    home_width = bbox[2] - bbox[0]
+                except AttributeError:
+                    home_width = draw.textsize(home_display, font=result_font)[0]
+                
+                x_pos += home_width + 10
+                
+                # Score in white
+                score_text = f"{home_score} - {away_score}"
+                draw.text((x_pos, y_result), score_text, fill=self.white, font=result_font)
+                
+                try:
+                    bbox = draw.textbbox((0, 0), score_text, font=result_font)
+                    score_width = bbox[2] - bbox[0]
+                except AttributeError:
+                    score_width = draw.textsize(score_text, font=result_font)[0]
+                
+                x_pos += score_width + 10
+                
+                # Away team
+                if away_is_scorps:
+                    draw.text((x_pos, y_result), away_display, fill=self.orange, font=result_font)
                 else:
-                    color = (255, 255, 0)  # Yellow for draw
+                    draw.text((x_pos, y_result), away_display, fill=self.white, font=result_font)
                 
-                draw.text((80, y_pos + 28), match_text, fill=color, font=result_font)
                 y_pos += 80
         else:
             draw.text((80, y_pos), "No recent results", fill=self.white, font=result_font)
