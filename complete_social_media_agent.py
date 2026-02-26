@@ -1068,17 +1068,29 @@ class CompleteSocialMediaAgent:
                 else:
                     form_guide.append(('D', (0, 100, 255)))  # Draw - Blue
             
-            # Draw form guide centered
-            form_text = " ".join([f[0] for f in form_guide])
+            # Calculate total width including "Form: " label
+            form_label = "Form: "
+            form_letters = " ".join([f[0] for f in form_guide])
+            
             try:
-                bbox = draw.textbbox((0, 0), form_text, font=form_font)
-                form_width = bbox[2] - bbox[0]
+                bbox_label = draw.textbbox((0, 0), form_label, font=form_font)
+                label_width = bbox_label[2] - bbox_label[0]
+                bbox_letters = draw.textbbox((0, 0), form_letters, font=form_font)
+                letters_width = bbox_letters[2] - bbox_letters[0]
             except AttributeError:
-                form_width = draw.textsize(form_text, font=form_font)[0]
+                label_width = draw.textsize(form_label, font=form_font)[0]
+                letters_width = draw.textsize(form_letters, font=form_font)[0]
+            
+            total_width = label_width + letters_width
+            
+            # Draw "Form: " label in white, then colored letters
+            x_start = (self.width - total_width) // 2
+            
+            # Draw "Form: " in white
+            draw.text((x_start, y_pos), form_label, fill=self.white, font=form_font)
             
             # Draw each letter with its color
-            x_start = (self.width - form_width) // 2
-            x_current = x_start
+            x_current = x_start + label_width
             for letter, color in form_guide:
                 draw.text((x_current, y_pos), letter, fill=color, font=form_font)
                 try:
