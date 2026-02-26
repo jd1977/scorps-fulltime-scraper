@@ -1265,25 +1265,25 @@ class CompleteSocialMediaAgent:
         img.paste(overlay, (0, 0), overlay)
         draw = ImageDraw.Draw(img)
         
-        # Fonts
+        # Fonts - larger team name font
         try:
-            team_font = ImageFont.truetype("seguisb.ttf", 16)  # Segoe UI Semibold for team names
-            result_font = ImageFont.truetype("seguibl.ttf", 18)  # Segoe UI Bold for scores
+            team_font = ImageFont.truetype("seguibl.ttf", 20)  # Segoe UI Bold for team names (increased size)
+            result_font = ImageFont.truetype("seguisb.ttf", 16)  # Segoe UI Semibold for scores
             date_font = ImageFont.truetype("seguisb.ttf", 14)  # Segoe UI Semibold for dates
         except:
             try:
-                team_font = ImageFont.truetype("arialbd.ttf", 16)
-                result_font = ImageFont.truetype("arialbd.ttf", 18)
+                team_font = ImageFont.truetype("arialbd.ttf", 20)
+                result_font = ImageFont.truetype("arialbd.ttf", 16)
                 date_font = ImageFont.truetype("arial.ttf", 14)
             except:
-                team_font = self.small_font
-                result_font = self.text_font
+                team_font = self.text_font
+                result_font = self.small_font
                 date_font = self.small_font
         
-        # Two columns
-        column_width = (self.width - 90) // 2  # Split available width
-        left_column_x = 50
-        right_column_x = left_column_x + column_width + 20
+        # Two columns - wider to fit full team names
+        column_width = (self.width - 80) // 2  # Wider columns
+        left_column_x = 40
+        right_column_x = left_column_x + column_width + 10  # Less gap between columns
         
         y_pos_left = overlay_top + 30
         y_pos_right = overlay_top + 30
@@ -1298,7 +1298,7 @@ class CompleteSocialMediaAgent:
                     x_pos = right_column_x
                     y_pos = y_pos_right
                 
-                # Team name in orange
+                # Team name in orange (larger, bold)
                 team_name = result.get('team', 'Team')
                 draw.text((x_pos, y_pos), team_name, fill=self.orange, font=team_font)
                 
@@ -1308,30 +1308,54 @@ class CompleteSocialMediaAgent:
                 home_score = result.get('home_score', 0)
                 away_score = result.get('away_score', 0)
                 
-                # Shorten team names
+                # Shorten team names but keep full names
                 home_display = home.replace('Scawthorpe Scorpions J.F.C.', 'Scorps').replace('J.F.C.', '').strip()
                 away_display = away.replace('Scawthorpe Scorpions J.F.C.', 'Scorps').replace('J.F.C.', '').strip()
                 
-                # Truncate if too long
-                max_team_len = 15
-                if len(home_display) > max_team_len:
-                    home_display = home_display[:max_team_len-2] + ".."
-                if len(away_display) > max_team_len:
-                    away_display = away_display[:max_team_len-2] + ".."
-                
+                # Don't truncate - let full names show
                 # Check which team is Scorps
                 home_is_scorps = 'scawthorpe' in home.lower() or 'scorpions' in home.lower()
                 away_is_scorps = 'scawthorpe' in away.lower() or 'scorpions' in away.lower()
                 
-                # Result text
-                result_text = f"{home_display} {home_score}-{away_score} {away_display}"
+                # Draw result with Scorps team names in orange
+                x_current = x_pos
+                y_result = y_pos + 25
                 
-                # Draw result in white
-                draw.text((x_pos, y_pos + 20), result_text, fill=self.white, font=result_font)
+                # Home team
+                if home_is_scorps:
+                    draw.text((x_current, y_result), home_display, fill=self.orange, font=result_font)
+                else:
+                    draw.text((x_current, y_result), home_display, fill=self.white, font=result_font)
+                
+                try:
+                    bbox = draw.textbbox((0, 0), home_display, font=result_font)
+                    home_width = bbox[2] - bbox[0]
+                except AttributeError:
+                    home_width = draw.textsize(home_display, font=result_font)[0]
+                
+                x_current += home_width + 5
+                
+                # Score in white
+                score_text = f"{home_score}-{away_score}"
+                draw.text((x_current, y_result), score_text, fill=self.white, font=result_font)
+                
+                try:
+                    bbox = draw.textbbox((0, 0), score_text, font=result_font)
+                    score_width = bbox[2] - bbox[0]
+                except AttributeError:
+                    score_width = draw.textsize(score_text, font=result_font)[0]
+                
+                x_current += score_width + 5
+                
+                # Away team
+                if away_is_scorps:
+                    draw.text((x_current, y_result), away_display, fill=self.orange, font=result_font)
+                else:
+                    draw.text((x_current, y_result), away_display, fill=self.white, font=result_font)
                 
                 # Date in small text
                 date_text = result.get('date', '')
-                draw.text((x_pos, y_pos + 45), date_text, fill=self.orange, font=date_font)
+                draw.text((x_pos, y_pos + 50), date_text, fill=self.orange, font=date_font)
                 
                 # Update y position for next result in this column
                 if i < results_per_column:
