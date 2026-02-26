@@ -1092,10 +1092,19 @@ class CompleteSocialMediaAgent:
         
         draw = ImageDraw.Draw(img)
         
-        # Add black overlay box in bottom half (similar to fixtures)
-        overlay_top = int(self.height * 0.50)  # Start at 50% down
-        overlay_bottom = self.height - 50
+        # Calculate dynamic overlay size based on number of teams
+        num_teams = min(len(table) if table else 0, 10)  # Max 10 teams
+        row_height = 32
+        header_height = 35
+        padding = 60  # Top and bottom padding
         
+        table_height = padding + header_height + (num_teams * row_height)
+        
+        # Position overlay lower and make it dynamic
+        overlay_bottom = self.height - 50
+        overlay_top = overlay_bottom - table_height
+        
+        # Add black overlay box
         overlay = Image.new('RGBA', (self.width, self.height), (0, 0, 0, 0))
         overlay_draw = ImageDraw.Draw(overlay)
         overlay_draw.rectangle([(30, overlay_top), (self.width - 30, overlay_bottom)], 
@@ -1103,23 +1112,43 @@ class CompleteSocialMediaAgent:
         img.paste(overlay, (0, 0), overlay)
         draw = ImageDraw.Draw(img)
         
-        # Table headers - positioned in the black box
+        # Table headers - positioned in the black box, centered
         y_pos = overlay_top + 30
         
         try:
-            header_font = ImageFont.truetype("seguisb.ttf", 18)  # Segoe UI Semibold
-            table_font = ImageFont.truetype("segoeui.ttf", 16)   # Segoe UI
+            header_font = ImageFont.truetype("seguibl.ttf", 20)  # Segoe UI Bold (increased size)
+            table_font = ImageFont.truetype("seguisb.ttf", 18)   # Segoe UI Semibold (bold)
         except:
-            header_font = self.small_font
-            table_font = self.small_font
+            try:
+                header_font = ImageFont.truetype("arialbd.ttf", 20)
+                table_font = ImageFont.truetype("arialbd.ttf", 18)
+            except:
+                header_font = self.small_font
+                table_font = self.small_font
+        
+        # Center the table by calculating starting position
+        table_width = 750  # Approximate width of the table
+        table_start_x = (self.width - table_width) // 2
         
         headers = ["Pos", "Team", "P", "W", "D", "L", "GF", "GA", "GD", "Pts"]
-        x_positions = [50, 120, 450, 490, 530, 570, 610, 660, 710, 770]
+        # Adjusted x_positions to be centered
+        x_positions = [
+            table_start_x,           # Pos
+            table_start_x + 70,      # Team
+            table_start_x + 400,     # P
+            table_start_x + 440,     # W
+            table_start_x + 480,     # D
+            table_start_x + 520,     # L
+            table_start_x + 560,     # GF
+            table_start_x + 610,     # GA
+            table_start_x + 660,     # GD
+            table_start_x + 710      # Pts
+        ]
         
         for i, header in enumerate(headers):
             draw.text((x_positions[i], y_pos), header, fill=self.orange, font=header_font)
         
-        y_pos += 35
+        y_pos += 40  # More space after headers
         
         # Table entries
         if table:
@@ -1133,7 +1162,8 @@ class CompleteSocialMediaAgent:
                 gf = str(entry.get('goals_for', 0))
                 ga = str(entry.get('goals_against', 0))
                 gd = str(entry.get('goal_difference', 0))
-                pts = str(entry.get('points', 0))
+                # Try multiple field names for points
+                pts = str(entry.get('points', entry.get('pts', 0)))
                 
                 # Highlight our team
                 if 'scawthorpe' in team.lower() or 'scorpions' in team.lower():
