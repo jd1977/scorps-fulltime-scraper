@@ -1008,26 +1008,6 @@ class CompleteSocialMediaAgent:
         
         draw = ImageDraw.Draw(img)
         
-        # Calculate dynamic overlay size (max 4 results + form guide)
-        num_results = min(len(sorted_results) if sorted_results else 0, 4)  # Max 4 results
-        result_height = 80  # Height per result
-        form_guide_height = 50  # Height for form guide
-        padding = 60  # Top and bottom padding
-        
-        results_box_height = padding + form_guide_height + (num_results * result_height)
-        
-        # Position overlay in bottom half - dynamic size
-        overlay_bottom = self.height - 50
-        overlay_top = overlay_bottom - results_box_height
-        
-        # Add black overlay box
-        overlay = Image.new('RGBA', (self.width, self.height), (0, 0, 0, 0))
-        overlay_draw = ImageDraw.Draw(overlay)
-        overlay_draw.rectangle([(30, overlay_top), (self.width - 30, overlay_bottom)], 
-                              fill=(0, 0, 0, 200))
-        img.paste(overlay, (0, 0), overlay)
-        draw = ImageDraw.Draw(img)
-        
         # Fonts - bold for results and form guide
         try:
             date_font = ImageFont.truetype("seguisb.ttf", 18)  # Segoe UI Semibold
@@ -1043,10 +1023,22 @@ class CompleteSocialMediaAgent:
                 result_font = self.text_font
                 form_font = self.text_font
         
-        # Form Guide - show last 6 results (W/D/L) at top center
-        y_pos = overlay_top + 20
+        # Calculate dynamic results overlay size (max 4 results)
+        num_results = min(len(sorted_results) if sorted_results else 0, 4)  # Max 4 results
+        result_height = 80  # Height per result
+        padding = 60  # Top and bottom padding
+        
+        results_box_height = padding + (num_results * result_height)
+        
+        # Position results overlay at bottom
+        results_overlay_bottom = self.height - 50
+        results_overlay_top = results_overlay_bottom - results_box_height
+        
+        # Form Guide Box - separate box above results (if results available)
+        form_box_gap = 20  # Gap between form box and results box
         
         if sorted_results:
+            # Calculate form guide data first
             form_guide = []
             for result in sorted_results[:6]:  # Last 6 results
                 home = result.get('home_team', '')
@@ -1068,41 +1060,77 @@ class CompleteSocialMediaAgent:
                 else:
                     form_guide.append(('D', (0, 100, 255)))  # Draw - Blue
             
-            # Calculate total width including "Form: " label
-            form_label = "Form: "
-            form_letters = " ".join([f[0] for f in form_guide])
-            
-            try:
-                bbox_label = draw.textbbox((0, 0), form_label, font=form_font)
-                label_width = bbox_label[2] - bbox_label[0]
-                bbox_letters = draw.textbbox((0, 0), form_letters, font=form_font)
-                letters_width = bbox_letters[2] - bbox_letters[0]
-            except AttributeError:
-                label_width = draw.textsize(form_label, font=form_font)[0]
-                letters_width = draw.textsize(form_letters, font=form_font)[0]
-            
-            total_width = label_width + letters_width
-            
-            # Draw "Form: " label in white, then colored letters
-            x_start = (self.width - total_width) // 2
-            
-            # Draw "Form: " in white
-            draw.text((x_start, y_pos), form_label, fill=self.white, font=form_font)
-            
-            # Draw each letter with its color
-            x_current = x_start + label_width
-            for letter, color in form_guide:
-                draw.text((x_current, y_pos), letter, fill=color, font=form_font)
+            if form_guide:
+                # Calculate total width including "Form: " label first
+                form_label = "Form: "
+                form_letters = " ".join([f[0] for f in form_guide])
+                
+                # Create temporary draw to measure text
+                temp_img = Image.new('RGB', (1, 1))
+                temp_draw = ImageDraw.Draw(temp_img)
+                
                 try:
-                    bbox = draw.textbbox((0, 0), letter + " ", font=form_font)
-                    letter_width = bbox[2] - bbox[0]
+                    bbox_label = temp_draw.textbbox((0, 0), form_label, font=form_font)
+                    label_width = bbox_label[2] - bbox_label[0]
+                    bbox_letters = temp_draw.textbbox((0, 0), form_letters, font=form_font)
+                    letters_width = bbox_letters[2] - bbox_letters[0]
                 except AttributeError:
-                    letter_width = draw.textsize(letter + " ", font=form_font)[0]
-                x_current += letter_width
+                    label_width = temp_draw.textsize(form_label, font=form_font)[0]
+                    letters_width = temp_draw.textsize(form_letters, font=form_font)[0]
+                
+                total_text_width = label_width + letters_width
+                box_padding = 40  # Padding on each side
+                form_box_width = total_text_width + (box_padding * 2)
+                
+                # Calculate form box size and position
+                form_box_height = 80  # Compact height for form guide
+                form_box_bottom = results_overlay_top - form_box_gap
+                form_box_top = form_box_bottom - form_box_height
+                
+                # Center the box horizontally
+                form_box_left = (self.width - form_box_width) // 2
+                form_box_right = form_box_left + form_box_width
+                
+                # Add form guide black overlay box (narrower, centered)
+                form_overlay = Image.new('RGBA', (self.width, self.height), (0, 0, 0, 0))
+                form_overlay_draw = ImageDraw.Draw(form_overlay)
+                form_overlay_draw.rectangle([(form_box_left, form_box_top), (form_box_right, form_box_bottom)], 
+                                          fill=(0, 0, 0, 200))
+                img.paste(form_overlay, (0, 0), form_overlay)
+                draw = ImageDraw.Draw(img)
+                
+                # Draw form guide centered in its box
+                y_pos = form_box_top + 25
+                
+                # Draw "Form: " label in white, then colored letters
+                x_start = (self.width - total_text_width) // 2
+                
+                # Draw "Form: " in white
+                draw.text((x_start, y_pos), form_label, fill=self.white, font=form_font)
+                
+                # Draw each letter with its color
+                x_current = x_start + label_width
+                for letter, color in form_guide:
+                    draw.text((x_current, y_pos), letter, fill=color, font=form_font)
+                    try:
+                        bbox = draw.textbbox((0, 0), letter + " ", font=form_font)
+                        letter_width = bbox[2] - bbox[0]
+                    except AttributeError:
+                        letter_width = draw.textsize(letter + " ", font=form_font)[0]
+                    x_current += letter_width
         
-        y_pos += 60  # Space after form guide
+        # Add results black overlay box
+        overlay = Image.new('RGBA', (self.width, self.height), (0, 0, 0, 0))
+        overlay_draw = ImageDraw.Draw(overlay)
+        overlay_draw.rectangle([(30, results_overlay_top), (self.width - 30, results_overlay_bottom)], 
+                              fill=(0, 0, 0, 200))
+        img.paste(overlay, (0, 0), overlay)
+        draw = ImageDraw.Draw(img)
         
-        # Results - positioned below form guide (max 4 most recent)
+        # Results - positioned in the results box (max 4 most recent)
+        y_pos = results_overlay_top + 30
+        
+        # Results - positioned in the results box (max 4 most recent)
         if sorted_results:
             for i, result in enumerate(sorted_results[:4]):  # Max 4 results
                 date = result.get('date', 'Recent')
@@ -1273,15 +1301,40 @@ class CompleteSocialMediaAgent:
                     form_guide.append(('D', (0, 100, 255)))  # Draw - Blue
             
             if form_guide:
-                # Calculate form box size
+                # Calculate total width including "Form: " label first
+                form_label = "Form: "
+                form_letters = " ".join([f[0] for f in form_guide])
+                
+                # Create temporary draw to measure text
+                temp_img = Image.new('RGB', (1, 1))
+                temp_draw = ImageDraw.Draw(temp_img)
+                
+                try:
+                    bbox_label = temp_draw.textbbox((0, 0), form_label, font=form_font)
+                    label_width = bbox_label[2] - bbox_label[0]
+                    bbox_letters = temp_draw.textbbox((0, 0), form_letters, font=form_font)
+                    letters_width = bbox_letters[2] - bbox_letters[0]
+                except AttributeError:
+                    label_width = temp_draw.textsize(form_label, font=form_font)[0]
+                    letters_width = temp_draw.textsize(form_letters, font=form_font)[0]
+                
+                total_text_width = label_width + letters_width
+                box_padding = 40  # Padding on each side
+                form_box_width = total_text_width + (box_padding * 2)
+                
+                # Calculate form box size and position
                 form_box_height = 80  # Compact height for form guide
                 form_box_bottom = table_overlay_top - form_box_gap
                 form_box_top = form_box_bottom - form_box_height
                 
-                # Add form guide black overlay box
+                # Center the box horizontally
+                form_box_left = (self.width - form_box_width) // 2
+                form_box_right = form_box_left + form_box_width
+                
+                # Add form guide black overlay box (narrower, centered)
                 form_overlay = Image.new('RGBA', (self.width, self.height), (0, 0, 0, 0))
                 form_overlay_draw = ImageDraw.Draw(form_overlay)
-                form_overlay_draw.rectangle([(30, form_box_top), (self.width - 30, form_box_bottom)], 
+                form_overlay_draw.rectangle([(form_box_left, form_box_top), (form_box_right, form_box_bottom)], 
                                           fill=(0, 0, 0, 200))
                 img.paste(form_overlay, (0, 0), form_overlay)
                 draw = ImageDraw.Draw(img)
@@ -1289,25 +1342,10 @@ class CompleteSocialMediaAgent:
                 # Draw form guide centered in its box
                 y_pos = form_box_top + 25
                 
-                # Calculate total width including "Form: " label
-                form_label = "Form: "
-                form_letters = " ".join([f[0] for f in form_guide])
-                
-                try:
-                    bbox_label = draw.textbbox((0, 0), form_label, font=form_font)
-                    label_width = bbox_label[2] - bbox_label[0]
-                    bbox_letters = draw.textbbox((0, 0), form_letters, font=form_font)
-                    letters_width = bbox_letters[2] - bbox_letters[0]
-                except AttributeError:
-                    label_width = draw.textsize(form_label, font=form_font)[0]
-                    letters_width = draw.textsize(form_letters, font=form_font)[0]
-                
-                total_width = label_width + letters_width
-                
                 # Draw "Form: " label in white, then colored letters
-                x_start = (self.width - total_width) // 2
+                x_start = (self.width - total_text_width) // 2
                 
-                # Draw "Form: " in white
+                # Draw "Form: " in white (using form_label already defined above)
                 draw.text((x_start, y_pos), form_label, fill=self.white, font=form_font)
                 
                 # Draw each letter with its color
