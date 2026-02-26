@@ -416,7 +416,19 @@ def show_tables_by_team(agent, teams):
     print("\n📊 SHOW TABLES BY TEAM")
     print("=" * 60)
     
-    sorted_teams = display_teams_compact(teams)
+    # Filter out U10 and below teams (no tables available for these age groups)
+    filtered_teams = []
+    for team in teams:
+        age_group = get_age_group_sort_key(team['name'])
+        if age_group > 10:  # Only include U11 and above
+            filtered_teams.append(team)
+    
+    if not filtered_teams:
+        print("\n❌ No teams with available league tables found.")
+        input("\nPress Enter to return to main menu...")
+        return
+    
+    sorted_teams = display_teams_compact(filtered_teams)
     selected_team = get_team_choice(sorted_teams)
     
     if selected_team is None:
@@ -428,20 +440,6 @@ def show_tables_by_team(agent, teams):
     
     if not league_id or not division_id:
         print(f"\n❌ Missing league or division ID for {team_name}")
-        return
-    
-    # Check if team is U10 or below (no tables available)
-    age_group = get_age_group_sort_key(team_name)
-    if age_group <= 10:
-        print(f"\n📊 LEAGUE TABLES - U10 AND BELOW")
-        print("=" * 60)
-        print(f"\n⚽ League tables are not published for U10 and below age groups.")
-        print("\nThis is FA policy to focus on player development rather than")
-        print("competition results at younger ages.")
-        print("\n💡 You can still view:")
-        print("   • Option 1: Upcoming fixtures for this team")
-        print("   • Option 4: Recent results for this team")
-        input("\nPress Enter to return to main menu...")
         return
     
     print(f"\n🔍 Getting league table for: {team_name}")
