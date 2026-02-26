@@ -1001,35 +1001,58 @@ class CompleteSocialMediaAgent:
         
         draw = ImageDraw.Draw(img)
         
-        # Title
-        title = "BOYS RESULTS"
-        title_width = self._get_text_width(draw, title, self.title_font)
-        title_x = (self.width - title_width) // 2
-        draw.text((title_x, 80), title, fill=self.orange, font=self.title_font)
+        # Calculate dynamic overlay size based on number of results
+        num_results = min(len(results) if results else 0, 6)  # Max 6 results
+        result_height = 80  # Height per result
+        padding = 60  # Top and bottom padding
         
-        # Team name
-        team_name = self._clean_team_name(team_data['name'])
-        team_width = self._get_text_width(draw, team_name, self.subtitle_font)
-        team_x = (self.width - team_width) // 2
-        draw.text((team_x, 150), team_name, fill=self.white, font=self.subtitle_font)
+        results_box_height = padding + (num_results * result_height)
         
-        # Results
-        y_pos = 220
+        # Position overlay in bottom half - dynamic size
+        overlay_bottom = self.height - 50
+        overlay_top = overlay_bottom - results_box_height
+        
+        # Add black overlay box
+        overlay = Image.new('RGBA', (self.width, self.height), (0, 0, 0, 0))
+        overlay_draw = ImageDraw.Draw(overlay)
+        overlay_draw.rectangle([(30, overlay_top), (self.width - 30, overlay_bottom)], 
+                              fill=(0, 0, 0, 200))
+        img.paste(overlay, (0, 0), overlay)
+        draw = ImageDraw.Draw(img)
+        
+        # Fonts - bold for results
+        try:
+            date_font = ImageFont.truetype("seguisb.ttf", 18)  # Segoe UI Semibold
+            result_font = ImageFont.truetype("seguibl.ttf", 22)  # Segoe UI Bold
+        except:
+            try:
+                date_font = ImageFont.truetype("arialbd.ttf", 18)
+                result_font = ImageFont.truetype("arialbd.ttf", 22)
+            except:
+                date_font = self.text_font
+                result_font = self.text_font
+        
+        # Results - positioned in the black box
+        y_pos = overlay_top + 30
         
         if results:
             for i, result in enumerate(results[:6]):
                 date = result.get('date', 'Recent')
-                draw.text((80, y_pos), date, fill=self.orange, font=self.text_font)
+                draw.text((80, y_pos), date, fill=self.orange, font=date_font)
                 
                 home = result.get('home_team', 'Team A')
                 away = result.get('away_team', 'Team B')
                 home_score = result.get('home_score', 0)
                 away_score = result.get('away_score', 0)
                 
+                # Shorten team names
+                home = home.replace('Scawthorpe Scorpions J.F.C.', 'Scorps').replace('J.F.C.', '').strip()
+                away = away.replace('Scawthorpe Scorpions J.F.C.', 'Scorps').replace('J.F.C.', '').strip()
+                
                 match_text = f"{home} {home_score} - {away_score} {away}"
                 
                 # Determine result color
-                our_team = 'scawthorpe' in home.lower() or 'scorpions' in home.lower()
+                our_team = 'scawthorpe' in result.get('home_team', '').lower() or 'scorpions' in result.get('home_team', '').lower()
                 if our_team:
                     our_score, their_score = home_score, away_score
                 else:
@@ -1042,18 +1065,28 @@ class CompleteSocialMediaAgent:
                 else:
                     color = (255, 255, 0)  # Yellow for draw
                 
-                draw.text((80, y_pos + 35), match_text, fill=color, font=self.text_font)
-                y_pos += 100
+                draw.text((80, y_pos + 28), match_text, fill=color, font=result_font)
+                y_pos += 80
         else:
-            draw.text((80, y_pos), "No recent results", fill=self.white, font=self.text_font)
-            draw.text((80, y_pos + 50), "Season starting soon!", fill=self.orange, font=self.text_font)
+            draw.text((80, y_pos), "No recent results", fill=self.white, font=result_font)
+            draw.text((80, y_pos + 40), "Season starting soon!", fill=self.orange, font=date_font)
         
         # Footer
-        footer = "🦂 SCAWTHORPE SCORPIONS J.F.C. 🦂"
-        footer_width = self._get_text_width(draw, footer, self.text_font)
-        footer_x = (self.width - footer_width) // 2
-        draw.text((footer_x, self.height - 80), footer, fill=self.orange, font=self.text_font)
+        footer = "COME ON SCORPS!"
+        try:
+            footer_font = ImageFont.truetype("arialbd.ttf", 36)
+        except:
+            footer_font = self.text_font
         
+        footer_width = self._get_text_width(draw, footer, footer_font)
+        footer_x = (self.width - footer_width) // 2
+        
+        # Shadow
+        draw.text((footer_x + 2, self.height - 48), footer, fill="#000000", font=footer_font)
+        # Main text
+        draw.text((footer_x, self.height - 50), footer, fill="#FFFFFF", font=footer_font)
+        
+        team_name = self._clean_team_name(team_data['name'])
         filename = f"results_{team_name.replace(' ', '_').lower()}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
         img.save(filename)
         return filename
