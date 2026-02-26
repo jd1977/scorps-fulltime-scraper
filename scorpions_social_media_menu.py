@@ -204,7 +204,7 @@ def list_fixtures_by_team(agent, teams):
                 if fixture_key in fixture_details:
                     fixture.update(fixture_details[fixture_key])
             
-            filename = agent.create_fixtures_post(data['team'], data['fixtures'])
+            filename = agent.create_fixtures_post(data['team'], data['fixtures'], template='team')
             print(f"✅ Created: {filename}")
     else:
         print(f"\n❌ No fixtures found for {selected_team['name']}")

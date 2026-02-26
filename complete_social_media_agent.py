@@ -792,6 +792,12 @@ class CompleteSocialMediaAgent:
                 os.path.join('assets', 'Scawthorpe Scorpions fixture announcement.png'),
                 os.path.join('assets', 'fixtures_background.png')
             ]
+        elif template == 'team':
+            possible_paths = [
+                os.path.join('assets', 'team_fixtures_template.png'),
+                os.path.join('assets', 'Scawthorpe Scorpions fixture announcement.png'),
+                os.path.join('assets', 'fixtures_background.png')
+            ]
         else:
             # Default fallback order
             possible_paths = [
