@@ -1184,13 +1184,14 @@ class CompleteSocialMediaAgent:
         img.save(filename)
         return filename
 
-    def create_table_post(self, team_data: dict, table: list, template: str = None) -> str:
+    def create_table_post(self, team_data: dict, table: list, template: str = None, results: list = None) -> str:
         """Create a league table post
         
         Args:
             team_data: Dictionary with team information
             table: List of table entries
             template: Optional template name to use specific background
+            results: Optional list of recent results for form guide
         """
         print(f"🎨 Creating table post...")
         
@@ -1238,19 +1239,81 @@ class CompleteSocialMediaAgent:
         img.paste(overlay, (0, 0), overlay)
         draw = ImageDraw.Draw(img)
         
-        # Table headers - positioned in the black box, centered
-        y_pos = overlay_top + 30
-        
+        # Fonts
         try:
             header_font = ImageFont.truetype("seguibl.ttf", 20)  # Segoe UI Bold (increased size)
             table_font = ImageFont.truetype("seguisb.ttf", 18)   # Segoe UI Semibold (bold)
+            form_font = ImageFont.truetype("seguibl.ttf", 28)    # Segoe UI Bold for form guide
         except:
             try:
                 header_font = ImageFont.truetype("arialbd.ttf", 20)
                 table_font = ImageFont.truetype("arialbd.ttf", 18)
+                form_font = ImageFont.truetype("arialbd.ttf", 28)
             except:
                 header_font = self.small_font
                 table_font = self.small_font
+                form_font = self.small_font
+        
+        # Form Guide - show last 6 results (W/D/L) at top center
+        y_pos = overlay_top + 20
+        
+        if results:
+            form_guide = []
+            for result in results[:6]:  # Last 6 results
+                home = result.get('home_team', '')
+                home_score = result.get('home_score', 0)
+                away_score = result.get('away_score', 0)
+                
+                # Check if Scorps is home or away
+                scorps_is_home = 'scawthorpe' in home.lower() or 'scorpions' in home.lower()
+                
+                if scorps_is_home:
+                    our_score, their_score = home_score, away_score
+                else:
+                    our_score, their_score = away_score, home_score
+                
+                if our_score > their_score:
+                    form_guide.append(('W', (0, 255, 0)))  # Win - Green
+                elif our_score < their_score:
+                    form_guide.append(('L', (255, 0, 0)))  # Loss - Red
+                else:
+                    form_guide.append(('D', (0, 100, 255)))  # Draw - Blue
+            
+            # Calculate total width including "Form: " label
+            form_label = "Form: "
+            form_letters = " ".join([f[0] for f in form_guide])
+            
+            try:
+                bbox_label = draw.textbbox((0, 0), form_label, font=form_font)
+                label_width = bbox_label[2] - bbox_label[0]
+                bbox_letters = draw.textbbox((0, 0), form_letters, font=form_font)
+                letters_width = bbox_letters[2] - bbox_letters[0]
+            except AttributeError:
+                label_width = draw.textsize(form_label, font=form_font)[0]
+                letters_width = draw.textsize(form_letters, font=form_font)[0]
+            
+            total_width = label_width + letters_width
+            
+            # Draw "Form: " label in white, then colored letters
+            x_start = (self.width - total_width) // 2
+            
+            # Draw "Form: " in white
+            draw.text((x_start, y_pos), form_label, fill=self.white, font=form_font)
+            
+            # Draw each letter with its color
+            x_current = x_start + label_width
+            for letter, color in form_guide:
+                draw.text((x_current, y_pos), letter, fill=color, font=form_font)
+                try:
+                    bbox = draw.textbbox((0, 0), letter + " ", font=form_font)
+                    letter_width = bbox[2] - bbox[0]
+                except AttributeError:
+                    letter_width = draw.textsize(letter + " ", font=form_font)[0]
+                x_current += letter_width
+            
+            y_pos += 60  # Space after form guide
+        
+        # Table headers - positioned below form guide, centered
         
         # Center the table by calculating starting position
         table_width = 750  # Approximate width of the table

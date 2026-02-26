@@ -573,7 +573,15 @@ def show_tables_by_team(agent, teams):
                     # Create post option
                     create = input("\n📱 Create social media post? (y/n): ").strip().lower()
                     if create == 'y':
-                        filename = agent.create_table_post(selected_team, table_data, template='league_table')
+                        # Fetch recent results for form guide
+                        print("   🔍 Fetching recent results for form guide...")
+                        results_data = agent.get_team_data(selected_team['name'])
+                        results = results_data.get('results', []) if results_data else []
+                        
+                        # Sort results by date (most recent first)
+                        sorted_results = sorted(results, key=lambda x: x.get('date', ''), reverse=True)
+                        
+                        filename = agent.create_table_post(selected_team, table_data, template='league_table', results=sorted_results)
                         print(f"✅ Created: {filename}")
                 else:
                     print(f"\n❌ No table data found")
