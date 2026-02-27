@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scawthorpe Scorpions Social Media Agent</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Scawthorpe Scorpions J.F.C.</h1>
+            <p class="subtitle">Social Media Content Generator</p>
+            <div class="stats">
+                <div class="stat-box">
+                    <div class="stat-number">{{ total_teams }}</div>
+                    <div class="stat-label">Teams</div>
+                </div>
+            </div>
+        </header>
+        
+        <div class="quick-actions">
+            <button class="quick-action-btn" onclick="showAllFixtures()">📅 This Week's Fixtures</button>
+            <button class="quick-action-btn" onclick="showAllResults()">🏆 This Week's Results</button>
+        </div>
+        
+        <div class="search-box">
+            <input type="text" id="searchInput" class="search-input" placeholder="Search teams... (e.g., U13, Red, Girls)">
+        </div>
+        
+        <div class="teams-grid" id="teamsGrid">
+            {% for team in teams %}
+            <div class="team-card" data-team-name="{{ team.name }}" data-display-name="{{ team.display_name }}">
+                <div class="team-name">{{ team.display_name }}</div>
+                <div class="team-league">{{ team.league_info.replace('League Name:', '') }}</div>
+                <div class="action-buttons">
+                    <button class="btn btn-fixtures" onclick="showFixtures('{{ team.name }}')">Fixtures</button>
+                    <button class="btn btn-results" onclick="showResults('{{ team.name }}')">Results</button>
+                    <button class="btn btn-table" onclick="showTable('{{ team.name }}')">Table</button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Loading...</h2>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div id="modalBody">
+                <div class="loading">Loading data...</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const cards = document.querySelectorAll('.team-card');
+            
+            cards.forEach(card => {
+                const displayName = card.dataset.displayName.toLowerCase();
+                if (displayName.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+        
+        function showModal() {
+            document.getElementById('modal').style.display = 'block';
+        }
+        
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+        
+        async function showFixtures(teamName) {
+            showModal();
+            const displayName = 'Scorps ' + teamName.replace('Scawthorpe Scorpions J.F.C. ', '');
+            document.getElementById('modalTitle').textContent = 'Fixtures - ' + displayName;
+            document.getElementById('modalBody').innerHTML = '<div class="loading">Loading fixtures...</div>';
+            
+            try {
+                const response = await fetch(`/api/fixtures/${encodeURIComponent(teamName)}`);
+                const data = await response.json();
+                
+                if (data.success && data.data.fixtures && data.data.fixtures.length > 0) {
+                    let html = '<div class="data-list">';
+                    data.data.fixtures.forEach(fixture => {
+                        html += `
+                            <div class="data-item">
+                                <strong>${fixture.date} ${fixture.time}</strong><br>
+                                ${fixture.home_team} vs ${fixture.away_team}<br>
+                                <small>${fixture.venue || 'Venue TBC'}</small><br>
+                                <small>${fixture.competition || ''}</small>
+                            </div>
+                        `;
+                    });
+                    html += '</div>';
+                    html += `<button class="generate-btn" onclick="generatePost('fixtures', '${teamName}')">Generate Fixtures Post</button>`;
+                    document.getElementById('modalBody').innerHTML = html;
+                } else {
+                    document.getElementById('modalBody').innerHTML = '<div class="error-message">No fixtures found</div>';
+                }
+            } catch (error) {
+                document.getElementById('modalBody').innerHTML = '<div class="error-message">Error loading fixtures</div>';
+            }
+        }
+        
+        async function showResults(teamName) {
+            showModal();
+            const displayName = 'Scorps ' + teamName.replace('Scawthorpe Scorpions J.F.C. ', '');
+            document.getElementById('modalTitle').textContent = 'Results - ' + displayName;
+            document.getElementById('modalBody').innerHTML = '<div class="loading">Loading results...</div>';
+            
+            try {
+                const response = await fetch(`/api/results/${encodeURIComponent(teamName)}`);
+                const data = await response.json();
+                
+                if (data.success && data.data.results && data.data.results.length > 0) {
+                    let html = '<div class="data-list">';
+                    data.data.results.forEach(result => {
+                        html += `
+                            <div class="data-item">
+                                <strong>${result.date}</strong><br>
+                                ${result.home_team} ${result.home_score} - ${result.away_score} ${result.away_team}<br>
+                                <small>${result.competition || ''}</small>
+                            </div>
+                        `;
+                    });
+                    html += '</div>';
+                    html += `<button class="generate-btn" onclick="generatePost('results', '${teamName}')">Generate Results Post</button>`;
+                    document.getElementById('modalBody').innerHTML = html;
+                } else {
+                    document.getElementById('modalBody').innerHTML = '<div class="error-message">No results found</div>';
+                }
+            } catch (error) {
+                document.getElementById('modalBody').innerHTML = '<div class="error-message">Error loading results</div>';
+            }
+        }
+        
+        async function showTable(teamName) {
+            showModal();
+            const displayName = 'Scorps ' + teamName.replace('Scawthorpe Scorpions J.F.C. ', '');
+            document.getElementById('modalTitle').textContent = 'League Table - ' + displayName;
+            document.getElementById('modalBody').innerHTML = '<div class="loading">Loading table...</div>';
+            
+            try {
+                const response = await fetch(`/api/results/${encodeURIComponent(teamName)}`);
+                const data = await response.json();
+                
+                if (data.success && data.data.table && data.data.table.length > 0) {
+                    let html = '<div class="data-list">';
+                    data.data.table.forEach(entry => {
+                        html += `
+                            <div class="data-item">
+                                <strong>${entry.position}. ${entry.team}</strong><br>
+                                P: ${entry.played} | W: ${entry.won} | D: ${entry.drawn} | L: ${entry.lost} | Pts: ${entry.points}
+                            </div>
+                        `;
+                    });
+                    html += '</div>';
+                    html += `<button class="generate-btn" onclick="generatePost('table', '${teamName}')">Generate Table Post</button>`;
+                    document.getElementById('modalBody').innerHTML = html;
+                } else {
+                    document.getElementById('modalBody').innerHTML = '<div class="error-message">No table data found</div>';
+                }
+            } catch (error) {
+                document.getElementById('modalBody').innerHTML = '<div class="error-message">Error loading table</div>';
+            }
+        }
+        
+        async function generatePost(type, teamName) {
+            document.getElementById('modalBody').innerHTML = '<div class="loading">Generating post...</div>';
+            
+            try {
+                const response = await fetch(`/api/generate/${type}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ team_name: teamName })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('modalBody').innerHTML = `
+                        <div class="success-message">
+                            ✅ Post generated successfully!<br>
+                            <a href="/download/${data.filename}" style="color: white; text-decoration: underline;">Download ${data.filename}</a>
+                        </div>
+                    `;
+                } else {
+                    document.getElementById('modalBody').innerHTML = `<div class="error-message">Error: ${data.error}</div>`;
+                }
+            } catch (error) {
+                document.getElementById('modalBody').innerHTML = '<div class="error-message">Error generating post</div>';
+            }
+        }
+        
+        // Close modal on outside click
+        window.onclick = function(event) {
+            const modal = document.getElementById('modal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+        
+        async function showAllFixtures() {
+            showModal();
+            document.getElementById('modalTitle').textContent = 'This Week\'s Fixtures';
+            document.getElementById('modalBody').innerHTML = '<div class="loading">Loading all fixtures...</div>';
+            
+            try {
+                const response = await fetch('/api/all-fixtures');
+                const data = await response.json();
+                
+                if (data.success && data.fixtures && data.fixtures.length > 0) {
+                    let html = '<div class="data-list">';
+                    data.fixtures.forEach(fixture => {
+                        html += `
+                            <div class="data-item">
+                                <strong>[${fixture.team}]</strong><br>
+                                <strong>${fixture.date} ${fixture.time}</strong><br>
+                                ${fixture.home_team} vs ${fixture.away_team}<br>
+                                <small>📍 ${fixture.venue || 'Venue TBC'}</small><br>
+                                <small>🏆 ${fixture.competition || ''}</small>
+                            </div>
+                        `;
+                    });
+                    html += '</div>';
+                    html += `<p style="text-align: center; margin-top: 20px; color: #999;">Found ${data.count} fixtures in the next 7 days</p>`;
+                    document.getElementById('modalBody').innerHTML = html;
+                } else {
+                    document.getElementById('modalBody').innerHTML = '<div class="error-message">No fixtures found for the next 7 days</div>';
+                }
+            } catch (error) {
+                document.getElementById('modalBody').innerHTML = '<div class="error-message">Error loading fixtures</div>';
+            }
+        }
+        
+        async function showAllResults() {
+            showModal();
+            document.getElementById('modalTitle').textContent = 'This Week\'s Results';
+            document.getElementById('modalBody').innerHTML = '<div class="loading">Loading all results...</div>';
+            
+            try {
+                const response = await fetch('/api/all-results');
+                const data = await response.json();
+                
+                if (data.success && data.results && data.results.length > 0) {
+                    let html = '<div class="data-list">';
+                    data.results.forEach(result => {
+                        html += `
+                            <div class="data-item">
+                                <strong>[${result.team}]</strong><br>
+                                <strong>${result.date}</strong><br>
+                                ${result.home_team} ${result.home_score} - ${result.away_score} ${result.away_team}<br>
+                                <small>🏆 ${result.competition || ''}</small>
+                            </div>
+                        `;
+                    });
+                    html += '</div>';
+                    html += `<p style="text-align: center; margin-top: 20px; color: #999;">Found ${data.count} results from the last 7 days</p>`;
+                    document.getElementById('modalBody').innerHTML = html;
+                } else {
+                    document.getElementById('modalBody').innerHTML = '<div class="error-message">No results found for the last 7 days</div>';
+                }
+            } catch (error) {
+                document.getElementById('modalBody').innerHTML = '<div class="error-message">Error loading results</div>';
+            }
+        }
+    </script>
+</body>
+</html>
