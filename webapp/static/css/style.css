@@ -37,7 +37,7 @@ header {
 }
 
 .header-logo {
-    width: 80px;
+    width: 120px;
     height: auto;
     margin-bottom: 15px;
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
@@ -84,6 +84,13 @@ h1 {
 .search-box {
     margin-bottom: 30px;
     text-align: center;
+}
+
+.team-count {
+    margin-top: 10px;
+    color: #FF8C00;
+    font-size: 0.9em;
+    font-weight: bold;
 }
 
 .quick-actions {

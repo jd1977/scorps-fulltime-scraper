@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scawthorpe Scorpions Social Media Agent</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=6">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=7">
 </head>
 <body>
     <div class="container">
@@ -12,12 +12,6 @@
             <img src="{{ url_for('static', filename='images/scorps-logo-2.png') }}" alt="Scorpions Logo" class="header-logo">
             <h1>Scawthorpe Scorpions J.F.C.</h1>
             <p class="subtitle">Social Media Content Generator</p>
-            <div class="stats">
-                <div class="stat-box">
-                    <div class="stat-number">{{ total_teams }}</div>
-                    <div class="stat-label">Teams</div>
-                </div>
-            </div>
         </header>
         
         <div class="quick-actions">
@@ -27,6 +21,7 @@
         
         <div class="search-box">
             <input type="text" id="searchInput" class="search-input" placeholder="Search teams... (e.g., U13, Red, Girls)">
+            <p class="team-count">{{ total_teams }} Teams</p>
         </div>
         
         <div class="teams-grid" id="teamsGrid">
