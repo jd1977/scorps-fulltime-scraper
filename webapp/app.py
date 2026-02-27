@@ -243,5 +243,15 @@ def download_file(filename):
         return send_file(file_path, as_attachment=True)
     return jsonify({'error': 'File not found'}), 404
 
+@app.route('/test-bg')
+def test_background():
+    """Test route to check if background image is accessible"""
+    bg_path = os.path.join(os.path.dirname(__file__), 'static', 'images', 'background.png')
+    return jsonify({
+        'exists': os.path.exists(bg_path),
+        'path': bg_path,
+        'size': os.path.getsize(bg_path) if os.path.exists(bg_path) else 0
+    })
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
