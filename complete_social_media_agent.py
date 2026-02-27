@@ -10,7 +10,7 @@ import json
 from datetime import datetime
 import re
 from dataclasses import dataclass
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, Any, Tuple
 from PIL import Image, ImageDraw, ImageFont
 import random
 import time
@@ -761,6 +761,146 @@ class CompleteSocialMediaAgent:
             return bbox[2] - bbox[0]
         except AttributeError:
             return draw.textsize(text, font=font)[0]
+
+    def _load_post_fonts(self, sizes: dict = None) -> dict:
+        """
+        Load fonts for post creation with fallback
+        
+        Args:
+            sizes: Dictionary of font names and sizes
+                  Default: {'title': 48, 'subtitle': 36, 'text': 28, 'small': 24}
+        
+        Returns:
+            Dictionary of loaded fonts
+        """
+        if sizes is None:
+            sizes = {'title': 48, 'subtitle': 36, 'text': 28, 'small': 24}
+        
+        fonts = {}
+        
+        for name, size in sizes.items():
+            try:
+                # Try Segoe UI Bold first (better for headings)
+                if name in ['title', 'subtitle']:
+                    fonts[name] = ImageFont.truetype("seguibl.ttf", size)
+                else:
+                    fonts[name] = ImageFont.truetype("seguisb.ttf", size)
+            except:
+                try:
+                    # Fallback to Arial Bold
+                    fonts[name] = ImageFont.truetype("arialbd.ttf", size)
+                except:
+                    # Final fallback to default
+                    fonts[name] = ImageFont.load_default()
+        
+        return fonts
+
+    def _draw_form_guide_box(self, img: Image.Image, results: list, 
+                            y_position: int, form_font: ImageFont.FreeTypeFont) -> int:
+        """
+        Draw form guide in a separate box
+        
+        Args:
+            img: PIL Image to draw on
+            results: List of recent results
+            y_position: Y position where box should end (box drawn above this)
+            form_font: Font to use for form guide
+        
+        Returns:
+            Y position of top of form box (for positioning other elements above)
+        """
+        if not results:
+            return y_position
+        
+        draw = ImageDraw.Draw(img)
+        
+        # Calculate form guide data
+        form_guide = []
+        for result in results[:6]:  # Last 6 results
+            home = result.get('home_team', '')
+            home_score = result.get('home_score', 0)
+            away_score = result.get('away_score', 0)
+            
+            # Check if Scorps is home or away
+            scorps_is_home = is_scorps_team(home)
+            
+            if scorps_is_home:
+                our_score, their_score = home_score, away_score
+            else:
+                our_score, their_score = away_score, home_score
+            
+            if our_score > their_score:
+                form_guide.append(('W', COLOR_GREEN))
+            elif our_score < their_score:
+                form_guide.append(('L', COLOR_RED))
+            else:
+                form_guide.append(('D', COLOR_BLUE))
+        
+        if not form_guide:
+            return y_position
+        
+        # Calculate box dimensions
+        form_label = "Form: "
+        form_letters = " ".join([f[0] for f in form_guide])
+        
+        # Create temporary draw to measure text
+        temp_img = Image.new('RGB', (1, 1))
+        temp_draw = ImageDraw.Draw(temp_img)
+        
+        try:
+            bbox_label = temp_draw.textbbox((0, 0), form_label, font=form_font)
+            label_width = bbox_label[2] - bbox_label[0]
+            bbox_letters = temp_draw.textbbox((0, 0), form_letters, font=form_font)
+            letters_width = bbox_letters[2] - bbox_letters[0]
+        except AttributeError:
+            label_width = temp_draw.textsize(form_label, font=form_font)[0]
+            letters_width = temp_draw.textsize(form_letters, font=form_font)[0]
+        
+        total_text_width = label_width + letters_width
+        box_padding = 40
+        form_box_width = total_text_width + (box_padding * 2)
+        
+        # Calculate form box position
+        form_box_height = 80
+        form_box_gap = 20
+        form_box_bottom = y_position - form_box_gap
+        form_box_top = form_box_bottom - form_box_height
+        
+        # Center the box horizontally
+        form_box_left = (self.width - form_box_width) // 2
+        form_box_right = form_box_left + form_box_width
+        
+        # Draw form guide black overlay box
+        form_overlay = Image.new('RGBA', (self.width, self.height), (0, 0, 0, 0))
+        form_overlay_draw = ImageDraw.Draw(form_overlay)
+        form_overlay_draw.rectangle(
+            [(form_box_left, form_box_top), (form_box_right, form_box_bottom)],
+            fill=(0, 0, 0, 200)
+        )
+        img.paste(form_overlay, (0, 0), form_overlay)
+        
+        # Redraw on main image
+        draw = ImageDraw.Draw(img)
+        
+        # Draw form guide centered in its box
+        y_text = form_box_top + 25
+        x_start = (self.width - total_text_width) // 2
+        
+        # Draw "Form: " in white
+        draw.text((x_start, y_text), form_label, fill=self.white, font=form_font)
+        
+        # Draw each letter with its color
+        x_current = x_start + label_width
+        for letter, color in form_guide:
+            draw.text((x_current, y_text), letter, fill=color, font=form_font)
+            try:
+                bbox = draw.textbbox((0, 0), letter + " ", font=form_font)
+                letter_width = bbox[2] - bbox[0]
+            except AttributeError:
+                letter_width = draw.textsize(letter + " ", font=form_font)[0]
+            x_current += letter_width
+        
+        return form_box_top
 
     def _archive_old_fixtures(self):
         """Archive old fixture posts and delete files older than 30 days"""
