@@ -10,7 +10,7 @@ from datetime import datetime, timedelta
 
 # Import shared utilities and configuration
 from utils import format_team_name, is_scorps_team, get_age_group, format_result_display
-from config import CLUB_ID, SEASON_ID, CLUB_FIXTURES_URL, TEAMS_JSON_FILE, AGE_GROUP_NO_TABLES
+from app_config import CLUB_ID, SEASON_ID, CLUB_FIXTURES_URL, TEAMS_JSON_FILE, AGE_GROUP_NO_TABLES
 
 def load_teams():
     """Load and display available teams"""

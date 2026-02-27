@@ -17,7 +17,7 @@ import time
 
 # Import shared utilities and configuration
 from utils import format_team_name, is_scorps_team, get_age_group, clean_team_name_for_filename
-from config import (
+from app_config import (
     CLUB_ID, SEASON_ID, CLUB_FIXTURES_URL, TEAMS_JSON_FILE,
     IMAGE_WIDTH, IMAGE_HEIGHT, COLOR_ORANGE, COLOR_BLACK, COLOR_WHITE,
     COLOR_DARK_ORANGE, COLOR_GREEN, COLOR_RED, COLOR_BLUE,
