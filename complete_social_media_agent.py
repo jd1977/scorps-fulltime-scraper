@@ -316,7 +316,7 @@ class CompleteSocialMediaAgent:
             'table': all_tables
         }
 
-    def get_all_club_results(self, use_cache: bool = True) -> list:
+    def get_all_club_results(self, use_cache: bool = True) -> List[Dict[str, Any]]:
         """
         Get all club results at once (optimized for Option 5)
         Fetches club-wide results in a single request instead of per-team
@@ -902,6 +902,82 @@ class CompleteSocialMediaAgent:
         
         return form_box_top
 
+    def _draw_footer(self, img: Image.Image, text: str = "COME ON SCORPS!") -> None:
+        """
+        Draw footer text at bottom of image
+        
+        Args:
+            img: PIL Image to draw on
+            text: Footer text to display
+        """
+        draw = ImageDraw.Draw(img)
+        
+        try:
+            footer_font = ImageFont.truetype("arialbd.ttf", 36)
+        except:
+            footer_font = self.text_font
+        
+        footer_width = self._get_text_width(draw, text, footer_font)
+        footer_x = (self.width - footer_width) // 2
+        
+        # Shadow
+        draw.text((footer_x + 2, self.height - 48), text, fill="#000000", font=footer_font)
+        # Main text
+        draw.text((footer_x, self.height - 50), text, fill="#FFFFFF", font=footer_font)
+
+    def _create_black_overlay(self, top: int, bottom: int, 
+                             left: int = 30, right: int = None) -> Image.Image:
+        """
+        Create a black overlay box
+        
+        Args:
+            top: Top Y position
+            bottom: Bottom Y position
+            left: Left X position (default: 30)
+            right: Right X position (default: width - 30)
+        
+        Returns:
+            RGBA overlay image
+        """
+        if right is None:
+            right = self.width - 30
+        
+        overlay = Image.new('RGBA', (self.width, self.height), (0, 0, 0, 0))
+        overlay_draw = ImageDraw.Draw(overlay)
+        overlay_draw.rectangle([(left, top), (right, bottom)], fill=(0, 0, 0, 200))
+        
+        return overlay
+
+    def _load_background_image(self, template: str = None) -> Tuple[Image.Image, bool]:
+        """
+        Load background template or create fallback
+        
+        Args:
+            template: Template name (without _template.png suffix)
+        
+        Returns:
+            Tuple of (Image, used_template: bool)
+        """
+        import os
+        
+        # Try to load background template
+        if template:
+            template_path = os.path.join('assets', f'{template}_template.png')
+            if os.path.exists(template_path):
+                print(f"   ✅ Using background: {template_path}")
+                img = Image.open(template_path)
+                try:
+                    img = img.resize((self.width, self.height), Image.Resampling.LANCZOS)
+                except AttributeError:
+                    img = img.resize((self.width, self.height), Image.LANCZOS)
+                return img, True
+        
+        # Fallback: Create black background with orange accents
+        img = Image.new('RGB', (self.width, self.height), self.black)
+        draw_temp = ImageDraw.Draw(img)
+        self._add_paint_effects(draw_temp)
+        return img, False
+
     def _archive_old_fixtures(self):
         """Archive old fixture posts and delete files older than 30 days"""
         import os
@@ -949,7 +1025,8 @@ class CompleteSocialMediaAgent:
         if deleted_count > 0:
             print(f"   🗑️  Deleted {deleted_count} file(s) older than 30 days from archive")
 
-    def create_fixtures_post(self, team_data: dict, fixtures: list, template: str = None) -> str:
+    def create_fixtures_post(self, team_data: Dict[str, Any], fixtures: List[Dict[str, Any]], 
+                            template: Optional[str] = None) -> str:
         """Create a fixtures post using the new template
         
         Args:
@@ -1154,7 +1231,8 @@ class CompleteSocialMediaAgent:
         img.save(filename)
         return filename
 
-    def create_results_post(self, team_data: dict, results: list, template: str = None) -> str:
+    def create_results_post(self, team_data: Dict[str, Any], results: List[Dict[str, Any]], 
+                           template: Optional[str] = None) -> str:
         """Create a results post
         
         Args:
@@ -1399,7 +1477,8 @@ class CompleteSocialMediaAgent:
         img.save(filename)
         return filename
 
-    def create_weekly_results_post(self, all_results: list, template: str = None) -> str:
+    def create_weekly_results_post(self, all_results: List[Dict[str, Any]], 
+                                  template: Optional[str] = None) -> str:
         """Create a post showing all results from the last 7 days in 2 columns
         
         Args:
@@ -1571,7 +1650,9 @@ class CompleteSocialMediaAgent:
         img.save(filename)
         return filename
 
-    def create_table_post(self, team_data: dict, table: list, template: str = None, results: list = None) -> str:
+    def create_table_post(self, team_data: Dict[str, Any], table: List[Dict[str, Any]], 
+                         template: Optional[str] = None, 
+                         results: Optional[List[Dict[str, Any]]] = None) -> str:
         """Create a league table post
         
         Args:

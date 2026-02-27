@@ -5,6 +5,7 @@ Interactive menu for creating social media posts
 """
 
 import json
+from typing import List, Dict, Any, Optional
 from complete_social_media_agent import CompleteSocialMediaAgent
 from datetime import datetime, timedelta
 
@@ -12,7 +13,7 @@ from datetime import datetime, timedelta
 from utils import format_team_name, is_scorps_team, get_age_group, format_result_display
 from app_config import CLUB_ID, SEASON_ID, CLUB_FIXTURES_URL, TEAMS_JSON_FILE, AGE_GROUP_NO_TABLES
 
-def load_teams():
+def load_teams() -> List[Dict[str, Any]]:
     """Load and display available teams"""
     try:
         with open(TEAMS_JSON_FILE, 'r') as f:
@@ -77,7 +78,7 @@ def sort_teams_by_age(teams):
     
     return sorted(teams, key=get_age_sort_key)
 
-def display_teams_compact(teams):
+def display_teams_compact(teams: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """Display teams in a simple numbered list with full names, sorted by age"""
     print("\n🦂 SELECT A TEAM:")
     print("=" * 60)
