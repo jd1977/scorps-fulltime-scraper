@@ -8,10 +8,14 @@ import json
 from complete_social_media_agent import CompleteSocialMediaAgent
 from datetime import datetime, timedelta
 
+# Import shared utilities and configuration
+from utils import format_team_name, is_scorps_team, get_age_group, format_result_display
+from config import CLUB_ID, SEASON_ID, CLUB_FIXTURES_URL, TEAMS_JSON_FILE, AGE_GROUP_NO_TABLES
+
 def load_teams():
     """Load and display available teams"""
     try:
-        with open('scawthorpe_teams.json', 'r') as f:
+        with open(TEAMS_JSON_FILE, 'r') as f:
             data = json.load(f)
         
         all_teams = data.get('teams', [])
@@ -35,58 +39,14 @@ def load_teams():
         return unique_teams
         
     except FileNotFoundError:
-        print("[X] scawthorpe_teams.json not found")
+        print(f"[X] {TEAMS_JSON_FILE} not found")
         return []
 
-def format_team_name(team_name):
-    """Format team name to show 'Scorps U13 Red' instead of full name"""
-    # Replace full club name with 'Scorps'
-    formatted = team_name.replace('Scawthorpe Scorpions J.F.C.', 'Scorps').strip()
-    formatted = formatted.replace('Scawthorpe Scorpions', 'Scorps').strip()
-    return formatted
+# Note: format_team_name, get_age_group_sort_key, and format_result_display 
+# are now imported from utils.py to avoid duplication
 
-def get_age_group_sort_key(team_name):
-    """Extract age group from team name for sorting (U7=7, U8=8, etc.)"""
-    import re
-    # Look for U followed by numbers
-    match = re.search(r'U(\d+)', team_name, re.IGNORECASE)
-    if match:
-        return int(match.group(1))
-    return 999  # Teams without age group go last
-
-def format_result_display(home_team, away_team, home_score, away_score, team_name):
-    """Format result display with special handling for U11 and below"""
-    age_group = get_age_group_sort_key(team_name)
-    
-    # For U11 and below, scores aren't tracked
-    if age_group <= 11:
-        # Check if scores are 0-0 (meaning match played but not scored)
-        if home_score == 0 and away_score == 0:
-            score_display = "X - X"
-            # For U11 and below, we can't determine win/loss, so show football icon
-            result_icon = "⚽ PLAYED"
-            return result_icon, score_display
-    
-    # For U12 and above, or if actual scores exist
-    home = format_team_name(home_team)
-    away = format_team_name(away_team)
-    
-    # Determine if we're home or away
-    if 'scawthorpe' in home.lower() or 'scorpions' in home.lower() or 'scorps' in home.lower():
-        our_score, their_score = home_score, away_score
-    else:
-        our_score, their_score = away_score, home_score
-    
-    # Determine result icon
-    if our_score > their_score:
-        result_icon = "✅ WIN"
-    elif our_score < their_score:
-        result_icon = "❌ LOSS"
-    else:
-        result_icon = "🤝 DRAW"
-    
-    score_display = f"{home_score} - {away_score}"
-    return result_icon, score_display
+# Alias for backward compatibility
+get_age_group_sort_key = get_age_group
 
 def display_main_menu():
     """Display the main menu"""
@@ -225,10 +185,8 @@ def list_all_fixtures(agent, teams):
     
     print(f"\n🔍 Getting all club fixtures between {today.strftime('%d/%m/%y')} and {seven_days_later.strftime('%d/%m/%y')}...")
     
-    # Use club-wide fixtures URL directly (no team filter)
-    CLUB_ID = "105735333"
-    SEASON_ID = "895948809"
-    club_fixtures_url = f"https://fulltime.thefa.com/fixtures/1/100.html?selectedSeason={SEASON_ID}&selectedFixtureGroupAgeGroup=0&previousSelectedFixtureGroupAgeGroup=&selectedFixtureGroupKey=&previousSelectedFixtureGroupKey=&selectedDateCode=all&selectedRelatedFixtureOption=3&selectedClub={CLUB_ID}&previousSelectedClub={CLUB_ID}&selectedTeam=&selectedFixtureDateStatus=&selectedFixtureStatus="
+    # Use club-wide fixtures URL from config
+    club_fixtures_url = CLUB_FIXTURES_URL
     
     all_fixtures = []
     
@@ -419,8 +377,8 @@ def show_tables_by_team(agent, teams):
     # Filter out U10 and below teams (no tables available for these age groups)
     filtered_teams = []
     for team in teams:
-        age_group = get_age_group_sort_key(team['name'])
-        if age_group > 10:  # Only include U11 and above
+        age_group = get_age_group(team['name'])
+        if age_group > AGE_GROUP_NO_TABLES:  # Only include U11 and above
             filtered_teams.append(team)
     
     if not filtered_teams:
@@ -446,8 +404,6 @@ def show_tables_by_team(agent, teams):
     print(f"   League ID: {league_id}, Division ID: {division_id}")
     
     # Build table URL using division_id from team data
-    # Format: https://fulltime.thefa.com/index.html?selectedSeason=895948809&selectedFixtureGroupAgeGroup=0&selectedDivision={division_id}&selectedCompetition=0
-    SEASON_ID = "895948809"
     table_url = f"https://fulltime.thefa.com/index.html?selectedSeason={SEASON_ID}&selectedFixtureGroupAgeGroup=0&selectedDivision={division_id}&selectedCompetition=0"
     print(f"   🌐 URL: {table_url}")
     
@@ -697,8 +653,6 @@ def show_results_by_team(agent, teams):
     print(f"   Team ID: {team_id}")
     
     # Use direct scraping with team-specific results URL
-    CLUB_ID = "105735333"
-    SEASON_ID = "895948809"
     results_url = f"https://fulltime.thefa.com/results.html?selectedSeason={SEASON_ID}&selectedFixtureGroupAgeGroup=0&selectedFixtureGroupKey=&selectedRelatedFixtureOption=3&selectedClub={CLUB_ID}&selectedTeam={team_id}&selectedDateCode=all&previousSelectedFixtureGroupAgeGroup=&previousSelectedFixtureGroupKey=&previousSelectedClub={CLUB_ID}"
     
     all_results = []
@@ -870,10 +824,8 @@ def add_kick_off_times_and_pitch(agent, teams):
     
     print(f"   Between {today.strftime('%d/%m/%y')} and {seven_days_later.strftime('%d/%m/%y')}...")
     
-    # Use club-wide fixtures URL directly (same as option 2)
-    CLUB_ID = "105735333"
-    SEASON_ID = "895948809"
-    club_fixtures_url = f"https://fulltime.thefa.com/fixtures/1/100.html?selectedSeason={SEASON_ID}&selectedFixtureGroupAgeGroup=0&previousSelectedFixtureGroupAgeGroup=&selectedFixtureGroupKey=&previousSelectedFixtureGroupKey=&selectedDateCode=all&selectedRelatedFixtureOption=3&selectedClub={CLUB_ID}&previousSelectedClub={CLUB_ID}&selectedTeam=&selectedFixtureDateStatus=&selectedFixtureStatus="
+    # Use club-wide fixtures URL from config (same as option 2)
+    club_fixtures_url = CLUB_FIXTURES_URL
     
     all_fixtures = []
     

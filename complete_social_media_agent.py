@@ -15,6 +15,15 @@ from PIL import Image, ImageDraw, ImageFont
 import random
 import time
 
+# Import shared utilities and configuration
+from utils import format_team_name, is_scorps_team, get_age_group, clean_team_name_for_filename
+from config import (
+    CLUB_ID, SEASON_ID, CLUB_FIXTURES_URL, TEAMS_JSON_FILE,
+    IMAGE_WIDTH, IMAGE_HEIGHT, COLOR_ORANGE, COLOR_BLACK, COLOR_WHITE,
+    COLOR_DARK_ORANGE, COLOR_GREEN, COLOR_RED, COLOR_BLUE,
+    USER_AGENTS, REQUEST_TIMEOUT, REQUEST_DELAY
+)
+
 @dataclass
 class Fixture:
     date: str
@@ -48,19 +57,6 @@ class TableEntry:
     points: int
 
 class CompleteSocialMediaAgent:
-    # List of realistic user agents to rotate through
-    USER_AGENTS = [
-        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
-        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
-        'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:122.0) Gecko/20100101 Firefox/122.0',
-        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15',
-        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36 Edg/121.0.0.0',
-        'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
-        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0',
-        'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:122.0) Gecko/20100101 Firefox/122.0'
-    ]
     
     def __init__(self):
         # Scraper setup
@@ -68,18 +64,18 @@ class CompleteSocialMediaAgent:
         self._rotate_user_agent()
         self.teams = self.load_teams()
         
-        # Club-wide fixtures URL
-        self.CLUB_ID = "105735333"
-        self.SEASON_ID = "895948809"
-        self.club_fixtures_url = f"https://fulltime.thefa.com/fixtures/1/100.html?selectedSeason={self.SEASON_ID}&selectedFixtureGroupAgeGroup=0&previousSelectedFixtureGroupAgeGroup=&selectedFixtureGroupKey=&previousSelectedFixtureGroupKey=&selectedDateCode=all&selectedRelatedFixtureOption=3&selectedClub={self.CLUB_ID}&previousSelectedClub={self.CLUB_ID}&selectedTeam=&selectedFixtureDateStatus=&selectedFixtureStatus="
+        # Club-wide fixtures URL from config
+        self.CLUB_ID = CLUB_ID
+        self.SEASON_ID = SEASON_ID
+        self.club_fixtures_url = CLUB_FIXTURES_URL
         
-        # Post generator setup
-        self.width = 1080
-        self.height = 1080
-        self.orange = (255, 140, 0)  # #FF8C00
-        self.black = (0, 0, 0)
-        self.white = (255, 255, 255)
-        self.dark_orange = (204, 85, 0)
+        # Post generator setup - use config values
+        self.width = IMAGE_WIDTH
+        self.height = IMAGE_HEIGHT
+        self.orange = COLOR_ORANGE
+        self.black = COLOR_BLACK
+        self.white = COLOR_WHITE
+        self.dark_orange = COLOR_DARK_ORANGE
         
         # Load fonts
         try:
@@ -95,7 +91,7 @@ class CompleteSocialMediaAgent:
     
     def _rotate_user_agent(self):
         """Rotate to a random user agent."""
-        user_agent = random.choice(self.USER_AGENTS)
+        user_agent = random.choice(USER_AGENTS)
         self.session.headers.update({
             'User-Agent': user_agent,
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
@@ -109,10 +105,10 @@ class CompleteSocialMediaAgent:
     def load_teams(self) -> Dict[str, Any]:
         """Load team data"""
         try:
-            with open('scawthorpe_teams.json', 'r') as f:
+            with open(TEAMS_JSON_FILE, 'r') as f:
                 return json.load(f)
         except FileNotFoundError:
-            print("[ERROR] scawthorpe_teams.json not found")
+            print(f"[ERROR] {TEAMS_JSON_FILE} not found")
             return {}
 
     def create_all_posts_for_team(self, team_name: str) -> Dict[str, str]:
@@ -1640,7 +1636,7 @@ class CompleteSocialMediaAgent:
 
     def _clean_team_name(self, name: str) -> str:
         """Clean team name for display"""
-        return name.replace('Scawthorpe Scorpions J.F.C.', 'Scorpions').strip()
+        return format_team_name(name, short=False)
 
 def main():
     """Test the complete social media agent"""
