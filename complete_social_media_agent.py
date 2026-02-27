@@ -23,6 +23,8 @@ from app_config import (
     COLOR_DARK_ORANGE, COLOR_GREEN, COLOR_RED, COLOR_BLUE,
     USER_AGENTS, REQUEST_TIMEOUT, REQUEST_DELAY
 )
+from http_utils import create_session_with_retries, fetch_with_retry
+from cache_utils import SimpleCache
 
 @dataclass
 class Fixture:
@@ -59,10 +61,13 @@ class TableEntry:
 class CompleteSocialMediaAgent:
     
     def __init__(self):
-        # Scraper setup
-        self.session = requests.Session()
+        # Scraper setup with retry logic
+        self.session = create_session_with_retries()
         self._rotate_user_agent()
         self.teams = self.load_teams()
+        
+        # Initialize cache
+        self.cache = SimpleCache()
         
         # Club-wide fixtures URL from config
         self.CLUB_ID = CLUB_ID
@@ -310,6 +315,52 @@ class CompleteSocialMediaAgent:
             'results': unique_results,
             'table': all_tables
         }
+
+    def get_all_club_results(self, use_cache: bool = True) -> list:
+        """
+        Get all club results at once (optimized for Option 5)
+        Fetches club-wide results in a single request instead of per-team
+        
+        Args:
+            use_cache: Whether to use cached data if available
+        
+        Returns:
+            List of all results for the club
+        """
+        cache_key = f"club_results_{self.CLUB_ID}"
+        
+        # Check cache first
+        if use_cache:
+            cached_results = self.cache.get(cache_key)
+            if cached_results is not None:
+                print("   ✅ Using cached club results")
+                return cached_results
+        
+        print("[*] Fetching all club results...")
+        
+        # Use club-wide results URL (no team filter)
+        results_url = f"https://fulltime.thefa.com/results.html?selectedSeason={self.SEASON_ID}&selectedFixtureGroupAgeGroup=0&selectedFixtureGroupKey=&selectedRelatedFixtureOption=3&selectedClub={self.CLUB_ID}&selectedDateCode=all&previousSelectedFixtureGroupAgeGroup=&previousSelectedFixtureGroupKey=&previousSelectedClub={self.CLUB_ID}"
+        
+        try:
+            response = fetch_with_retry(self.session, results_url, headers=self.session.headers)
+            
+            if response and response.status_code == 200:
+                from bs4 import BeautifulSoup
+                soup = BeautifulSoup(response.content, 'html.parser')
+                results = self._extract_results_from_soup(soup)
+                
+                # Cache the results
+                self.cache.set(cache_key, results)
+                
+                print(f"   ✅ Found {len(results)} total club results")
+                return results
+            else:
+                print(f"   ❌ Failed to fetch club results")
+                return []
+                
+        except Exception as e:
+            print(f"   ❌ Error fetching club results: {e}")
+            return []
 
     def _scrape_team_page(self, team_id: str, league_id: str, team_name: str) -> Dict[str, Any]:
         """Scrape team-specific fixtures and results pages"""

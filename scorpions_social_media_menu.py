@@ -550,7 +550,7 @@ def show_tables_by_team(agent, teams):
         traceback.print_exc()
 
 def show_all_this_weeks_results(agent, teams):
-    """Option 4: Show all this week's results (last 7 days)"""
+    """Option 5: Show all this week's results (last 7 days) - OPTIMIZED"""
     print("\n🏆 SHOW ALL RESULTS (LAST 7 DAYS)")
     print("=" * 60)
     
@@ -560,47 +560,55 @@ def show_all_this_weeks_results(agent, teams):
     today = datetime.now()
     seven_days_ago = today - timedelta(days=7)
     
-    print(f"\n🔍 Scanning all teams for results between {seven_days_ago.strftime('%d/%m/%y')} and {today.strftime('%d/%m/%y')}...")
+    print(f"\n🔍 Fetching all club results (optimized - single request)...")
     
-    all_results = []
+    # Use optimized method - fetches all results in one request
+    all_club_results = agent.get_all_club_results(use_cache=True)
     
-    for team in teams:  # Check ALL teams, not just first 10
-        team_name = team['name'].replace('Scawthorpe Scorpions J.F.C.', '').strip()
-        print(f"   Checking {team_name}...", end=' ')
-        data = agent.get_team_data(team_name)
-        
-        if data and data['results']:
-            results_found = 0
-            for result in data['results']:
-                # Parse result date (format: DD/MM/YY)
-                try:
-                    result_date_str = result.get('date', '')
-                    if result_date_str:
-                        # Parse DD/MM/YY format
-                        result_date = datetime.strptime(result_date_str, '%d/%m/%y')
-                        
-                        # Only include if within last 7 days
-                        if seven_days_ago <= result_date <= today:
-                            result['team'] = team_name
-                            result['parsed_date'] = result_date
-                            all_results.append(result)
-                            results_found += 1
-                except ValueError:
-                    # Skip results with invalid dates
-                    continue
-            print(f"✅ {results_found} results")
-        else:
-            print("⭕ No results")
+    if not all_club_results:
+        print(f"\n❌ No results found")
+        return
     
-    if all_results:
+    # Filter for last 7 days and add team info
+    filtered_results = []
+    
+    for result in all_club_results:
+        try:
+            result_date_str = result.get('date', '')
+            if result_date_str:
+                # Parse DD/MM/YY format
+                result_date = datetime.strptime(result_date_str, '%d/%m/%y')
+                
+                # Only include if within last 7 days
+                if seven_days_ago <= result_date <= today:
+                    # Determine which team this result belongs to
+                    home_team = result.get('home_team', '')
+                    away_team = result.get('away_team', '')
+                    
+                    # Find our team name
+                    if is_scorps_team(home_team):
+                        team_name = format_team_name(home_team)
+                    elif is_scorps_team(away_team):
+                        team_name = format_team_name(away_team)
+                    else:
+                        continue  # Skip if neither team is ours
+                    
+                    result['team'] = team_name
+                    result['parsed_date'] = result_date
+                    filtered_results.append(result)
+        except ValueError:
+            # Skip results with invalid dates
+            continue
+    
+    if filtered_results:
         # Sort by age group (youngest first), then by date (most recent first)
-        all_results.sort(key=lambda x: (get_age_group_sort_key(x.get('team', '')), -x['parsed_date'].timestamp()))
+        filtered_results.sort(key=lambda x: (get_age_group(x.get('team', '')), -x['parsed_date'].timestamp()))
         
-        print(f"\n🏆 RESULTS FROM LAST 7 DAYS ({len(all_results)} found)")
+        print(f"\n🏆 RESULTS FROM LAST 7 DAYS ({len(filtered_results)} found)")
         print("   (Ordered by age group: U7, U8, U9, U10, U11, U12, U13, U14, U15, U16, U18)")
         print("=" * 60)
         
-        for i, result in enumerate(all_results[:20], 1):
+        for i, result in enumerate(filtered_results[:20], 1):
             home = format_team_name(result.get('home_team', 'Team A'))
             away = format_team_name(result.get('away_team', 'Team B'))
             home_score = result.get('home_score', 0)
@@ -625,7 +633,7 @@ def show_all_this_weeks_results(agent, teams):
         # Create post option
         create = input("\n📱 Create social media post? (y/n): ").strip().lower()
         if create == 'y':
-            filename = agent.create_weekly_results_post(all_results, template='this_weeks_results')
+            filename = agent.create_weekly_results_post(filtered_results, template='this_weeks_results')
             print(f"✅ Created: {filename}")
     else:
         print(f"\n❌ No results found in the last 7 days")

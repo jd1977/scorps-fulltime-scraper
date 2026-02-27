@@ -83,7 +83,13 @@ USER_AGENTS = [
 # HTTP Request settings
 REQUEST_TIMEOUT = 15  # seconds
 REQUEST_DELAY = 3     # seconds between requests
+MAX_RETRIES = 3       # number of retry attempts
+RETRY_BACKOFF = 1     # backoff factor for retries (1, 2, 4 seconds)
+RETRY_STATUS_CODES = [500, 502, 503, 504]  # HTTP status codes to retry
 
 # Age group thresholds
 AGE_GROUP_NO_SCORES = 11  # U11 and below don't track scores
 AGE_GROUP_NO_TABLES = 10  # U10 and below don't have league tables
+
+# Cache settings
+CACHE_TTL_MINUTES = 5  # Cache data for 5 minutes
