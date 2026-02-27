@@ -1,7 +1,7 @@
 """
 Flask Web App for Scawthorpe Scorpions Social Media Agent
 """
-from flask import Flask, render_template, jsonify, send_file, request
+from flask import Flask, render_template, jsonify, send_file, request, send_from_directory
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -12,6 +12,11 @@ from datetime import datetime
 
 app = Flask(__name__)
 agent = CompleteSocialMediaAgent()
+
+@app.route('/static/<path:path>')
+def send_static(path):
+    """Serve static files"""
+    return send_from_directory('static', path)
 
 @app.route('/')
 def index():
