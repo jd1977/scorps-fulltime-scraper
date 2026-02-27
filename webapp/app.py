@@ -1,0 +1,97 @@
+"""
+Flask Web App for Scawthorpe Scorpions Social Media Agent
+"""
+from flask import Flask, render_template, jsonify, send_file, request
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from complete_social_media_agent import CompleteSocialMediaAgent
+import json
+from datetime import datetime
+
+app = Flask(__name__)
+agent = CompleteSocialMediaAgent()
+
+@app.route('/')
+def index():
+    """Main dashboard"""
+    teams = agent.teams.get('teams', [])
+    return render_template('index.html', teams=teams, total_teams=len(teams))
+
+@app.route('/api/teams')
+def get_teams():
+    """Get all teams"""
+    teams = agent.teams.get('teams', [])
+    return jsonify({'teams': teams, 'total': len(teams)})
+
+@app.route('/api/fixtures/<team_name>')
+def get_fixtures(team_name):
+    """Get fixtures for a team"""
+    try:
+        data = agent.get_team_fixtures_only(team_name)
+        return jsonify({'success': True, 'data': data})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/results/<team_name>')
+def get_results(team_name):
+    """Get results for a team"""
+    try:
+        data = agent.get_team_data(team_name)
+        return jsonify({'success': True, 'data': data})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/generate/fixtures', methods=['POST'])
+def generate_fixtures_post():
+    """Generate fixtures post"""
+    try:
+        team_name = request.json.get('team_name')
+        data = agent.get_team_fixtures_only(team_name)
+        
+        if data and data.get('fixtures'):
+            filename = agent.create_fixtures_post(data['team'], data['fixtures'])
+            return jsonify({'success': True, 'filename': filename})
+        return jsonify({'success': False, 'error': 'No fixtures found'}), 404
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/generate/results', methods=['POST'])
+def generate_results_post():
+    """Generate results post"""
+    try:
+        team_name = request.json.get('team_name')
+        data = agent.get_team_data(team_name)
+        
+        if data and data.get('results'):
+            filename = agent.create_results_post(data['team'], data['results'])
+            return jsonify({'success': True, 'filename': filename})
+        return jsonify({'success': False, 'error': 'No results found'}), 404
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/generate/table', methods=['POST'])
+def generate_table_post():
+    """Generate table post"""
+    try:
+        team_name = request.json.get('team_name')
+        data = agent.get_team_data(team_name)
+        
+        if data and data.get('table'):
+            filename = agent.create_table_post(data['team'], data['table'])
+            return jsonify({'success': True, 'filename': filename})
+        return jsonify({'success': False, 'error': 'No table found'}), 404
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/download/<path:filename>')
+def download_file(filename):
+    """Download generated image"""
+    file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), filename)
+    if os.path.exists(file_path):
+        return send_file(file_path, as_attachment=True)
+    return jsonify({'error': 'File not found'}), 404
+
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0', port=5000)

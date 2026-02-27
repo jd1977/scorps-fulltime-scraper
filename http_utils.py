@@ -24,12 +24,22 @@ def create_session_with_retries() -> requests.Session:
     session = requests.Session()
     
     # Configure retry strategy
-    retry_strategy = Retry(
-        total=MAX_RETRIES,
-        backoff_factor=RETRY_BACKOFF,
-        status_forcelist=RETRY_STATUS_CODES,
-        allowed_methods=["HEAD", "GET", "OPTIONS"]  # Safe methods to retry
-    )
+    # Use method_whitelist for older urllib3 versions, allowed_methods for newer
+    try:
+        retry_strategy = Retry(
+            total=MAX_RETRIES,
+            backoff_factor=RETRY_BACKOFF,
+            status_forcelist=RETRY_STATUS_CODES,
+            allowed_methods=["HEAD", "GET", "OPTIONS"]  # Safe methods to retry
+        )
+    except TypeError:
+        # Fallback for older urllib3 versions
+        retry_strategy = Retry(
+            total=MAX_RETRIES,
+            backoff_factor=RETRY_BACKOFF,
+            status_forcelist=RETRY_STATUS_CODES,
+            method_whitelist=["HEAD", "GET", "OPTIONS"]  # Safe methods to retry
+        )
     
     # Mount adapter with retry strategy
     adapter = HTTPAdapter(max_retries=retry_strategy)
