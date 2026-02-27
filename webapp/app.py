@@ -22,7 +22,35 @@ def send_static(path):
 def index():
     """Main dashboard"""
     teams = agent.teams.get('teams', [])
-    return render_template('index.html', teams=teams, total_teams=len(teams))
+    
+    # Format and sort teams
+    formatted_teams = []
+    for team in teams:
+        # Extract age group and color from full name
+        # e.g., "Scawthorpe Scorpions J.F.C. U10 Red" -> "Scorps U10 Red"
+        name = team['name']
+        
+        # Remove club prefix
+        short_name = name.replace('Scawthorpe Scorpions J.F.C. ', '')
+        
+        # Add "Scorps" prefix
+        display_name = f"Scorps {short_name}"
+        
+        # Extract age group number for sorting (U7, U8, etc.)
+        import re
+        age_match = re.search(r'U(\d+)', short_name)
+        age_num = int(age_match.group(1)) if age_match else 999
+        
+        formatted_teams.append({
+            **team,
+            'display_name': display_name,
+            'age_num': age_num
+        })
+    
+    # Sort by age group (U7, U8, U9, etc.)
+    formatted_teams.sort(key=lambda x: (x['age_num'], x['display_name']))
+    
+    return render_template('index.html', teams=formatted_teams, total_teams=len(formatted_teams))
 
 @app.route('/api/teams')
 def get_teams():
