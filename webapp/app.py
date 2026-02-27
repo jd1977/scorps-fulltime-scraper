@@ -187,14 +187,16 @@ def generate_weekly_fixtures_post():
                         continue
         
         if all_fixtures:
-            # Generate filename
+            # Note: Actual image generation needs to be implemented
+            # The CLI uses a method that doesn't exist in the agent yet
             timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
             filename = f'fixtures_boys_teams_{timestamp}.png'
             
-            # For now, return success - you'll need to implement the actual post generation
-            # This would call a method like agent.create_boys_fixtures_post(all_fixtures)
-            return jsonify({'success': True, 'filename': filename, 'count': len(all_fixtures), 
-                          'message': 'Weekly fixtures post generation coming soon'})
+            return jsonify({
+                'success': False, 
+                'error': 'Weekly fixtures post generation not yet implemented. Please use CLI for now.',
+                'count': len(all_fixtures)
+            }), 501
         return jsonify({'success': False, 'error': 'No fixtures found'}), 404
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
@@ -221,14 +223,16 @@ def generate_weekly_results_post():
                 continue
         
         if recent_results:
-            # Generate filename
+            # Note: Actual image generation needs to be implemented
+            # The CLI uses a method that doesn't exist in the agent yet
             timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
             filename = f'weekly_results_{timestamp}.png'
             
-            # For now, return success - you'll need to implement the actual post generation
-            # This would call a method like agent.create_weekly_results_post(recent_results)
-            return jsonify({'success': True, 'filename': filename, 'count': len(recent_results),
-                          'message': 'Weekly results post generation coming soon'})
+            return jsonify({
+                'success': False,
+                'error': 'Weekly results post generation not yet implemented. Please use CLI for now.',
+                'count': len(recent_results)
+            }), 501
         return jsonify({'success': False, 'error': 'No results found'}), 404
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
