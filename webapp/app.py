@@ -13,11 +13,6 @@ from datetime import datetime
 app = Flask(__name__)
 agent = CompleteSocialMediaAgent()
 
-@app.route('/static/<path:path>')
-def send_static(path):
-    """Serve static files"""
-    return send_from_directory('static', path)
-
 @app.route('/')
 def index():
     """Main dashboard"""
