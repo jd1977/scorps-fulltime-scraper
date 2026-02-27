@@ -187,13 +187,53 @@ def generate_weekly_fixtures_post():
                         continue
         
         if all_fixtures:
-            # Create the weekly fixtures post
-            filename = agent.create_weekly_fixtures_post(all_fixtures, template='boys_fixtures')
-            return jsonify({
-                'success': True, 
-                'filename': filename,
-                'count': len(all_fixtures)
-            })
+            # Separate boys and girls fixtures
+            boys_fixtures = []
+            girls_fixtures = []
+            
+            for f in all_fixtures:
+                # Extract team name
+                home_team = f.get('home_team', '')
+                away_team = f.get('away_team', '')
+                
+                if 'scawthorpe' in home_team.lower() or 'scorpions' in home_team.lower():
+                    team_name = home_team
+                else:
+                    team_name = away_team
+                
+                team_identifier = team_name.replace('Scawthorpe Scorpions J.F.C.', '').replace('Scawthorpe Scorpions', '').strip()
+                
+                # Check if it's a girls team
+                if 'girl' in team_identifier.lower():
+                    girls_fixtures.append(f)
+                else:
+                    boys_fixtures.append(f)
+            
+            created_posts = []
+            
+            # Create boys posts (max 6 per post)
+            if boys_fixtures:
+                for i in range(0, len(boys_fixtures), 6):
+                    batch = boys_fixtures[i:i+6]
+                    filename = agent.create_fixtures_post({'name': 'Boys Teams'}, batch, template='boys_fixtures')
+                    created_posts.append(filename)
+            
+            # Create girls posts (max 6 per post)
+            if girls_fixtures:
+                for i in range(0, len(girls_fixtures), 6):
+                    batch = girls_fixtures[i:i+6]
+                    filename = agent.create_fixtures_post({'name': 'Girls Teams'}, batch, template='girls_fixtures')
+                    created_posts.append(filename)
+            
+            if created_posts:
+                return jsonify({
+                    'success': True, 
+                    'filename': created_posts[0],  # Return first file for download
+                    'all_files': created_posts,
+                    'count': len(all_fixtures),
+                    'message': f'Created {len(created_posts)} post(s)'
+                })
+            
         return jsonify({'success': False, 'error': 'No fixtures found'}), 404
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
@@ -220,7 +260,7 @@ def generate_weekly_results_post():
                 continue
         
         if recent_results:
-            # Create the weekly results post
+            # Create the weekly results post using the template
             filename = agent.create_weekly_results_post(recent_results, template='this_weeks_results')
             return jsonify({
                 'success': True,
