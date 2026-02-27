@@ -125,6 +125,121 @@ def generate_table_post():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
+@app.route('/api/all-fixtures')
+def get_all_fixtures():
+    """Get all club fixtures for next 7 days"""
+    try:
+        from datetime import datetime, timedelta
+        from bs4 import BeautifulSoup
+        import time
+        
+        today = datetime.now()
+        seven_days_later = today + timedelta(days=7)
+        all_fixtures = []
+        
+        # Fetch club-wide fixtures
+        agent._rotate_user_agent()
+        response = agent.session.get(agent.club_fixtures_url, timeout=15)
+        time.sleep(3)
+        
+        if response.status_code == 200:
+            soup = BeautifulSoup(response.content, 'html.parser')
+            fixtures_table = soup.find('div', class_='fixtures-table')
+            
+            if fixtures_table:
+                rows = fixtures_table.find_all('tr')
+                
+                for row in rows:
+                    if row.find('th'):
+                        continue
+                    
+                    cells = row.find_all('td')
+                    if len(cells) < 7:
+                        continue
+                    
+                    try:
+                        date_cell = cells[1]
+                        date_span = date_cell.find('span')
+                        date = date_span.get_text(strip=True) if date_span else ""
+                        time_span = date_cell.find('span', class_='color-dark-grey')
+                        fixture_time = time_span.get_text(strip=True) if time_span else ""
+                        
+                        home_team = cells[2].get_text(strip=True)
+                        away_team = cells[6].get_text(strip=True)
+                        venue = cells[7].get_text(strip=True) if len(cells) > 7 else ""
+                        competition = cells[8].get_text(strip=True) if len(cells) > 8 else ""
+                        
+                        if date:
+                            fixture_date = datetime.strptime(date, '%d/%m/%y')
+                            
+                            if (today <= fixture_date <= seven_days_later and
+                                home_team and away_team and venue and
+                                'tbc' not in home_team.lower() and
+                                'tbc' not in away_team.lower() and
+                                'tbc' not in venue.lower()):
+                                
+                                if 'scawthorpe' in home_team.lower() or 'scorpions' in home_team.lower():
+                                    team_name = home_team
+                                else:
+                                    team_name = away_team
+                                
+                                team_identifier = team_name.replace('Scawthorpe Scorpions J.F.C.', '').replace('Scawthorpe Scorpions', '').strip()
+                                
+                                all_fixtures.append({
+                                    'date': date,
+                                    'time': fixture_time,
+                                    'home_team': home_team,
+                                    'away_team': away_team,
+                                    'venue': venue,
+                                    'competition': competition,
+                                    'team': team_identifier if team_identifier else 'Unknown'
+                                })
+                    except:
+                        continue
+        
+        return jsonify({'success': True, 'fixtures': all_fixtures, 'count': len(all_fixtures)})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/all-results')
+def get_all_results():
+    """Get all club results from last 7 days"""
+    try:
+        results = agent.get_all_club_results(use_cache=False)
+        
+        from datetime import datetime, timedelta
+        today = datetime.now()
+        seven_days_ago = today - timedelta(days=7)
+        
+        # Filter results from last 7 days
+        recent_results = []
+        for result in results:
+            try:
+                if result.get('date'):
+                    result_date = datetime.strptime(result['date'], '%d/%m/%y')
+                    if seven_days_ago <= result_date <= today:
+                        # Extract team identifier
+                        home_team = result.get('home_team', '')
+                        away_team = result.get('away_team', '')
+                        
+                        if 'scawthorpe' in home_team.lower() or 'scorpions' in home_team.lower():
+                            team_name = home_team
+                        else:
+                            team_name = away_team
+                        
+                        team_identifier = team_name.replace('Scawthorpe Scorpions J.F.C.', '').replace('Scawthorpe Scorpions', '').strip()
+                        
+                        recent_results.append({
+                            **result,
+                            'team': team_identifier if team_identifier else 'Unknown'
+                        })
+            except:
+                continue
+        
+        return jsonify({'success': True, 'results': recent_results, 'count': len(recent_results)})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 @app.route('/download/<path:filename>')
 def download_file(filename):
     """Download generated image"""
