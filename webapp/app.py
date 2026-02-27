@@ -187,16 +187,13 @@ def generate_weekly_fixtures_post():
                         continue
         
         if all_fixtures:
-            # Note: Actual image generation needs to be implemented
-            # The CLI uses a method that doesn't exist in the agent yet
-            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-            filename = f'fixtures_boys_teams_{timestamp}.png'
-            
+            # Create the weekly fixtures post
+            filename = agent.create_weekly_fixtures_post(all_fixtures, template='boys_fixtures')
             return jsonify({
-                'success': False, 
-                'error': 'Weekly fixtures post generation not yet implemented. Please use CLI for now.',
+                'success': True, 
+                'filename': filename,
                 'count': len(all_fixtures)
-            }), 501
+            })
         return jsonify({'success': False, 'error': 'No fixtures found'}), 404
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
@@ -223,16 +220,13 @@ def generate_weekly_results_post():
                 continue
         
         if recent_results:
-            # Note: Actual image generation needs to be implemented
-            # The CLI uses a method that doesn't exist in the agent yet
-            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-            filename = f'weekly_results_{timestamp}.png'
-            
+            # Create the weekly results post
+            filename = agent.create_weekly_results_post(recent_results, template='this_weeks_results')
             return jsonify({
-                'success': False,
-                'error': 'Weekly results post generation not yet implemented. Please use CLI for now.',
+                'success': True,
+                'filename': filename,
                 'count': len(recent_results)
-            }), 501
+            })
         return jsonify({'success': False, 'error': 'No results found'}), 404
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500

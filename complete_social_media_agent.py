@@ -1477,6 +1477,145 @@ class CompleteSocialMediaAgent:
         img.save(filename)
         return filename
 
+    def create_weekly_fixtures_post(self, all_fixtures: List[Dict[str, Any]], 
+                                   template: Optional[str] = None) -> str:
+        """Create a post showing all fixtures for the next 7 days in 2 columns
+        
+        Args:
+            all_fixtures: List of fixture dictionaries from all teams
+            template: Optional template name to use specific background
+        """
+        print(f"🎨 Creating weekly fixtures post...")
+        
+        # Try to load background template
+        import os
+        bg_path = None
+        if template:
+            template_path = os.path.join('assets', f'{template}_template.png')
+            if os.path.exists(template_path):
+                bg_path = template_path
+                print(f"   ✅ Using background: {template_path}")
+        
+        if bg_path:
+            # Load and resize background image
+            img = Image.open(bg_path)
+            try:
+                img = img.resize((self.width, self.height), Image.Resampling.LANCZOS)
+            except AttributeError:
+                img = img.resize((self.width, self.height), Image.LANCZOS)
+        else:
+            # Fallback: Create black background with orange accents
+            img = Image.new('RGB', (self.width, self.height), self.black)
+            draw_temp = ImageDraw.Draw(img)
+            self._add_paint_effects(draw_temp)
+        
+        draw = ImageDraw.Draw(img)
+        
+        # Calculate dynamic overlay size based on number of fixtures (2 columns)
+        num_fixtures = min(len(all_fixtures) if all_fixtures else 0, 20)  # Max 20 fixtures
+        fixtures_per_column = (num_fixtures + 1) // 2  # Divide into 2 columns
+        fixture_height = 80  # Height per fixture (slightly taller for date/time/venue)
+        padding = 60  # Top and bottom padding
+        
+        fixtures_box_height = padding + (fixtures_per_column * fixture_height) + 40
+        
+        # Position overlay in bottom half
+        overlay_bottom = self.height - 50
+        overlay_top = overlay_bottom - fixtures_box_height
+        
+        # Add black overlay box
+        overlay = Image.new('RGBA', (self.width, self.height), (0, 0, 0, 0))
+        overlay_draw = ImageDraw.Draw(overlay)
+        overlay_draw.rectangle([(30, overlay_top), (self.width - 30, overlay_bottom)], 
+                              fill=(0, 0, 0, 200))
+        img.paste(overlay, (0, 0), overlay)
+        draw = ImageDraw.Draw(img)
+        
+        # Fonts
+        try:
+            team_font = ImageFont.truetype("seguibl.ttf", 18)  # Team names
+            fixture_font = ImageFont.truetype("seguisb.ttf", 14)  # Fixture details
+            date_font = ImageFont.truetype("seguisb.ttf", 14)  # Dates
+        except:
+            try:
+                team_font = ImageFont.truetype("arialbd.ttf", 18)
+                fixture_font = ImageFont.truetype("arial.ttf", 14)
+                date_font = ImageFont.truetype("arial.ttf", 14)
+            except:
+                team_font = self.text_font
+                fixture_font = self.small_font
+                date_font = self.small_font
+        
+        # Two columns
+        column_width = (self.width - 80) // 2
+        left_column_x = 50
+        right_column_x = left_column_x + column_width + 20
+        
+        # Title
+        title = "THIS WEEK'S FIXTURES"
+        title_bbox = draw.textbbox((0, 0), title, font=self.title_font)
+        title_width = title_bbox[2] - title_bbox[0]
+        title_x = (self.width - title_width) // 2
+        title_y = overlay_top - 100
+        draw.text((title_x, title_y), title, fill=self.orange, font=self.title_font)
+        
+        # Draw fixtures in two columns
+        y_left = overlay_top + padding
+        y_right = overlay_top + padding
+        
+        for i, fixture in enumerate(all_fixtures[:20]):  # Max 20 fixtures
+            # Determine which column
+            if i % 2 == 0:
+                x = left_column_x
+                y = y_left
+            else:
+                x = right_column_x
+                y = y_right
+            
+            # Extract team name from fixture
+            home_team = fixture.get('home_team', '')
+            away_team = fixture.get('away_team', '')
+            
+            # Determine which is Scorpions team
+            if 'scawthorpe' in home_team.lower() or 'scorpions' in home_team.lower():
+                team_name = home_team.replace('Scawthorpe Scorpions J.F.C.', 'Scorps').strip()
+            else:
+                team_name = away_team.replace('Scawthorpe Scorpions J.F.C.', 'Scorps').strip()
+            
+            # Draw team name in orange
+            draw.text((x, y), team_name, fill=self.orange, font=team_font)
+            
+            # Draw fixture details
+            date_time = f"{fixture.get('date', '')} {fixture.get('time', '')}"
+            draw.text((x, y + 22), date_time, fill=self.white, font=date_font)
+            
+            # Draw match
+            match_text = f"{home_team.split()[-1]} vs {away_team.split()[-1]}"
+            if len(match_text) > 30:
+                match_text = match_text[:27] + "..."
+            draw.text((x, y + 40), match_text, fill=self.white, font=fixture_font)
+            
+            # Update y position for next fixture in this column
+            if i % 2 == 0:
+                y_left += fixture_height
+            else:
+                y_right += fixture_height
+        
+        # Footer
+        footer_text = "🦂 SCAWTHORPE SCORPIONS J.F.C."
+        footer_bbox = draw.textbbox((0, 0), footer_text, font=self.small_font)
+        footer_width = footer_bbox[2] - footer_bbox[0]
+        footer_x = (self.width - footer_width) // 2
+        footer_y = overlay_bottom + 10
+        draw.text((footer_x, footer_y), footer_text, fill=self.white, font=self.small_font)
+        
+        # Save
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        filename = f"fixtures_boys_teams_{timestamp}.png"
+        img.save(filename)
+        print(f"   ✅ Saved: {filename}")
+        return filename
+
     def create_weekly_results_post(self, all_results: List[Dict[str, Any]], 
                                   template: Optional[str] = None) -> str:
         """Create a post showing all results from the last 7 days in 2 columns
