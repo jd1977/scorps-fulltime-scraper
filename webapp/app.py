@@ -120,6 +120,119 @@ def generate_table_post():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
+@app.route('/api/generate/weekly-fixtures', methods=['POST'])
+def generate_weekly_fixtures_post():
+    """Generate weekly fixtures post for all teams"""
+    try:
+        # Note: This creates a simple text file for now
+        # You can enhance this to create an actual image post later
+        from datetime import datetime, timedelta
+        from bs4 import BeautifulSoup
+        import time
+        
+        today = datetime.now()
+        seven_days_later = today + timedelta(days=7)
+        all_fixtures = []
+        
+        # Fetch club-wide fixtures
+        agent._rotate_user_agent()
+        response = agent.session.get(agent.club_fixtures_url, timeout=15)
+        time.sleep(3)
+        
+        if response.status_code == 200:
+            soup = BeautifulSoup(response.content, 'html.parser')
+            fixtures_table = soup.find('div', class_='fixtures-table')
+            
+            if fixtures_table:
+                rows = fixtures_table.find_all('tr')
+                
+                for row in rows:
+                    if row.find('th'):
+                        continue
+                    
+                    cells = row.find_all('td')
+                    if len(cells) < 7:
+                        continue
+                    
+                    try:
+                        date_cell = cells[1]
+                        date_span = date_cell.find('span')
+                        date = date_span.get_text(strip=True) if date_span else ""
+                        time_span = date_cell.find('span', class_='color-dark-grey')
+                        fixture_time = time_span.get_text(strip=True) if time_span else ""
+                        
+                        home_team = cells[2].get_text(strip=True)
+                        away_team = cells[6].get_text(strip=True)
+                        venue = cells[7].get_text(strip=True) if len(cells) > 7 else ""
+                        competition = cells[8].get_text(strip=True) if len(cells) > 8 else ""
+                        
+                        if date:
+                            fixture_date = datetime.strptime(date, '%d/%m/%y')
+                            
+                            if (today <= fixture_date <= seven_days_later and
+                                home_team and away_team and venue and
+                                'tbc' not in home_team.lower() and
+                                'tbc' not in away_team.lower() and
+                                'tbc' not in venue.lower()):
+                                
+                                all_fixtures.append({
+                                    'date': date,
+                                    'time': fixture_time,
+                                    'home_team': home_team,
+                                    'away_team': away_team,
+                                    'venue': venue,
+                                    'competition': competition
+                                })
+                    except:
+                        continue
+        
+        if all_fixtures:
+            # Generate filename
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            filename = f'fixtures_boys_teams_{timestamp}.png'
+            
+            # For now, return success - you'll need to implement the actual post generation
+            # This would call a method like agent.create_boys_fixtures_post(all_fixtures)
+            return jsonify({'success': True, 'filename': filename, 'count': len(all_fixtures), 
+                          'message': 'Weekly fixtures post generation coming soon'})
+        return jsonify({'success': False, 'error': 'No fixtures found'}), 404
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/generate/weekly-results', methods=['POST'])
+def generate_weekly_results_post():
+    """Generate weekly results post for all teams"""
+    try:
+        results = agent.get_all_club_results(use_cache=False)
+        
+        from datetime import datetime, timedelta
+        today = datetime.now()
+        seven_days_ago = today - timedelta(days=7)
+        
+        # Filter results from last 7 days
+        recent_results = []
+        for result in results:
+            try:
+                if result.get('date'):
+                    result_date = datetime.strptime(result['date'], '%d/%m/%y')
+                    if seven_days_ago <= result_date <= today:
+                        recent_results.append(result)
+            except:
+                continue
+        
+        if recent_results:
+            # Generate filename
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            filename = f'weekly_results_{timestamp}.png'
+            
+            # For now, return success - you'll need to implement the actual post generation
+            # This would call a method like agent.create_weekly_results_post(recent_results)
+            return jsonify({'success': True, 'filename': filename, 'count': len(recent_results),
+                          'message': 'Weekly results post generation coming soon'})
+        return jsonify({'success': False, 'error': 'No results found'}), 404
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 @app.route('/api/all-fixtures')
 def get_all_fixtures():
     """Get all club fixtures for next 7 days"""

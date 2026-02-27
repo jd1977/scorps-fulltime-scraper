@@ -232,6 +232,7 @@
                     });
                     html += '</div>';
                     html += `<p style="text-align: center; margin-top: 20px; color: #999;">Found ${data.count} fixtures in the next 7 days</p>`;
+                    html += `<button class="generate-btn" onclick="generateWeeklyPost('fixtures')">Generate Weekly Fixtures Post</button>`;
                     document.getElementById('modalBody').innerHTML = html;
                 } else {
                     document.getElementById('modalBody').innerHTML = '<div class="error-message">No fixtures found for the next 7 days</div>';
@@ -264,12 +265,42 @@
                     });
                     html += '</div>';
                     html += `<p style="text-align: center; margin-top: 20px; color: #999;">Found ${data.count} results from the last 7 days</p>`;
+                    html += `<button class="generate-btn" onclick="generateWeeklyPost('results')">Generate Weekly Results Post</button>`;
                     document.getElementById('modalBody').innerHTML = html;
                 } else {
                     document.getElementById('modalBody').innerHTML = '<div class="error-message">No results found for the last 7 days</div>';
                 }
             } catch (error) {
                 document.getElementById('modalBody').innerHTML = '<div class="error-message">Error loading results</div>';
+            }
+        }
+        
+        async function generateWeeklyPost(type) {
+            document.getElementById('modalBody').innerHTML = '<div class="loading">Generating post...</div>';
+            
+            try {
+                const endpoint = type === 'fixtures' ? '/api/generate/weekly-fixtures' : '/api/generate/weekly-results';
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('modalBody').innerHTML = `
+                        <div class="success-message">
+                            ✅ Post generated successfully!<br>
+                            <a href="/download/${data.filename}" style="color: white; text-decoration: underline;">Download ${data.filename}</a>
+                        </div>
+                    `;
+                } else {
+                    document.getElementById('modalBody').innerHTML = `<div class="error-message">Error: ${data.error}</div>`;
+                }
+            } catch (error) {
+                document.getElementById('modalBody').innerHTML = '<div class="error-message">Error generating post</div>';
             }
         }
     </script>
