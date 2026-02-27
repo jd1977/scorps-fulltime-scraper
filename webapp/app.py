@@ -23,8 +23,10 @@ def index():
     """Main dashboard"""
     teams = agent.teams.get('teams', [])
     
-    # Format and sort teams
+    # Format and sort teams, removing duplicates
     formatted_teams = []
+    seen_display_names = set()
+    
     for team in teams:
         # Extract age group and color from full name
         # e.g., "Scawthorpe Scorpions J.F.C. U10 Red" -> "Scorps U10 Red"
@@ -35,6 +37,11 @@ def index():
         
         # Add "Scorps" prefix
         display_name = f"Scorps {short_name}"
+        
+        # Skip duplicates (teams in multiple leagues)
+        if display_name in seen_display_names:
+            continue
+        seen_display_names.add(display_name)
         
         # Extract age group number for sorting (U7, U8, etc.)
         import re
