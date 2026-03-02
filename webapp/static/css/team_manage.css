@@ -124,6 +124,14 @@
     background: #45a049;
 }
 
+.btn-edit {
+    background: #2196F3;
+}
+
+.btn-edit:hover {
+    background: #0b7dda;
+}
+
 .btn-danger {
     background: #f44336;
 }

@@ -139,7 +139,8 @@ def record_match():
         data['fixture_id'],
         data['team_score'],
         data['opponent_score'],
-        data.get('man_of_match_player_id'),
+        data.get('coaches_motm_player_id'),
+        data.get('parents_motm_player_id'),
         data.get('notes')
     )
     

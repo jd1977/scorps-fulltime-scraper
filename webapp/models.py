@@ -69,11 +69,13 @@ class Database:
                 fixture_id INTEGER NOT NULL,
                 team_score INTEGER,
                 opponent_score INTEGER,
-                man_of_match_player_id INTEGER,
+                coaches_motm_player_id INTEGER,
+                parents_motm_player_id INTEGER,
                 notes TEXT,
                 recorded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (fixture_id) REFERENCES fixtures(id),
-                FOREIGN KEY (man_of_match_player_id) REFERENCES players(id)
+                FOREIGN KEY (coaches_motm_player_id) REFERENCES players(id),
+                FOREIGN KEY (parents_motm_player_id) REFERENCES players(id)
             )
         ''')
         
@@ -281,14 +283,14 @@ class Database:
     
     # Match result methods
     def record_match_result(self, fixture_id, team_score, opponent_score, 
-                          man_of_match_player_id=None, notes=None):
+                          coaches_motm_player_id=None, parents_motm_player_id=None, notes=None):
         conn = self.get_connection()
         cursor = conn.cursor()
         cursor.execute('''
             INSERT INTO match_results (fixture_id, team_score, opponent_score, 
-                                      man_of_match_player_id, notes)
-            VALUES (?, ?, ?, ?, ?)
-        ''', (fixture_id, team_score, opponent_score, man_of_match_player_id, notes))
+                                      coaches_motm_player_id, parents_motm_player_id, notes)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ''', (fixture_id, team_score, opponent_score, coaches_motm_player_id, parents_motm_player_id, notes))
         result_id = cursor.lastrowid
         conn.commit()
         conn.close()
@@ -317,8 +319,8 @@ class Database:
         
         result = {
             'id': row[0], 'fixture_id': row[1], 'team_score': row[2],
-            'opponent_score': row[3], 'man_of_match_player_id': row[4],
-            'notes': row[5], 'recorded_at': row[6]
+            'opponent_score': row[3], 'coaches_motm_player_id': row[4],
+            'parents_motm_player_id': row[5], 'notes': row[6], 'recorded_at': row[7]
         }
         
         # Get goals
@@ -392,12 +394,21 @@ class Database:
         cursor.execute('SELECT COUNT(*) FROM goals WHERE assist_player_id = ?', (player_id,))
         assists = cursor.fetchone()[0]
         
-        # Man of match
-        cursor.execute('SELECT COUNT(*) FROM match_results WHERE man_of_match_player_id = ?', (player_id,))
-        motm = cursor.fetchone()[0]
+        # Coach's Man of Match
+        cursor.execute('SELECT COUNT(*) FROM match_results WHERE coaches_motm_player_id = ?', (player_id,))
+        coaches_motm = cursor.fetchone()[0]
+        
+        # Parents' Man of Match
+        cursor.execute('SELECT COUNT(*) FROM match_results WHERE parents_motm_player_id = ?', (player_id,))
+        parents_motm = cursor.fetchone()[0]
         
         conn.close()
-        return {'goals': goals, 'assists': assists, 'man_of_match': motm}
+        return {
+            'goals': goals, 
+            'assists': assists, 
+            'coaches_motm': coaches_motm,
+            'parents_motm': parents_motm
+        }
     
     def get_team_stats(self, team_id):
         """Get team statistics"""
