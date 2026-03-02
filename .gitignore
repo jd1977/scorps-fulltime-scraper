@@ -40,13 +40,20 @@ Thumbs.db
 # Generated content (exclude generated posts but not templates)
 social_media_posts/
 posts/
+output/
 fixtures_boys_teams_*.png
 fixtures_girls_teams_*.png
 fixtures_scorpions_*.png
 results_scorpions_*.png
 table_scorpions_*.png
+weekly_*.png
 fixture_details.json
 fixtures_archive/
+
+# Temporary/debug files
+copy_*.py
+debug_*.html
+ize*
 
 # Sensitive data (if any)
 *.env
