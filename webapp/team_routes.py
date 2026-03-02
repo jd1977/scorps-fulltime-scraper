@@ -96,6 +96,9 @@ def select_team(team_id):
         )
         result['has_details'] = recorded is not None
         if recorded:
+            # Use recorded scores instead of FA Full-Time scores
+            result['home_score'] = recorded.get('home_score', result.get('home_score', 0))
+            result['away_score'] = recorded.get('away_score', result.get('away_score', 0))
             result['recorded_goals'] = len(recorded.get('goals', []))
             result['coaches_motm'] = recorded.get('coaches_motm_player_id') is not None
             result['parents_motm'] = recorded.get('parents_motm_player_id') is not None
@@ -252,6 +255,36 @@ def refresh_cache(team_id):
     team_data_cache.remove(cache_key)
     
     return jsonify({'success': True, 'message': 'Cache refreshed'})
+
+@team_bp.route('/api/match/get-recorded', methods=['POST'])
+def get_recorded_match():
+    """Get existing recorded match data"""
+    data = request.json
+    try:
+        recorded = db.get_match_record(
+            data['team_id'],
+            data['date'],
+            data['home_team'],
+            data['away_team']
+        )
+        if recorded:
+            return jsonify({'success': True, 'match': recorded})
+        return jsonify({'success': False, 'error': 'No recorded data found'}), 404
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@team_bp.route('/api/team/reset-stats/<int:team_id>', methods=['POST'])
+def reset_team_stats(team_id):
+    """Reset all match records and stats for a team"""
+    team = db.get_team(team_id)
+    if not team:
+        return jsonify({'success': False, 'error': 'Team not found'}), 404
+    
+    try:
+        count = db.reset_team_stats(team_id)
+        return jsonify({'success': True, 'message': f'Reset {count} match records'})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 @team_bp.route('/api/match/<int:fixture_id>')
 def get_match_result(fixture_id):

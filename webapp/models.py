@@ -549,3 +549,42 @@ class Database:
             'goals_for': row[4] or 0,
             'goals_against': row[5] or 0
         }
+
+    def reset_player_stats(self, player_id):
+        """Reset all stats for a player (delete all their goals, assists, and MOTM awards)"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        
+        # Delete goals scored by this player
+        cursor.execute('DELETE FROM full_match_goals WHERE player_id = ?', (player_id,))
+        
+        # Delete assists by this player
+        cursor.execute('DELETE FROM full_match_goals WHERE assist_player_id = ?', (player_id,))
+        
+        # Remove MOTM awards
+        cursor.execute('UPDATE full_match_records SET coaches_motm_player_id = NULL WHERE coaches_motm_player_id = ?', (player_id,))
+        cursor.execute('UPDATE full_match_records SET parents_motm_player_id = NULL WHERE parents_motm_player_id = ?', (player_id,))
+        
+        conn.commit()
+        conn.close()
+    
+    def reset_team_stats(self, team_id):
+        """Reset all match records and stats for a team"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        
+        # Get all match records for this team
+        cursor.execute('SELECT id FROM full_match_records WHERE team_id = ?', (team_id,))
+        match_ids = [row[0] for row in cursor.fetchall()]
+        
+        # Delete all goals for these matches
+        for match_id in match_ids:
+            cursor.execute('DELETE FROM full_match_goals WHERE match_record_id = ?', (match_id,))
+        
+        # Delete all match records
+        cursor.execute('DELETE FROM full_match_records WHERE team_id = ?', (team_id,))
+        
+        conn.commit()
+        conn.close()
+        
+        return len(match_ids)
