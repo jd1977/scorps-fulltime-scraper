@@ -453,21 +453,42 @@ class Database:
         conn = self.get_connection()
         cursor = conn.cursor()
         
-        # Insert or replace match record
+        # Check if match already exists
         cursor.execute('''
-            INSERT OR REPLACE INTO full_match_records 
-            (team_id, match_date, home_team, away_team, home_score, away_score, 
-             competition, coaches_motm_player_id, parents_motm_player_id, notes)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ''', (team_id, match_date, home_team, away_team, home_score, away_score,
-              competition, coaches_motm_player_id, parents_motm_player_id, notes))
+            SELECT id FROM full_match_records 
+            WHERE team_id = ? AND match_date = ? AND home_team = ? AND away_team = ?
+        ''', (team_id, match_date, home_team, away_team))
         
-        match_id = cursor.lastrowid
+        existing = cursor.fetchone()
         
-        # Delete existing goals for this match
-        cursor.execute('DELETE FROM full_match_goals WHERE match_record_id = ?', (match_id,))
+        if existing:
+            # Delete old goals first
+            old_match_id = existing[0]
+            cursor.execute('DELETE FROM full_match_goals WHERE match_record_id = ?', (old_match_id,))
+            
+            # Update existing record
+            cursor.execute('''
+                UPDATE full_match_records 
+                SET home_score = ?, away_score = ?, competition = ?,
+                    coaches_motm_player_id = ?, parents_motm_player_id = ?, notes = ?
+                WHERE id = ?
+            ''', (home_score, away_score, competition, coaches_motm_player_id, 
+                  parents_motm_player_id, notes, old_match_id))
+            
+            match_id = old_match_id
+        else:
+            # Insert new match record
+            cursor.execute('''
+                INSERT INTO full_match_records 
+                (team_id, match_date, home_team, away_team, home_score, away_score, 
+                 competition, coaches_motm_player_id, parents_motm_player_id, notes)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ''', (team_id, match_date, home_team, away_team, home_score, away_score,
+                  competition, coaches_motm_player_id, parents_motm_player_id, notes))
+            
+            match_id = cursor.lastrowid
         
-        # Add goals
+        # Add new goals
         if goals:
             for goal in goals:
                 cursor.execute('''
