@@ -59,7 +59,7 @@
     display: block;
     margin-bottom: 0.5rem;
     font-weight: 600;
-    color: #333;
+    color: #FF8C00;
 }
 
 .form-group input,
@@ -264,7 +264,7 @@
 }
 
 .fixtures-section h3 {
-    color: #333;
+    color: #FF8C00;
     font-size: 1.2rem;
     margin: 1.5rem 0 1rem 0;
 }
@@ -400,6 +400,11 @@
     border-radius: 4px;
     margin-bottom: 1rem;
     border-left: 3px solid #FF8C00;
+}
+
+.goal-entry label {
+    color: #FF8C00;
+    font-weight: 600;
 }
 
 #goalsList {
