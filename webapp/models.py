@@ -542,21 +542,40 @@ class Database:
         return match_record
     
     def get_team_stats(self, team_id):
-        """Get team statistics"""
+        """Get team statistics from recorded match data"""
         conn = self.get_connection()
         cursor = conn.cursor()
         
         cursor.execute('''
             SELECT 
                 COUNT(*) as matches_played,
-                SUM(CASE WHEN mr.team_score > mr.opponent_score THEN 1 ELSE 0 END) as wins,
-                SUM(CASE WHEN mr.team_score = mr.opponent_score THEN 1 ELSE 0 END) as draws,
-                SUM(CASE WHEN mr.team_score < mr.opponent_score THEN 1 ELSE 0 END) as losses,
-                SUM(mr.team_score) as goals_for,
-                SUM(mr.opponent_score) as goals_against
-            FROM match_results mr
-            JOIN fixtures f ON mr.fixture_id = f.id
-            WHERE f.team_id = ?
+                SUM(CASE 
+                    WHEN (home_team LIKE '%scawthorpe%' OR home_team LIKE '%scorpions%') 
+                         AND home_score > away_score THEN 1
+                    WHEN (away_team LIKE '%scawthorpe%' OR away_team LIKE '%scorpions%')
+                         AND away_score > home_score THEN 1
+                    ELSE 0 
+                END) as wins,
+                SUM(CASE WHEN home_score = away_score THEN 1 ELSE 0 END) as draws,
+                SUM(CASE 
+                    WHEN (home_team LIKE '%scawthorpe%' OR home_team LIKE '%scorpions%')
+                         AND home_score < away_score THEN 1
+                    WHEN (away_team LIKE '%scawthorpe%' OR away_team LIKE '%scorpions%')
+                         AND away_score < home_score THEN 1
+                    ELSE 0 
+                END) as losses,
+                SUM(CASE 
+                    WHEN home_team LIKE '%scawthorpe%' OR home_team LIKE '%scorpions%' 
+                    THEN home_score 
+                    ELSE away_score 
+                END) as goals_for,
+                SUM(CASE 
+                    WHEN home_team LIKE '%scawthorpe%' OR home_team LIKE '%scorpions%'
+                    THEN away_score 
+                    ELSE home_score 
+                END) as goals_against
+            FROM full_match_records
+            WHERE team_id = ?
         ''', (team_id,))
         
         row = cursor.fetchone()
