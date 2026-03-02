@@ -63,7 +63,7 @@ def get_age_group(team_name: str) -> int:
 def format_result_display(home_team: str, away_team: str, home_score: int, 
                           away_score: int, team_name: str) -> Tuple[str, str]:
     """
-    Format result display with special handling for U11 and below
+    Format result display with special handling for U10 and below
     
     Args:
         home_team: Home team name
@@ -77,15 +77,13 @@ def format_result_display(home_team: str, away_team: str, home_score: int,
     """
     age_group = get_age_group(team_name)
     
-    # For U11 and below, scores aren't tracked
-    if age_group <= 11:
-        # Check if scores are 0-0 (meaning match played but not scored)
-        if home_score == 0 and away_score == 0:
-            score_display = "X - X"
-            result_icon = "⚽ PLAYED"
-            return result_icon, score_display
+    # For U10 and below, scores aren't tracked - ALWAYS show X - X
+    if age_group <= 10:
+        score_display = "X - X"
+        result_icon = "⚽ PLAYED"
+        return result_icon, score_display
     
-    # For U12 and above, or if actual scores exist
+    # For U11 and above, show actual scores
     home = format_team_name(home_team)
     away = format_team_name(away_team)
     

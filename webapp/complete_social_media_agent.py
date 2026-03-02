@@ -1450,6 +1450,10 @@ class CompleteSocialMediaAgent:
                 home_display = home.replace('Scawthorpe Scorpions J.F.C.', 'Scorps').replace('J.F.C.', '').strip()
                 away_display = away.replace('Scawthorpe Scorpions J.F.C.', 'Scorps').replace('J.F.C.', '').strip()
                 
+                # Determine age group from team name for score display
+                team_name_for_age = home if home_is_scorps else away
+                age_group = get_age_group(team_name_for_age)
+                
                 # Draw result with Scorps team name in orange, rest in white
                 x_pos = 80
                 y_result = y_pos + 28
@@ -1469,9 +1473,15 @@ class CompleteSocialMediaAgent:
                 
                 x_pos += home_width + 10
                 
-                # Score in white
-                score_text = f"{home_score} - {away_score}"
-                draw.text((x_pos, y_result), score_text, fill=self.white, font=result_font)
+                # Score - show "X - X" for U10 and below (scores not recorded)
+                if age_group <= 10:
+                    score_text = "X - X"
+                    score_color = (255, 0, 0)  # Red color for X - X
+                else:
+                    score_text = f"{home_score} - {away_score}"
+                    score_color = self.white
+                
+                draw.text((x_pos, y_result), score_text, fill=score_color, font=result_font)
                 
                 try:
                     bbox = draw.textbbox((0, 0), score_text, font=result_font)
