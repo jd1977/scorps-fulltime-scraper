@@ -10,8 +10,22 @@ db = Database()
 @team_bp.route('/manage')
 def manage():
     """Team management dashboard"""
-    teams = db.get_all_teams()
-    return render_template('team_manage.html', teams=teams)
+    # Get teams from scawthorpe_teams.json (existing teams from Full-Time)
+    import json
+    import os
+    
+    teams_file = os.path.join(os.path.dirname(__file__), 'scawthorpe_teams.json')
+    with open(teams_file, 'r') as f:
+        data = json.load(f)
+    
+    fulltime_teams = data.get('teams', [])
+    
+    # Get managed teams (teams with coach details added)
+    managed_teams = db.get_all_teams()
+    
+    return render_template('team_manage.html', 
+                         fulltime_teams=fulltime_teams,
+                         managed_teams=managed_teams)
 
 @team_bp.route('/select/<int:team_id>')
 def select_team(team_id):

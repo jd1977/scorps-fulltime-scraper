@@ -63,12 +63,14 @@
     border: 1px solid #ddd;
     border-radius: 4px;
     font-size: 1rem;
+    background: white;
 }
 
 .form-group input:focus,
 .form-group select:focus {
     outline: none;
     border-color: #FF8C00;
+    box-shadow: 0 0 0 2px rgba(255, 140, 0, 0.1);
 }
 
 .form-row {
