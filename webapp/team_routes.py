@@ -35,13 +35,45 @@ def select_team(team_id):
         return "Team not found", 404
     
     players = db.get_team_players(team_id)
-    fixtures = db.get_team_fixtures(team_id)
     stats = db.get_team_stats(team_id)
+    
+    # Get fixtures and results from FA Full-Time
+    import sys
+    import os
+    sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    from complete_social_media_agent import CompleteSocialMediaAgent
+    
+    agent = CompleteSocialMediaAgent()
+    
+    # Get fixtures and results for this team
+    fixtures_data = agent.get_team_fixtures_only(team['team_name'])
+    results_data = agent.get_team_data(team['team_name'])
+    
+    all_fixtures = fixtures_data.get('fixtures', []) if fixtures_data else []
+    results = results_data.get('results', []) if results_data else []
+    
+    # Get only the next fixture (first one in the list)
+    next_fixture = all_fixtures[0] if all_fixtures else None
+    
+    # Check if we have recorded data for each result
+    for result in results:
+        recorded = db.get_match_record(
+            team_id,
+            result.get('date', ''),
+            result.get('home_team', ''),
+            result.get('away_team', '')
+        )
+        result['has_details'] = recorded is not None
+        if recorded:
+            result['recorded_goals'] = len(recorded.get('goals', []))
+            result['coaches_motm'] = recorded.get('coaches_motm_player_id') is not None
+            result['parents_motm'] = recorded.get('parents_motm_player_id') is not None
     
     return render_template('team_detail.html', 
                          team=team, 
                          players=players, 
-                         fixtures=fixtures,
+                         next_fixture=next_fixture,
+                         results=results,
                          stats=stats)
 
 @team_bp.route('/api/create', methods=['POST'])
@@ -152,6 +184,28 @@ def record_match():
                    goal.get('minute'))
     
     return jsonify({'success': True, 'result_id': result_id})
+
+@team_bp.route('/api/match/record-full', methods=['POST'])
+def record_full_match():
+    """Record complete match details from FA Full-Time results"""
+    data = request.json
+    try:
+        match_id = db.record_full_match(
+            data['team_id'],
+            data['date'],
+            data['home_team'],
+            data['away_team'],
+            data['home_score'],
+            data['away_score'],
+            data.get('competition'),
+            data.get('coaches_motm_player_id'),
+            data.get('parents_motm_player_id'),
+            data.get('notes'),
+            data.get('goals', [])
+        )
+        return jsonify({'success': True, 'match_id': match_id})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 @team_bp.route('/api/match/<int:fixture_id>')
 def get_match_result(fixture_id):

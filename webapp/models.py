@@ -93,6 +93,42 @@ class Database:
             )
         ''')
         
+        # Full match records table (for storing complete match data from FA Full-Time)
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS full_match_records (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                team_id INTEGER NOT NULL,
+                match_date TEXT NOT NULL,
+                home_team TEXT NOT NULL,
+                away_team TEXT NOT NULL,
+                home_score INTEGER,
+                away_score INTEGER,
+                competition TEXT,
+                coaches_motm_player_id INTEGER,
+                parents_motm_player_id INTEGER,
+                notes TEXT,
+                recorded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (team_id) REFERENCES teams(id),
+                FOREIGN KEY (coaches_motm_player_id) REFERENCES players(id),
+                FOREIGN KEY (parents_motm_player_id) REFERENCES players(id),
+                UNIQUE(team_id, match_date, home_team, away_team)
+            )
+        ''')
+        
+        # Goals for full match records
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS full_match_goals (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                match_record_id INTEGER NOT NULL,
+                player_id INTEGER NOT NULL,
+                assist_player_id INTEGER,
+                minute INTEGER,
+                FOREIGN KEY (match_record_id) REFERENCES full_match_records(id),
+                FOREIGN KEY (player_id) REFERENCES players(id),
+                FOREIGN KEY (assist_player_id) REFERENCES players(id)
+            )
+        ''')
+        
         # Team sheets table
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS team_sheets (
@@ -386,20 +422,20 @@ class Database:
         conn = self.get_connection()
         cursor = conn.cursor()
         
-        # Goals
-        cursor.execute('SELECT COUNT(*) FROM goals WHERE player_id = ?', (player_id,))
+        # Goals from full match records
+        cursor.execute('SELECT COUNT(*) FROM full_match_goals WHERE player_id = ?', (player_id,))
         goals = cursor.fetchone()[0]
         
-        # Assists
-        cursor.execute('SELECT COUNT(*) FROM goals WHERE assist_player_id = ?', (player_id,))
+        # Assists from full match records
+        cursor.execute('SELECT COUNT(*) FROM full_match_goals WHERE assist_player_id = ?', (player_id,))
         assists = cursor.fetchone()[0]
         
-        # Coach's Man of Match
-        cursor.execute('SELECT COUNT(*) FROM match_results WHERE coaches_motm_player_id = ?', (player_id,))
+        # Coach's Man of Match from full match records
+        cursor.execute('SELECT COUNT(*) FROM full_match_records WHERE coaches_motm_player_id = ?', (player_id,))
         coaches_motm = cursor.fetchone()[0]
         
-        # Parents' Man of Match
-        cursor.execute('SELECT COUNT(*) FROM match_results WHERE parents_motm_player_id = ?', (player_id,))
+        # Parents' Man of Match from full match records
+        cursor.execute('SELECT COUNT(*) FROM full_match_records WHERE parents_motm_player_id = ?', (player_id,))
         parents_motm = cursor.fetchone()[0]
         
         conn.close()
@@ -409,6 +445,80 @@ class Database:
             'coaches_motm': coaches_motm,
             'parents_motm': parents_motm
         }
+    
+    def record_full_match(self, team_id, match_date, home_team, away_team, home_score, away_score,
+                         competition=None, coaches_motm_player_id=None, parents_motm_player_id=None, 
+                         notes=None, goals=None):
+        """Record complete match details from FA Full-Time results"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        
+        # Insert or replace match record
+        cursor.execute('''
+            INSERT OR REPLACE INTO full_match_records 
+            (team_id, match_date, home_team, away_team, home_score, away_score, 
+             competition, coaches_motm_player_id, parents_motm_player_id, notes)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (team_id, match_date, home_team, away_team, home_score, away_score,
+              competition, coaches_motm_player_id, parents_motm_player_id, notes))
+        
+        match_id = cursor.lastrowid
+        
+        # Delete existing goals for this match
+        cursor.execute('DELETE FROM full_match_goals WHERE match_record_id = ?', (match_id,))
+        
+        # Add goals
+        if goals:
+            for goal in goals:
+                cursor.execute('''
+                    INSERT INTO full_match_goals (match_record_id, player_id, assist_player_id, minute)
+                    VALUES (?, ?, ?, ?)
+                ''', (match_id, goal['player_id'], goal.get('assist_player_id'), goal.get('minute')))
+        
+        conn.commit()
+        conn.close()
+        return match_id
+    
+    def get_match_record(self, team_id, match_date, home_team, away_team):
+        """Get recorded match details"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        
+        cursor.execute('''
+            SELECT * FROM full_match_records 
+            WHERE team_id = ? AND match_date = ? AND home_team = ? AND away_team = ?
+        ''', (team_id, match_date, home_team, away_team))
+        
+        row = cursor.fetchone()
+        if not row:
+            conn.close()
+            return None
+        
+        match_record = {
+            'id': row[0], 'team_id': row[1], 'match_date': row[2],
+            'home_team': row[3], 'away_team': row[4], 'home_score': row[5],
+            'away_score': row[6], 'competition': row[7],
+            'coaches_motm_player_id': row[8], 'parents_motm_player_id': row[9],
+            'notes': row[10], 'recorded_at': row[11]
+        }
+        
+        # Get goals
+        cursor.execute('''
+            SELECT g.*, p.player_name, ap.player_name as assist_name
+            FROM full_match_goals g
+            LEFT JOIN players p ON g.player_id = p.id
+            LEFT JOIN players ap ON g.assist_player_id = ap.id
+            WHERE g.match_record_id = ?
+        ''', (match_record['id'],))
+        
+        goals = cursor.fetchall()
+        match_record['goals'] = [{
+            'id': g[0], 'player_id': g[2], 'player_name': g[5],
+            'assist_player_id': g[3], 'assist_name': g[6], 'minute': g[4]
+        } for g in goals]
+        
+        conn.close()
+        return match_record
     
     def get_team_stats(self, team_id):
         """Get team statistics"""
