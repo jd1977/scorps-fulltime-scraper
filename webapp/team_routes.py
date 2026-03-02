@@ -47,6 +47,12 @@ def select_team(team_id):
     players = db.get_team_players(team_id)
     stats = db.get_team_stats(team_id)
     
+    # Extract age group from team name
+    import re
+    age_match = re.search(r'U(\d+)', team['team_name'], re.IGNORECASE)
+    age_group = int(age_match.group(1)) if age_match else 99
+    is_u10_or_below = age_group <= 10
+    
     # Check cache first (24-hour TTL)
     cache_key = f"team_data_{team['team_name']}"
     cached_data = team_data_cache.get(cache_key)
@@ -99,7 +105,9 @@ def select_team(team_id):
                          players=players, 
                          next_fixture=next_fixture,
                          results=results,
-                         stats=stats)
+                         stats=stats,
+                         age_group=age_group,
+                         is_u10_or_below=is_u10_or_below)
 
 @team_bp.route('/api/create', methods=['POST'])
 def create_team():

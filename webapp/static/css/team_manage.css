@@ -397,3 +397,21 @@ textarea:focus {
     border-color: #FF8C00;
     box-shadow: 0 0 0 2px rgba(255, 140, 0, 0.1);
 }
+
+/* U10 and Below Notice */
+.u10-notice {
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: 4px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.u10-notice p {
+    margin: 0;
+    color: #856404;
+}
+
+.u10-notice strong {
+    color: #FF8C00;
+}
