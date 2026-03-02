@@ -86,7 +86,10 @@ def generate_fixtures_post():
         data = agent.get_team_fixtures_only(team_name)
         
         if data and data.get('fixtures'):
-            filename = agent.create_fixtures_post(data['team'], data['fixtures'])
+            # Determine if it's a girls team to use correct template
+            team_identifier = data['team']['name'].lower()
+            template = 'girls' if 'girl' in team_identifier else 'boys'
+            filename = agent.create_fixtures_post(data['team'], data['fixtures'], template=template)
             return jsonify({'success': True, 'filename': filename})
         return jsonify({'success': False, 'error': 'No fixtures found'}), 404
     except Exception as e:
@@ -100,7 +103,10 @@ def generate_results_post():
         data = agent.get_team_data(team_name)
         
         if data and data.get('results'):
-            filename = agent.create_results_post(data['team'], data['results'])
+            # Determine if it's a girls team to use correct template
+            team_identifier = data['team']['name'].lower()
+            template = 'girls' if 'girl' in team_identifier else 'boys'
+            filename = agent.create_results_post(data['team'], data['results'], template=template)
             return jsonify({'success': True, 'filename': filename})
         return jsonify({'success': False, 'error': 'No results found'}), 404
     except Exception as e:
@@ -114,7 +120,10 @@ def generate_table_post():
         data = agent.get_team_data(team_name)
         
         if data and data.get('table'):
-            filename = agent.create_table_post(data['team'], data['table'])
+            # Determine if it's a girls team to use correct template
+            team_identifier = data['team']['name'].lower()
+            template = 'girls' if 'girl' in team_identifier else 'boys'
+            filename = agent.create_table_post(data['team'], data['table'], template=template)
             return jsonify({'success': True, 'filename': filename})
         return jsonify({'success': False, 'error': 'No table found'}), 404
     except Exception as e:
@@ -215,14 +224,14 @@ def generate_weekly_fixtures_post():
             if boys_fixtures:
                 for i in range(0, len(boys_fixtures), 6):
                     batch = boys_fixtures[i:i+6]
-                    filename = agent.create_fixtures_post({'name': 'Boys Teams'}, batch, template='boys_fixtures')
+                    filename = agent.create_fixtures_post({'name': 'Boys Teams'}, batch, template='boys')
                     created_posts.append(filename)
             
             # Create girls posts (max 6 per post)
             if girls_fixtures:
                 for i in range(0, len(girls_fixtures), 6):
                     batch = girls_fixtures[i:i+6]
-                    filename = agent.create_fixtures_post({'name': 'Girls Teams'}, batch, template='girls_fixtures')
+                    filename = agent.create_fixtures_post({'name': 'Girls Teams'}, batch, template='girls')
                     created_posts.append(filename)
             
             if created_posts:
@@ -389,9 +398,16 @@ def get_all_results():
 @app.route('/download/<path:filename>')
 def download_file(filename):
     """Download generated image"""
+    # Try current directory first (for AWS deployment)
+    file_path = os.path.join(os.path.dirname(__file__), filename)
+    if os.path.exists(file_path):
+        return send_file(file_path, as_attachment=True)
+    
+    # Fall back to parent directory (for local development)
     file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), filename)
     if os.path.exists(file_path):
         return send_file(file_path, as_attachment=True)
+    
     return jsonify({'error': 'File not found'}), 404
 
 @app.route('/test-bg')
