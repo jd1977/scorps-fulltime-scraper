@@ -43,16 +43,28 @@ def index():
         age_match = re.search(r'U(\d+)', short_name)
         age_num = int(age_match.group(1)) if age_match else 999
         
+        # Determine if it's a girls team
+        is_girls = 'girl' in short_name.lower()
+        
         formatted_teams.append({
             **team,
             'display_name': display_name,
-            'age_num': age_num
+            'age_num': age_num,
+            'is_girls': is_girls
         })
     
-    # Sort by age group (U7, U8, U9, etc.)
-    formatted_teams.sort(key=lambda x: (x['age_num'], x['display_name']))
+    # Separate boys and girls teams
+    boys_teams = [t for t in formatted_teams if not t['is_girls']]
+    girls_teams = [t for t in formatted_teams if t['is_girls']]
     
-    return render_template('index.html', teams=formatted_teams, total_teams=len(formatted_teams))
+    # Sort both by age group (youngest to eldest)
+    boys_teams.sort(key=lambda x: (x['age_num'], x['display_name']))
+    girls_teams.sort(key=lambda x: (x['age_num'], x['display_name']))
+    
+    return render_template('index.html', 
+                         boys_teams=boys_teams, 
+                         girls_teams=girls_teams,
+                         total_teams=len(formatted_teams))
 
 @app.route('/api/teams')
 def get_teams():

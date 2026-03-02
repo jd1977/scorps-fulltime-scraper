@@ -21,21 +21,43 @@
         
         <div class="search-box">
             <input type="text" id="searchInput" class="search-input" placeholder="Search teams... (e.g., U13, Red, Girls)">
-            <p class="team-count">{{ total_teams }} Teams</p>
+            <p class="team-count">{{ total_teams }} Teams ({{ boys_teams|length }} Boys, {{ girls_teams|length }} Girls)</p>
         </div>
         
-        <div class="teams-grid" id="teamsGrid">
-            {% for team in teams %}
-            <div class="team-card" data-team-name="{{ team.name }}" data-display-name="{{ team.display_name }}">
-                <div class="team-name">{{ team.display_name }}</div>
-                <div class="team-league">{{ team.league_info.replace('League Name:', '') }}</div>
-                <div class="action-buttons">
-                    <button class="btn btn-fixtures" onclick="showFixtures('{{ team.name }}')">Fixtures</button>
-                    <button class="btn btn-results" onclick="showResults('{{ team.name }}')">Results</button>
-                    <button class="btn btn-table" onclick="showTable('{{ team.name }}')">Table</button>
+        <div class="teams-container">
+            <div class="teams-column">
+                <h2 class="column-header">Boys Teams</h2>
+                <div class="teams-grid" id="boysTeamsGrid">
+                    {% for team in boys_teams %}
+                    <div class="team-card" data-team-name="{{ team.name }}" data-display-name="{{ team.display_name }}" data-gender="boys">
+                        <div class="team-name">{{ team.display_name }}</div>
+                        <div class="team-league">{{ team.league_info.replace('League Name:', '') }}</div>
+                        <div class="action-buttons">
+                            <button class="btn btn-fixtures" onclick="showFixtures('{{ team.name }}')">Fixtures</button>
+                            <button class="btn btn-results" onclick="showResults('{{ team.name }}')">Results</button>
+                            <button class="btn btn-table" onclick="showTable('{{ team.name }}')">Table</button>
+                        </div>
+                    </div>
+                    {% endfor %}
                 </div>
             </div>
-            {% endfor %}
+            
+            <div class="teams-column">
+                <h2 class="column-header">Girls Teams</h2>
+                <div class="teams-grid" id="girlsTeamsGrid">
+                    {% for team in girls_teams %}
+                    <div class="team-card" data-team-name="{{ team.name }}" data-display-name="{{ team.display_name }}" data-gender="girls">
+                        <div class="team-name">{{ team.display_name }}</div>
+                        <div class="team-league">{{ team.league_info.replace('League Name:', '') }}</div>
+                        <div class="action-buttons">
+                            <button class="btn btn-fixtures" onclick="showFixtures('{{ team.name }}')">Fixtures</button>
+                            <button class="btn btn-results" onclick="showResults('{{ team.name }}')">Results</button>
+                            <button class="btn btn-table" onclick="showTable('{{ team.name }}')">Table</button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
         </div>
     </div>
     
