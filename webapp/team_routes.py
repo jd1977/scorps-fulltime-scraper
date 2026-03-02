@@ -3,9 +3,19 @@ Flask routes for Team Management
 """
 from flask import Blueprint, render_template, request, jsonify, redirect, url_for
 from models import Database
+from datetime import timedelta
 
 team_bp = Blueprint('team', __name__, url_prefix='/team')
 db = Database()
+
+# Import cache utilities
+import sys
+import os
+sys.path.append(os.path.dirname(__file__))
+from cache_utils import SimpleCache
+
+# Create cache with 24-hour TTL (1440 minutes)
+team_data_cache = SimpleCache(ttl_minutes=1440)
 
 @team_bp.route('/manage')
 def manage():
@@ -37,20 +47,35 @@ def select_team(team_id):
     players = db.get_team_players(team_id)
     stats = db.get_team_stats(team_id)
     
-    # Get fixtures and results from FA Full-Time
-    import sys
-    import os
-    sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    from complete_social_media_agent import CompleteSocialMediaAgent
+    # Check cache first (24-hour TTL)
+    cache_key = f"team_data_{team['team_name']}"
+    cached_data = team_data_cache.get(cache_key)
     
-    agent = CompleteSocialMediaAgent()
-    
-    # Get fixtures and results for this team
-    fixtures_data = agent.get_team_fixtures_only(team['team_name'])
-    results_data = agent.get_team_data(team['team_name'])
-    
-    all_fixtures = fixtures_data.get('fixtures', []) if fixtures_data else []
-    results = results_data.get('results', []) if results_data else []
+    if cached_data:
+        # Use cached data
+        all_fixtures = cached_data.get('fixtures', [])
+        results = cached_data.get('results', [])
+    else:
+        # Fetch from FA Full-Time
+        import sys
+        import os
+        sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        from complete_social_media_agent import CompleteSocialMediaAgent
+        
+        agent = CompleteSocialMediaAgent()
+        
+        # Get fixtures and results for this team
+        fixtures_data = agent.get_team_fixtures_only(team['team_name'])
+        results_data = agent.get_team_data(team['team_name'])
+        
+        all_fixtures = fixtures_data.get('fixtures', []) if fixtures_data else []
+        results = results_data.get('results', []) if results_data else []
+        
+        # Cache the data for 24 hours
+        team_data_cache.set(cache_key, {
+            'fixtures': all_fixtures,
+            'results': results
+        })
     
     # Get only the next fixture (first one in the list)
     next_fixture = all_fixtures[0] if all_fixtures else None
@@ -206,6 +231,19 @@ def record_full_match():
         return jsonify({'success': True, 'match_id': match_id})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
+
+@team_bp.route('/api/refresh-cache/<int:team_id>', methods=['POST'])
+def refresh_cache(team_id):
+    """Manually refresh the cache for a team"""
+    team = db.get_team(team_id)
+    if not team:
+        return jsonify({'success': False, 'error': 'Team not found'}), 404
+    
+    # Clear cache for this team
+    cache_key = f"team_data_{team['team_name']}"
+    team_data_cache.remove(cache_key)
+    
+    return jsonify({'success': True, 'message': 'Cache refreshed'})
 
 @team_bp.route('/api/match/<int:fixture_id>')
 def get_match_result(fixture_id):
