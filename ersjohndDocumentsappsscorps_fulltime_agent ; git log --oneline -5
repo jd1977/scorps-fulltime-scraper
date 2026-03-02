@@ -1,0 +1,37 @@
+[1mdiff --git a/webapp/app.py b/webapp/app.py[m
+[1mindex 5a51493..c93af2b 100644[m
+[1m--- a/webapp/app.py[m
+[1m+++ b/webapp/app.py[m
+[36m@@ -43,16 +43,28 @@[m [mdef index():[m
+         age_match = re.search(r'U(\d+)', short_name)[m
+         age_num = int(age_match.group(1)) if age_match else 999[m
+         [m
+[32m+[m[32m        # Determine if it's a girls team[m
+[32m+[m[32m        is_girls = 'girl' in short_name.lower()[m
+[32m+[m[41m        [m
+         formatted_teams.append({[m
+             **team,[m
+             'display_name': display_name,[m
+[31m-            'age_num': age_num[m
+[32m+[m[32m            'age_num': age_num,[m
+[32m+[m[32m            'is_girls': is_girls[m
+         })[m
+     [m
+[31m-    # Sort by age group (U7, U8, U9, etc.)[m
+[31m-    formatted_teams.sort(key=lambda x: (x['age_num'], x['display_name']))[m
+[32m+[m[32m    # Separate boys and girls teams[m
+[32m+[m[32m    boys_teams = [t for t in formatted_teams if not t['is_girls']][m
+[32m+[m[32m    girls_teams = [t for t in formatted_teams if t['is_girls']][m
+[32m+[m[41m    [m
+[32m+[m[32m    # Sort both by age group (youngest to eldest)[m
+[32m+[m[32m    boys_teams.sort(key=lambda x: (x['age_num'], x['display_name']))[m
+[32m+[m[32m    girls_teams.sort(key=lambda x: (x['age_num'], x['display_name']))[m
+     [m
+[31m-    return render_template('index.html', teams=formatted_teams, total_teams=len(formatted_teams))[m
+[32m+[m[32m    return render_template('index.html',[m[41m [m
+[32m+[m[32m                         boys_teams=boys_teams,[m[41m [m
+[32m+[m[32m                         girls_teams=girls_teams,[m
+[32m+[m[32m                         total_teams=len(formatted_teams))[m
+ [m
+ @app.route('/api/teams')[m
+ def get_teams():[m

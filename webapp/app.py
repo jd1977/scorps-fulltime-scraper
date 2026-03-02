@@ -13,6 +13,10 @@ from datetime import datetime
 app = Flask(__name__)
 agent = CompleteSocialMediaAgent()
 
+# Register team management blueprint
+from team_routes import team_bp
+app.register_blueprint(team_bp)
+
 @app.route('/')
 def index():
     """Main dashboard"""

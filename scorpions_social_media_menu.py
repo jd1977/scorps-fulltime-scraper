@@ -60,6 +60,7 @@ def display_main_menu():
     print("  4. Show Results by Team")
     print("  5. Show All This Week's Results")
     print("  6. Add Kick Off Times & Pitch")
+    print("  7. Manage Teams (Players, Match Records)")
     print("  q. Quit")
     print("\n" + "=" * 60)
 
@@ -990,6 +991,31 @@ def add_kick_off_times_and_pitch(agent, teams):
     except ValueError:
         print("\n❌ Invalid input")
 
+def manage_teams_cli():
+    """Option 7: Manage teams - opens web interface"""
+    print("\n⚙️  MANAGE TEAMS")
+    print("=" * 60)
+    print("\n📋 Team Management Features:")
+    print("  • Set up team details (coach name, contact info)")
+    print("  • Manage squad (add players, shirt numbers, positions)")
+    print("  • Create team sheets for fixtures")
+    print("  • Record match results, goals, and assists")
+    print("  • Track player statistics (goals, assists, man of match)")
+    print("\n" + "=" * 60)
+    print("\n🌐 Opening web interface...")
+    print("   URL: http://localhost:5000/team/manage")
+    print("\n💡 TIP: The web app must be running for this to work.")
+    print("   Run 'python webapp/app.py' in another terminal if needed.")
+    
+    # Try to open in browser
+    import webbrowser
+    try:
+        webbrowser.open('http://localhost:5000/team/manage')
+        print("\n✅ Browser opened! If not, manually visit: http://localhost:5000/team/manage")
+    except:
+        print("\n⚠️  Could not open browser automatically.")
+        print("   Please manually visit: http://localhost:5000/team/manage")
+
 def main():
     """Main menu loop"""
     print("\n" + "=" * 60)
@@ -1025,6 +1051,8 @@ def main():
             show_all_this_weeks_results(agent, teams)
         elif choice == '6':
             add_kick_off_times_and_pitch(agent, teams)
+        elif choice == '7':
+            manage_teams_cli()
         else:
             print("❌ Invalid option. Please try again.")
         
