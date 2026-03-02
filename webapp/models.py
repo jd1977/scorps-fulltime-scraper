@@ -175,6 +175,18 @@ class Database:
     def add_player(self, team_id, player_name, shirt_number=None, position=None):
         conn = self.get_connection()
         cursor = conn.cursor()
+        
+        # Check if shirt number already exists for this team
+        if shirt_number:
+            cursor.execute('''
+                SELECT id FROM players 
+                WHERE team_id = ? AND shirt_number = ? AND active = 1
+            ''', (team_id, shirt_number))
+            existing = cursor.fetchone()
+            if existing:
+                conn.close()
+                raise ValueError(f"Shirt number {shirt_number} is already assigned to another player")
+        
         cursor.execute('''
             INSERT INTO players (team_id, player_name, shirt_number, position)
             VALUES (?, ?, ?, ?)
@@ -202,6 +214,27 @@ class Database:
     def update_player(self, player_id, player_name=None, shirt_number=None, position=None):
         conn = self.get_connection()
         cursor = conn.cursor()
+        
+        # Get current player's team_id
+        cursor.execute('SELECT team_id FROM players WHERE id = ?', (player_id,))
+        result = cursor.fetchone()
+        if not result:
+            conn.close()
+            raise ValueError("Player not found")
+        
+        team_id = result[0]
+        
+        # Check if shirt number already exists for another player in this team
+        if shirt_number:
+            cursor.execute('''
+                SELECT id FROM players 
+                WHERE team_id = ? AND shirt_number = ? AND active = 1 AND id != ?
+            ''', (team_id, shirt_number, player_id))
+            existing = cursor.fetchone()
+            if existing:
+                conn.close()
+                raise ValueError(f"Shirt number {shirt_number} is already assigned to another player")
+        
         cursor.execute('''
             UPDATE players 
             SET player_name = ?, shirt_number = ?, position = ?

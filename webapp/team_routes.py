@@ -69,23 +69,33 @@ def create_team():
 def add_player():
     """Add player to team"""
     data = request.json
-    player_id = db.add_player(
-        data['team_id'],
-        data['player_name'],
-        data.get('shirt_number'),
-        data.get('position')
-    )
-    return jsonify({'success': True, 'player_id': player_id})
+    try:
+        player_id = db.add_player(
+            data['team_id'],
+            data['player_name'],
+            data.get('shirt_number'),
+            data.get('position')
+        )
+        return jsonify({'success': True, 'player_id': player_id})
+    except ValueError as e:
+        return jsonify({'success': False, 'error': str(e)}), 400
+    except Exception as e:
+        return jsonify({'success': False, 'error': 'Failed to add player'}), 500
 
 @team_bp.route('/api/player/update/<int:player_id>', methods=['POST'])
 def update_player(player_id):
     """Update player details"""
     data = request.json
-    db.update_player(player_id,
-                    data.get('player_name'),
-                    data.get('shirt_number'),
-                    data.get('position'))
-    return jsonify({'success': True})
+    try:
+        db.update_player(player_id,
+                        data.get('player_name'),
+                        data.get('shirt_number'),
+                        data.get('position'))
+        return jsonify({'success': True})
+    except ValueError as e:
+        return jsonify({'success': False, 'error': str(e)}), 400
+    except Exception as e:
+        return jsonify({'success': False, 'error': 'Failed to update player'}), 500
 
 @team_bp.route('/api/player/delete/<int:player_id>', methods=['POST'])
 def delete_player(player_id):
